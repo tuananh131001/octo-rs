@@ -10,7 +10,7 @@ pub mod audio_fingerprinter;
 pub mod loudness_meter;
 pub mod spectrum_analyzer;
 
-mod net_format;
+pub(crate) mod net_format;
 mod tool;
 
 pub use audio_fingerprinter::{AudioFingerprinter, FingerprintOutcome, FingerprintResult};

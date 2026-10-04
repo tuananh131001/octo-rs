@@ -1,0 +1,43 @@
+duration 0 rate 44100
+id3v2 version 3
+  USLT enc 1 lang "ivl" desc "" text "[re:Octo]\u000a[00:01.00]Ça va — 東京\u000a[00:02.50]second line"
+id3v1 title null artist null album null year 0 comment null track 0 genre null
+tag
+  title null
+  performers []
+  albumartists []
+  composers []
+  album null
+  genres []
+  year 0 track 0/0 disc 0/0 bpm 0
+  copyright null
+  lyrics "[re:Octo]\u000a[00:01.00]Ça va — 東京\u000a[00:02.50]second line"
+  isrc null publisher null
+  releaseid null releasegroupid null
+extras
+  isrc null
+  label null
+  catalognumber null
+  barcode null
+  releasetype null
+  releasestatus null
+  releasecountry null
+  releasetrackid null
+  albumartistid null
+  artistid null
+  acoustid null
+  trackgain null
+  trackpeak null
+  albumgain null
+  albumpeak null
+  albumid null
+  albumartists null
+  albumversion null
+  releasedate null
+  recordingid null compilation False
+facts 0 ".mp3" 44100 null null null null null null null [] null null null null null False True
+barefacts 0 ".mp3" 44100 False
+identity null 0
+album null null False
+kept "lyrics" null ["[Unknown Artist]"] [] null null null null 0/0 0/0 False
+pid "||[Unknown Artist]|||||lyrics"

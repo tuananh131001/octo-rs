@@ -1,0 +1,76 @@
+duration 0 rate 8000
+xiph vendor "ffmpeg"
+  TITLE ["Teardrop"]
+  ARTIST ["Massive Attack feat. Elizabeth Fraser"]
+  ARTISTS ["A", "B"]
+  ALBUM ["Mezzanine"]
+  ALBUMARTIST ["Massive Attack"]
+  TRACKNUMBER ["03"]
+  TRACKTOTAL ["11"]
+  DISCNUMBER ["1"]
+  DATE ["1998"]
+  GENRE ["Trip Hop", "Rock"]
+  TEMPO ["77"]
+  COMPOSER ["Robert Del Naja", "Grant Marshall"]
+  COPYRIGHT ["℗ 1998 Virgin Records"]
+  MUSICBRAINZ_TRACKID ["5b0ef8e9-9b55-4a3b-9a6b-3a2f6b1c7d01"]
+  MUSICBRAINZ_RELEASEGROUPID ["b2b4e1d0-6f5e-4a7c-8d9e-0f1a2b3c4d5e"]
+  MUSICBRAINZ_ARTISTID ["10adbe5e-a2c0-4bf3-8249-2b4cbf6e6ca8", "2f5e3d3a-0000-4000-8000-000000000001"]
+  COMPILATION ["1"]
+  ISRC ["GBAAA9800001", "GBAAA9800002"]
+  LABEL ["Trimmed"]
+  CATALOGNUMBER ["CDV 2851"]
+  RELEASETYPE ["album", "compilation"]
+  RELEASESTATUS ["official"]
+  RELEASECOUNTRY ["GB"]
+  ORIGINALDATE ["1998-04-20"]
+  ORIGINALYEAR ["1998"]
+  MUSICBRAINZ_RELEASETRACKID ["8e7d6c5b-4a3f-4d2c-9b1a-0e9f8d7c6b5a"]
+  MUSICBRAINZ_ALBUMARTISTID ["10adbe5e-a2c0-4bf3-8249-2b4cbf6e6ca8"]
+  ACOUSTID_ID ["acoustid-1"]
+  REPLAYGAIN_TRACK_GAIN ["-6.52 dB"]
+  REPLAYGAIN_TRACK_PEAK ["0.891251"]
+  REPLAYGAIN_ALBUM_GAIN ["+3.10 dB"]
+  REPLAYGAIN_ALBUM_PEAK ["1.000000"]
+  ALBUMARTISTS [" Massive Attack ", "Tracey Thorn"]
+flacpicture FrontCover "image/png" "Cover" 0x0x0/0 bytes 98 sha256 630466e7681e0f40
+tag
+  title "Teardrop"
+  performers ["Massive Attack feat. Elizabeth Fraser"]
+  albumartists ["Massive Attack"]
+  composers ["Robert Del Naja", "Grant Marshall"]
+  album "Mezzanine"
+  genres ["Trip Hop", "Rock"]
+  year 1998 track 3/11 disc 1/0 bpm 77
+  copyright "℗ 1998 Virgin Records"
+  lyrics null
+  isrc "GBAAA9800001" publisher null
+  releaseid null releasegroupid "b2b4e1d0-6f5e-4a7c-8d9e-0f1a2b3c4d5e"
+  picture FrontCover "image/png" "Cover" bytes 98 sha256 630466e7681e0f40
+extras
+  isrc "GBAAA9800001"
+  label "Trimmed"
+  catalognumber "CDV 2851"
+  barcode null
+  releasetype "album"
+  releasestatus "official"
+  releasecountry "GB"
+  releasetrackid "8e7d6c5b-4a3f-4d2c-9b1a-0e9f8d7c6b5a"
+  albumartistid "10adbe5e-a2c0-4bf3-8249-2b4cbf6e6ca8"
+  artistid "10adbe5e-a2c0-4bf3-8249-2b4cbf6e6ca8"
+  acoustid "acoustid-1"
+  trackgain "-6.52 dB"
+  trackpeak "0.891251"
+  albumgain "+3.10 dB"
+  albumpeak "1.000000"
+  albumid null
+  albumartists "Massive Attack"
+  albumversion null
+  releasedate null
+  recordingid "5b0ef8e9-9b55-4a3b-9a6b-3a2f6b1c7d01" compilation True
+facts 0 ".flac" 8000 "Teardrop" "Massive Attack feat. Elizabeth Fraser" "Mezzanine" "Massive Attack" 1998 3 1 ["GBAAA9800001"] null "CDV 2851" "Trimmed" "5b0ef8e9-9b55-4a3b-9a6b-3a2f6b1c7d01" null True True
+barefacts 0 ".flac" 8000 False
+identity "5b0ef8e9-9b55-4a3b-9a6b-3a2f6b1c7d01" 0
+album "Mezzanine" "Massive Attack" True
+kept "Teardrop" "Mezzanine" ["Massive Attack"] [" Massive Attack ", "Tracey Thorn"] null null null "8e7d6c5b-4a3f-4d2c-9b1a-0e9f8d7c6b5a" 3/11 1/0 True
+pid "8e7d6c5b-4a3f-4d2c-9b1a-0e9f8d7c6b5a||Massive Attack| Massive Attack \u0001Tracey Thorn|Mezzanine|||Teardrop"

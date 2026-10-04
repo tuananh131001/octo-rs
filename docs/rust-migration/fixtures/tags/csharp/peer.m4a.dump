@@ -1,0 +1,59 @@
+duration 0 rate 44100
+apple
+  "aART" [data(1) "AC/DC"]
+  "©nam" [data(1) "Ágætis byrjun — 東京"]
+  "©ART" [data(1) "Sigur Rós"]
+  "©gen" [data(1) "Rock; Shoegaze"]
+  "trkn" [data(0) hex 0000000700000000]
+  "disk" [data(0) hex 0000000200020000]
+  "©day" [data(1) "1999"]
+  "----" [mean "com.apple.iTunes", name "originaldate", data(1) "1999-06-12"]
+  "----" [mean "com.apple.iTunes", name "LABEL", data(1) "Smekkleysa Ünïcode"]
+  "----" [mean "com.apple.iTunes", name "MusicBrainz Artist Id", data(1) "a-1", mean "com.apple.iTunes", name "MusicBrainz Artist Id", data(1) "a-2"]
+  "----" [mean "com.apple.iTunes", name "MusicBrainz Artist Id", data(1) "a-1", mean "com.apple.iTunes", name "MusicBrainz Artist Id", data(1) "a-2"]
+  "----" [mean "com.apple.iTunes", name "ARTISTS", data(1) "Sigur Rós", mean "com.apple.iTunes", name "ARTISTS", data(1) "坂本龍一"]
+  "----" [mean "com.apple.iTunes", name "ARTISTS", data(1) "Sigur Rós", mean "com.apple.iTunes", name "ARTISTS", data(1) "坂本龍一"]
+  "----" [mean "com.apple.iTunes", name "MusicBrainz Track Id", data(1) "rec-peer"]
+  "cpil" [data(21) hex 00]
+  "©lyr" [data(1) "plain peer lyrics\u000awith ünïcode"]
+  "covr" [data(14) bytes 98 sha256 630466e7681e0f40]
+tag
+  title "Ágætis byrjun — 東京"
+  performers ["Sigur Rós"]
+  albumartists ["AC/DC"]
+  composers []
+  album null
+  genres ["Rock", "Shoegaze"]
+  year 1999 track 7/0 disc 2/2 bpm 0
+  copyright null
+  lyrics "plain peer lyrics\u000awith ünïcode"
+  isrc null publisher null
+  releaseid null releasegroupid null
+  picture FrontCover "image/png" "cover.png" bytes 98 sha256 630466e7681e0f40
+extras
+  isrc null
+  label "Smekkleysa Ünïcode"
+  catalognumber null
+  barcode null
+  releasetype null
+  releasestatus null
+  releasecountry null
+  releasetrackid null
+  albumartistid null
+  artistid "a-1"
+  acoustid null
+  trackgain null
+  trackpeak null
+  albumgain null
+  albumpeak null
+  albumid null
+  albumartists null
+  albumversion null
+  releasedate null
+  recordingid "rec-peer" compilation False
+facts 0 ".m4a" 44100 "Ágætis byrjun — 東京" "Sigur Rós" null "AC/DC" 1999 7 2 [] null null "Smekkleysa Ünïcode" "rec-peer" null False True
+barefacts 0 ".m4a" 44100 False
+identity "rec-peer" 0
+album null "AC/DC" False
+kept "Ágætis byrjun — 東京" null ["AC/DC"] [] null "1999" null null 7/0 2/2 False
+pid "||AC/DC||||1999|Ágætis byrjun — 東京"

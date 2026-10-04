@@ -1,0 +1,75 @@
+duration 0 rate 44100
+id3v2 version 4
+  TIT2 enc 3 ["Teardrop"]
+  TPE1 enc 3 ["Massive Attack feat. Elizabeth Fraser"]
+  TXXX enc 3 desc "ARTISTS" ["Massive Attack", "Elizabeth Fraser"]
+  TALB enc 3 ["Mezzanine"]
+  TPE2 enc 3 ["Massive Attack"]
+  TRCK enc 3 ["03/11"]
+  TPOS enc 3 ["1"]
+  TDRC enc 3 ["1998"]
+  TCON enc 3 ["Trip Hop", "17"]
+  TBPM enc 3 ["77"]
+  TCOM enc 3 ["Robert Del Naja", "Grant Marshall"]
+  TCOP enc 3 ["℗ 1998 Virgin Records"]
+  UFID owner "http://musicbrainz.org" id "5b0ef8e9-9b55-4a3b-9a6b-3a2f6b1c7d01"
+  TXXX enc 3 desc "MusicBrainz Release Group Id" ["b2b4e1d0-6f5e-4a7c-8d9e-0f1a2b3c4d5e"]
+  TXXX enc 3 desc "MusicBrainz Artist Id" ["10adbe5e-a2c0-4bf3-8249-2b4cbf6e6ca8", "2f5e3d3a-0000-4000-8000-000000000001"]
+  TCMP enc 3 ["1"]
+  TSRC enc 3 ["GBAAA9800001"]
+  TPUB enc 3 ["Virgin"]
+  TXXX enc 3 desc "CATALOGNUMBER" ["CDV 2851"]
+  TXXX enc 3 desc "BARCODE" ["724384559922"]
+  TXXX enc 3 desc "MusicBrainz Album Type" ["album", "compilation"]
+  TXXX enc 3 desc "MusicBrainz Album Status" ["official"]
+  TXXX enc 3 desc "MusicBrainz Album Release Country" ["GB"]
+  TDOR enc 3 ["1998-04-20"]
+  TXXX enc 3 desc "MusicBrainz Release Track Id" ["8e7d6c5b-4a3f-4d2c-9b1a-0e9f8d7c6b5a"]
+  TXXX enc 3 desc "MusicBrainz Album Artist Id" ["10adbe5e-a2c0-4bf3-8249-2b4cbf6e6ca8"]
+  TXXX enc 3 desc "Acoustid Id" ["acoustid-1"]
+  TXXX enc 3 desc "REPLAYGAIN_TRACK_GAIN" ["-6.52 dB"]
+  TXXX enc 3 desc "REPLAYGAIN_TRACK_PEAK" ["0.891251"]
+  TXXX enc 3 desc "REPLAYGAIN_ALBUM_GAIN" ["-7.25 dB"]
+  TXXX enc 3 desc "REPLAYGAIN_ALBUM_PEAK" ["0.987654"]
+  APIC enc 3 mime "image/png" type FrontCover desc "Cover" bytes 98 sha256 630466e7681e0f40
+id3v1 title "Teardrop" artist "Massive Attack feat. Elizabeth" album "Mezzanine" year 1998 comment null track 3 genre null
+tag
+  title "Teardrop"
+  performers ["Massive Attack feat. Elizabeth Fraser"]
+  albumartists ["Massive Attack"]
+  composers ["Robert Del Naja", "Grant Marshall"]
+  album "Mezzanine"
+  genres ["Trip Hop", "Rock"]
+  year 1998 track 3/11 disc 1/0 bpm 77
+  copyright "℗ 1998 Virgin Records"
+  lyrics null
+  isrc "GBAAA9800001" publisher "Virgin"
+  releaseid null releasegroupid "b2b4e1d0-6f5e-4a7c-8d9e-0f1a2b3c4d5e"
+  picture FrontCover "image/png" "Cover" bytes 98 sha256 630466e7681e0f40
+extras
+  isrc "GBAAA9800001"
+  label "Virgin"
+  catalognumber "CDV 2851"
+  barcode "724384559922"
+  releasetype "album"
+  releasestatus "official"
+  releasecountry "GB"
+  releasetrackid "8e7d6c5b-4a3f-4d2c-9b1a-0e9f8d7c6b5a"
+  albumartistid "10adbe5e-a2c0-4bf3-8249-2b4cbf6e6ca8"
+  artistid "10adbe5e-a2c0-4bf3-8249-2b4cbf6e6ca8"
+  acoustid "acoustid-1"
+  trackgain "-6.52 dB"
+  trackpeak "0.891251"
+  albumgain "-7.25 dB"
+  albumpeak "0.987654"
+  albumid null
+  albumartists null
+  albumversion null
+  releasedate null
+  recordingid "5b0ef8e9-9b55-4a3b-9a6b-3a2f6b1c7d01" compilation True
+facts 0 ".mp3" 44100 "Teardrop" "Massive Attack feat. Elizabeth Fraser" "Mezzanine" "Massive Attack" 1998 3 1 ["GBAAA9800001"] "724384559922" "CDV 2851" "Virgin" "5b0ef8e9-9b55-4a3b-9a6b-3a2f6b1c7d01" null True True
+barefacts 0 ".mp3" 44100 False
+identity "5b0ef8e9-9b55-4a3b-9a6b-3a2f6b1c7d01" 0
+album "Mezzanine" "Massive Attack" True
+kept "Teardrop" "Mezzanine" ["Massive Attack"] [] null null null "8e7d6c5b-4a3f-4d2c-9b1a-0e9f8d7c6b5a" 3/11 1/0 True
+pid "8e7d6c5b-4a3f-4d2c-9b1a-0e9f8d7c6b5a||Massive Attack||Mezzanine|||Teardrop"
