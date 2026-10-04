@@ -44,6 +44,7 @@ use crate::services::cover_art::{
     CoverUpgradeStore, CoverUpgradeWorker, DeezerCoverArtLookup, DownloadCoverResolver, IAlbumCoverFinder,
     ICoverArtSource, ITunesCoverArtLookup, LastFmCoverArtLookup,
 };
+use octo_media::cover::CoverArtService;
 
 use crate::services::fingerprint::{
     AcoustIdClient, AcoustIdRateLimitHandler, AcoustIdRateLimiter, DownloadVerificationService,
@@ -210,6 +211,10 @@ pub struct AppInner {
     pub cover_art_aggregator: Arc<CoverArtAggregator>,
     /// `CoverArtArchiveLookup` (singleton) with its named client.
     pub cover_art_archive: Arc<CoverArtArchiveLookup>,
+    /// `CoverArtService` (singleton): list covers, the placeholder and the Octo badge. Pictures
+    /// in `<config>/covers` replace the generated cover of the playlist they are named after.
+    /// `Program.cs` warmed it in the background at startup: the "CoverArtService" worker.
+    pub cover_art_service: Arc<CoverArtService>,
     /// `DownloadHistoryService`: the fetched-songs log, `downloads-history.json` beside settings.json.
     pub download_history: Arc<DownloadHistoryService>,
     /// `DownloadConcurrency`: how many downloads transfer at once.
@@ -436,7 +441,10 @@ impl Acquisition {
         soulseek_link: Arc<dyn ISoulseekLink>,
     ) -> Acquisition {
         // STUB(4-C): the real service replaces this when it lands.
-        let download_service: Arc<dyn IDownloadService> = Arc::new(NotPortedDownloadService);
+        let download_service: Arc<dyn IDownloadService> = Arc::new(NotPortedDownloadService::with_preview(
+            stores.external_id_registry.clone(),
+            stores.you_tube_resolver.clone(),
+        ));
 
         let track_acquisition_queue = Arc::new(TrackAcquisitionQueue::new());
         let acquisition_activity = Arc::new(AcquisitionActivity::new(track_acquisition_queue.clone()));
@@ -1238,6 +1246,17 @@ impl AppState {
             async move { itunes.run_flush_loop(stopping).await }
         });
         let settings_writer = Arc::new(SettingsFileWriter::new(settings_path));
+        let cover_art_service = Arc::new(CoverArtService::new(Some(config_dir.join("covers"))));
+        // The first list cover loads the fonts and finds the system's fallbacks, which takes a
+        // second or two; done here in the background so no client waits for it.
+        let warmed = Arc::clone(&cover_art_service);
+        workers.register("CoverArtService", move |_stopping| {
+            let service = Arc::clone(&warmed);
+            async move {
+                let _ = tokio::task::spawn_blocking(move || service.warm()).await;
+                Ok(())
+            }
+        });
         let integrations = Integrations::build(&settings, &settings_writer, &clients.deezer_metadata);
         let soulseek = SoulseekServices::build(&settings, &stores, &clients, &integrations.last_fm);
         let navidrome = NavidromeServices::build(&settings, &stores, true, vec![soulseek.validator]);
@@ -1333,6 +1352,7 @@ impl AppState {
             itunes_cover_art: clients.itunes_cover_art,
             cover_art_aggregator: clients.cover_art_aggregator,
             cover_art_archive: clients.cover_art_archive,
+            cover_art_service,
             last_fm: integrations.last_fm,
             last_fm_scrobbles: integrations.last_fm_scrobbles,
             listen_brainz: integrations.listen_brainz,
@@ -1403,6 +1423,7 @@ impl AppState {
         // The Last.fm, ListenBrainz and notification clients point at the real hosts too, and
         // the default settings give none of them a key, token or URL to use.
         let settings_writer = Arc::new(SettingsFileWriter::new(config_dir.join("settings.json")));
+        let cover_art_service = Arc::new(CoverArtService::new(Some(config_dir.join("covers"))));
         let integrations = Integrations::build(&settings, &settings_writer, &clients.deezer_metadata);
         let soulseek = SoulseekServices::build(&settings, &stores, &clients, &integrations.last_fm);
         let navidrome = NavidromeServices::build(&settings, &stores, false, vec![soulseek.validator]);
@@ -1497,6 +1518,7 @@ impl AppState {
             itunes_cover_art: clients.itunes_cover_art,
             cover_art_aggregator: clients.cover_art_aggregator,
             cover_art_archive: clients.cover_art_archive,
+            cover_art_service,
             last_fm: integrations.last_fm,
             last_fm_scrobbles: integrations.last_fm_scrobbles,
             listen_brainz: integrations.listen_brainz,

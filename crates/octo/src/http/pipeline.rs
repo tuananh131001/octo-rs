@@ -37,7 +37,10 @@ pub type App = BoxCloneSyncService<Request, Response, Infallible>;
 
 /// Every route Octo answers itself. Add each ported controller's `routes()` here.
 pub fn app_routes(assets: &StaticAssets) -> RouteSet {
-    RouteSet::new().merge(assets.routes()).merge(admin_root::routes())
+    RouteSet::new()
+        .merge(assets.routes())
+        .merge(admin_root::routes())
+        .merge(crate::controllers::subsonic::routes())
 }
 
 pub fn build(state: AppState, assets: &StaticAssets) -> App {

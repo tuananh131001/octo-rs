@@ -127,6 +127,16 @@ impl NoticeQueue {
             .collect()
     }
 
+    /// `IsQueued`: whether this song is waiting in one of the user's notice playlists, which is
+    /// where a NoticeOnly rating is a command. Added by 6-A2 for setRating.
+    pub fn is_queued(&self, username: &str, navidrome_id: &str) -> bool {
+        self.entries.lock().values().any(|entry| {
+            entry.state == NoticeState::Queued
+                && entry.navidrome_id.as_deref() == Some(navidrome_id)
+                && same_user(&entry.username, username)
+        })
+    }
+
     pub fn set_navidrome_id(&self, key: &str, navidrome_id: &str) {
         if let Some(entry) = self.entries.lock().get_mut(key) {
             entry.navidrome_id = Some(navidrome_id.to_string());

@@ -103,4 +103,18 @@ impl UpgradeQueue {
     pub fn snapshot(&self) -> Vec<UpgradeJob> {
         self.jobs.lock().clone()
     }
+
+    /// `Snapshot(requester)`: the jobs one person asked for (by name, ignoring case), as
+    /// copies, oldest first; every job when `requester` is `None`. Added by 6-A2 for getUpgrades.
+    pub fn snapshot_for(&self, requester: Option<&str>) -> Vec<UpgradeJob> {
+        let mut jobs: Vec<UpgradeJob> = self
+            .jobs
+            .lock()
+            .iter()
+            .filter(|job| requester.is_none_or(|r| octo_core::common::dotnet::eq_ignore_case(&job.requested_by, r)))
+            .cloned()
+            .collect();
+        jobs.sort_by_key(|job| job.queued_utc);
+        jobs
+    }
 }
