@@ -260,8 +260,8 @@ fn plan_is_idempotent() {
 
 /// This is the test that enforces the two year rules agree. Two hand-rolled copies is how
 /// one of them quietly stops dropping "2020s" when someone fixes the other. (The radio
-/// kinship half of the C# test, `LastFmRadioStreamService.KinshipTags`, is checked with the
-/// radio port, 5-C.)
+/// kinship half of the C# test, `LastFmRadioStreamService.KinshipTags`, is checked beside
+/// `kinship_tags` in `last_fm::last_fm_radio_stream_service`.)
 #[test]
 fn is_year_like_matches_what_the_radio_kinship_filter_also_drops() {
     for (tag, expected) in [

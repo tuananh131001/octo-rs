@@ -5,6 +5,7 @@ pub mod config;
 pub mod fingerprint;
 pub mod json;
 pub mod last_fm;
+pub mod library;
 pub mod lyrics;
 pub mod metadata;
 pub mod models;

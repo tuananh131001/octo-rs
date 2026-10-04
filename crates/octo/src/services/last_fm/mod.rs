@@ -1,12 +1,48 @@
-//! Last.fm with I/O (`Services/LastFm`): the web-service client the radio and search read, and
-//! the scrobbler with the dashboard's Connect flow. The records, the search cleanup and the
-//! request signature are `octo_core::last_fm`.
+//! Last.fm with I/O (`Services/LastFm`): the web-service client the radio and search read, the
+//! scrobbler with the dashboard's Connect flow, and Last.fm radio (the state store, the
+//! recommendation build, the refresh queue and worker, the stream and its cache, sessions and
+//! transcoder, and the warmup). The records, the search cleanup, the request signature and the
+//! radio's pure rules are `octo_core::last_fm`.
 
+pub mod icy_metadata_stream;
+pub mod last_fm_radio_audio_transcoder;
+pub mod last_fm_radio_recommendation_service;
+pub mod last_fm_radio_refresh_queue;
+pub mod last_fm_radio_refresh_worker;
+pub mod last_fm_radio_state_store;
+pub mod last_fm_radio_stream_service;
+pub mod last_fm_radio_stream_session_store;
+pub mod last_fm_radio_track_cache;
+pub mod last_fm_radio_track_resolver;
+pub mod last_fm_radio_warmup_service;
 pub mod last_fm_scrobble_service;
 pub mod last_fm_service;
+pub mod radio_tune_in_selector;
 
+pub use icy_metadata_stream::IcyMetadataStream;
+pub use last_fm_radio_audio_transcoder::{FfmpegLastFmRadioAudioTranscoder, ILastFmRadioAudioTranscoder};
+pub use last_fm_radio_recommendation_service::LastFmRadioRecommendationService;
+pub use last_fm_radio_refresh_queue::{LastFmRadioRefreshJob, LastFmRadioRefreshQueue};
+pub use last_fm_radio_refresh_worker::LastFmRadioRefreshWorker;
+pub use last_fm_radio_state_store::LastFmRadioStateStore;
+pub use last_fm_radio_stream_service::{
+    LastFmRadioStreamService, LastFmRadioStreamServiceParts, RadioWarmupResult,
+};
+pub use last_fm_radio_stream_session_store::{
+    LastFmRadioStreamSession, LastFmRadioStreamSessionStore, PreparedRadioTrack,
+};
+pub use last_fm_radio_track_cache::LastFmRadioTrackCache;
+pub use last_fm_radio_track_resolver::LastFmRadioTrackResolver;
+pub use last_fm_radio_warmup_service::LastFmRadioWarmupService;
 pub use last_fm_scrobble_service::{LastFmConnectError, LastFmScrobbleService, ScrobbleTime, ScrobbleTuning};
 pub use last_fm_service::LastFmService;
+pub use radio_tune_in_selector::{IRadioTuneInSelector, RandomRadioTuneInSelector};
+
+/// `OperationCanceledException`: the caller's token, or a deadline, ran out. The radio services
+/// answer it where the C# threw it, so a caller can tell a cancellation from a failure.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[error("The operation was canceled.")]
+pub struct OperationCanceled;
 
 /// The .NET number parsers the Last.fm readers lean on.
 pub(crate) mod net_parse {

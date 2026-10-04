@@ -160,8 +160,8 @@ impl LoudnessMeter {
 
     /// The summary block the loudness filter prints at the end of its stderr. An error is a
     /// level the pattern let through that is still not a number (`1.2.3`), which C# threw
-    /// from `double.Parse`.
-    pub(crate) fn parse(report: &str) -> Result<Option<Loudness>, std::num::ParseFloatError> {
+    /// from `double.Parse`. Public because the radio transcoder reads the same summary.
+    pub fn parse(report: &str) -> Result<Option<Loudness>, std::num::ParseFloatError> {
         let (mut integrated, mut range, mut peak) = (None, None, None);
         for captures in LOUDNESS_LINE.captures_iter(report) {
             let value = parse_level(&captures[2])?;

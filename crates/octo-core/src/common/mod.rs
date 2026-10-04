@@ -3,6 +3,7 @@
 pub mod acquisition_tracker;
 pub mod clock;
 pub mod dotnet;
+pub mod dotnet_random;
 pub mod error;
 pub mod live_version;
 pub mod log_redaction;
