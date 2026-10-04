@@ -139,6 +139,9 @@ The machine has 4 cores and 7 GB of RAM, and several porters share it.
 
 - Point every build at the shared target directory, so dependencies compile once:
   `export CARGO_TARGET_DIR=/home/anhnt/Projects/octo/target CARGO_BUILD_JOBS=2`.
+- Never run `docker system prune`, `docker image prune` or `docker rmi`, and never delete
+  images or volumes you did not create. The C# baseline image (`octo-csharp:csharp-final`) and
+  the .NET SDK image are shared by everyone.
 - Build and test only your crate, filtered: `cargo test -p octo-core song_identity`. Never run
   `cargo clean`, and never `cargo build --release`.
 - Cargo is at `~/.cargo/bin` (`export PATH=$HOME/.cargo/bin:$PATH`).
