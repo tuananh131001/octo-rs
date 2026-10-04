@@ -79,7 +79,7 @@ use crate::services::soulseek::{
 use crate::services::subsonic::new_subsonic_response_builder;
 use crate::services::subsonic::{
     CredentialCheck, NavidromeIdentityService, RecentScrobbles, RequestIdentity, SearchSongOrderCache,
-    SubsonicDiscoveryService, SubsonicProxyService,
+    SubsonicDiscoveryService, SubsonicProxyService, SyncCatalogService,
 };
 use crate::services::updates::ReleaseCheck;
 use crate::services::updates::UpdateHost;
@@ -290,6 +290,9 @@ pub struct AppInner {
     pub last_fm_radio_refresh_worker: Arc<LastFmRadioRefreshWorker>,
     /// `GeneratedPlaylistService`: the genre and decade mixes, `generated-playlists.json`.
     pub generated_playlists: Arc<GeneratedPlaylistService>,
+    /// `AddSingleton<SyncCatalogService>()`: the discovery catalog appended to a syncing
+    /// client's library walk, built over the background proxy (the C# made a scope per build).
+    pub sync_catalog: Arc<SyncCatalogService>,
 }
 
 /// The acquisition pipeline of task 4-D, over the services it routes to. The C# broke two
@@ -986,6 +989,13 @@ impl AppState {
             acquisition.download_service.clone(),
         );
         radio.register_workers(&workers);
+        let sync_catalog = Arc::new(SyncCatalogService::new(
+            navidrome.subsonic_proxy.clone(),
+            soulseek.metadata.clone(),
+            stores.external_id_registry.clone(),
+            settings.clone(),
+            Clock::system(),
+        ));
         let inner = AppInner {
             settings_writer,
             restart_tracker: Arc::new(restart_tracker),
@@ -1068,6 +1078,7 @@ impl AppState {
             last_fm_radio_warmup: radio.warmup,
             last_fm_radio_refresh_worker: radio.refresh_worker,
             generated_playlists: radio.generated_playlists,
+            sync_catalog,
         };
         AppState {
             inner: Arc::new(inner),
@@ -1115,6 +1126,13 @@ impl AppState {
             soulseek.metadata.clone(),
             acquisition.download_service.clone(),
         );
+        let sync_catalog = Arc::new(SyncCatalogService::new(
+            navidrome.subsonic_proxy.clone(),
+            soulseek.metadata.clone(),
+            stores.external_id_registry.clone(),
+            settings.clone(),
+            Clock::system(),
+        ));
         let inner = AppInner {
             restart_tracker,
             settings,
@@ -1195,6 +1213,7 @@ impl AppState {
             last_fm_radio_warmup: radio.warmup,
             last_fm_radio_refresh_worker: radio.refresh_worker,
             generated_playlists: radio.generated_playlists,
+            sync_catalog,
         };
         AppState {
             inner: Arc::new(inner),
@@ -1385,6 +1404,20 @@ mod tests {
             .issue("alice", "or1", [("u", "alice")], None);
         let session = state.last_fm_radio_stream_sessions.get(&token, None).unwrap();
         assert!(state.last_fm_radio_streams.resolve(&session).is_none());
+    }
+
+    /// 5-F: the sync catalog is one singleton; nothing is built or pinned until a walk asks.
+    #[test]
+    fn the_sync_catalog_is_a_singleton_with_nothing_built() {
+        use crate::services::subsonic::SyncCatalogKind;
+        let state = AppState::for_tests(AppSettings::default());
+        assert!(state.sync_catalog.try_get_song("alice", "ph-1").is_none());
+        assert!(
+            state
+                .sync_catalog
+                .pinned_catalog("alice", SyncCatalogKind::Song)
+                .is_none()
+        );
     }
 
     #[test]

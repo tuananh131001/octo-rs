@@ -13,6 +13,7 @@ pub mod search_song_page_planner;
 pub mod subsonic_discovery_service;
 pub mod subsonic_proxy_service;
 pub mod subsonic_response_builder;
+pub mod sync_catalog_service;
 
 pub use credential_check::{CredentialCheck, CredentialVerdict};
 pub use navidrome_identity_service::{NavidromeIdentityService, NavidromeLibrary};
@@ -26,6 +27,7 @@ pub use subsonic_proxy_service::{
     IncomingRequest, RawRelayResult, RelayError, RelayResponse, SubsonicProxyService,
 };
 pub use subsonic_response_builder::{SubsonicResponseBuilderExt, new_subsonic_response_builder};
+pub use sync_catalog_service::{SyncCatalog, SyncCatalogKind, SyncCatalogService};
 
 #[cfg(test)]
 mod subsonic_wire_golden_tests;
