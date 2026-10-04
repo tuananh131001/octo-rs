@@ -13,6 +13,7 @@ anyhow.workspace = true
 async-trait.workspace = true
 cosmic-text.workspace = true
 image.workspace = true
+indexmap.workspace = true
 lofty.workspace = true
 parking_lot.workspace = true
 regex.workspace = true
@@ -23,6 +24,10 @@ tiny-skia.workspace = true
 tokio.workspace = true
 tokio-util.workspace = true
 tracing.workspace = true
+unicode-general-category.workspace = true
+unicode-normalization.workspace = true
+unicode-script.workspace = true
+unicode-segmentation.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

@@ -47,7 +47,10 @@ tower = { version = "0.5", features = ["util"] }
 tower-http = { version = "0.7", features = ["cors", "fs", "trace", "set-header"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+unicode-general-category = "1"
 unicode-normalization = "0.1"
+unicode-script = "0.5"
+unicode-segmentation = "1"
 url = "2"
 uuid = { version = "1", features = ["v4", "serde"] }
 
@@ -79,6 +82,11 @@ debug = "line-tables-only"
 # Cover rendering and image decoding are unbearably slow unoptimised, even in tests.
 opt-level = 2
 debug = false
+
+[profile.dev.package.octo-media]
+# The list-cover veil and resampling are per-pixel maths over up to 1.44 million pixels; the
+# cover timing test (ListCoverTests' ACover_DrawsQuickly) only means something optimised.
+opt-level = 2
 
 [profile.release]
 lto = "thin"
