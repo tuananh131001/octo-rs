@@ -57,7 +57,12 @@ impl SubsonicDiscoveryService {
             targets.len(),
             CANDIDATE_PORTS.len()
         );
-        let found = probe_all(&targets, &CANDIDATE_PORTS).await;
+        // Never this process itself: Octo answers a ping with a Subsonic envelope too, and a
+        // lone container on 8080 would otherwise adopt itself as its Navidrome. The C# had the
+        // same race and only escaped it by starting slowly (known-diffs.md).
+        let own_port = crate::host::bind_address(std::env::var("ASPNETCORE_URLS").ok().as_deref()).port();
+        let own: HashSet<(String, u16)> = own_addresses().into_iter().map(|ip| (ip, own_port)).collect();
+        let found = probe_all(&targets, &CANDIDATE_PORTS, &own).await;
         info!("Server discovery: found {} Subsonic server(s).", found.len());
         found
     }
@@ -65,7 +70,7 @@ impl SubsonicDiscoveryService {
 
 /// Probes every host and port, at most [`MAX_CONCURRENCY`] at once, and returns the servers
 /// found, each URL once (ignoring case), ordered by URL ignoring case.
-async fn probe_all(hosts: &[String], ports: &[u16]) -> Vec<DiscoveredServer> {
+async fn probe_all(hosts: &[String], ports: &[u16], skip: &HashSet<(String, u16)>) -> Vec<DiscoveredServer> {
     let client = reqwest::Client::builder()
         .timeout(PROBE_TIMEOUT)
         .no_gzip()
@@ -77,6 +82,9 @@ async fn probe_all(hosts: &[String], ports: &[u16]) -> Vec<DiscoveredServer> {
     let mut tasks = tokio::task::JoinSet::new();
     for host in hosts {
         for &port in ports {
+            if skip.contains(&(host.clone(), port)) {
+                continue;
+            }
             let Ok(permit) = Arc::clone(&gate).acquire_owned().await else {
                 continue;
             };
@@ -149,6 +157,21 @@ fn string_or_stop(value: &serde_json::Value) -> Option<Option<String>> {
     }
 }
 
+/// This host's own IPv4 addresses, on every up interface.
+fn own_addresses() -> Vec<String> {
+    let Ok(interfaces) = if_addrs::get_if_addrs() else {
+        return Vec::new();
+    };
+    interfaces
+        .into_iter()
+        .filter(|i| i.is_oper_up())
+        .filter_map(|i| match i.ip() {
+            IpAddr::V4(a) => Some(a.to_string()),
+            IpAddr::V6(_) => None,
+        })
+        .collect()
+}
+
 /// The host's own /24 address list (network+1 .. network+254), across every up, non-loopback
 /// IPv4 interface. Capped at /24 so the sweep is bounded even when the real subnet is larger.
 fn build_targets() -> Vec<String> {
@@ -203,7 +226,7 @@ mod tests {
             .await;
 
         let ports: Vec<u16> = [&navidrome, &other].iter().map(|s| s.address().port()).collect();
-        let found = probe_all(&["127.0.0.1".to_string()], &ports).await;
+        let found = probe_all(&["127.0.0.1".to_string()], &ports, &HashSet::new()).await;
 
         assert_eq!(
             found,
@@ -223,7 +246,12 @@ mod tests {
             .respond_with(ResponseTemplate::new(200).set_body_string(r#"<SUBSONIC-RESPONSE status="ok"/>"#))
             .mount(&server)
             .await;
-        let found = probe_all(&["127.0.0.1".to_string()], &[server.address().port()]).await;
+        let found = probe_all(
+            &["127.0.0.1".to_string()],
+            &[server.address().port()],
+            &HashSet::new(),
+        )
+        .await;
         assert_eq!(found.len(), 1);
         assert_eq!((found[0].kind.clone(), found[0].requires_auth), (None, false));
     }
@@ -231,5 +259,23 @@ mod tests {
     #[test]
     fn the_sweep_skips_loopback() {
         assert!(build_targets().iter().all(|ip| !ip.starts_with("127.")));
+    }
+
+    #[tokio::test]
+    async fn the_sweep_skips_its_own_address_and_port() {
+        let server = wiremock::MockServer::start().await;
+        wiremock::Mock::given(wiremock::matchers::path("/rest/ping.view"))
+            .respond_with(wiremock::ResponseTemplate::new(200).set_body_string(
+                r#"{"subsonic-response":{"status":"ok","version":"1.16.1","type":"navidrome"}}"#,
+            ))
+            .mount(&server)
+            .await;
+        let port = server.address().port();
+        let own: HashSet<(String, u16)> = [("127.0.0.1".to_string(), port)].into_iter().collect();
+        assert!(
+            probe_all(&["127.0.0.1".to_string()], &[port], &own)
+                .await
+                .is_empty()
+        );
     }
 }

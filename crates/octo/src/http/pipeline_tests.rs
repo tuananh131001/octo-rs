@@ -42,6 +42,8 @@ fn assets() -> StaticAssets {
         vec![0x89, b'P', b'N', b'G', 1, 2, 3],
         modified(),
     ));
+    // As the host does once it is listening.
+    a.warm_all();
     a
 }
 
@@ -568,6 +570,7 @@ async fn the_real_admin_ui_is_served_with_the_c_sharp_etags() {
     let repo = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../octo");
     let roots = StaticRoots::resolve(None, None, None, Some(&repo));
     let assets = StaticAssets::load(&roots);
+    assets.warm_all();
     for url in [
         "/admin/index.html",
         "/admin/admin.css",

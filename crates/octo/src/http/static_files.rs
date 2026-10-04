@@ -17,7 +17,7 @@
 //! The files are read into memory at startup: the whole UI is well under a few megabytes.
 
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use axum::body::{Body, Bytes};
@@ -130,8 +130,13 @@ pub struct StaticAsset {
     last_modified: SystemTime,
     last_modified_text: String,
     identity: Variant,
-    /// In preference order for a tie: Brotli, then gzip.
-    compressed: Vec<(Encoding, Variant)>,
+    /// Whether the type is worth compressing.
+    compressible: bool,
+    /// In preference order for a tie: Brotli, then gzip. Filled by [`StaticAsset::warm`], which
+    /// the host runs in the background once it is listening: compressing the dashboard at
+    /// quality 11 takes most of a second, too long to hold up the first answer. Until then the
+    /// plain body is served.
+    compressed: OnceLock<Vec<(Encoding, Variant)>>,
 }
 
 impl StaticAsset {
@@ -147,22 +152,34 @@ impl StaticAsset {
             .map(|d| d.as_secs())
             .unwrap_or(0);
         let last_modified = UNIX_EPOCH + Duration::from_secs(secs);
-        let compressed = if is_compressible(content_type) {
-            vec![
-                (Encoding::Br, Variant::new(brotli_compress(&body))),
-                (Encoding::Gzip, Variant::new(gzip_compress(&body))),
-            ]
-        } else {
-            Vec::new()
-        };
         StaticAsset {
             url_path,
             content_type,
             last_modified,
             last_modified_text: httpdate::fmt_http_date(last_modified),
             identity: Variant::new(body),
-            compressed,
+            compressible: is_compressible(content_type),
+            compressed: OnceLock::new(),
         }
+    }
+
+    /// Computes the compressed variants, once. Blocking; run it off the async threads.
+    pub fn warm(&self) {
+        self.compressed.get_or_init(|| {
+            if !self.compressible {
+                return Vec::new();
+            }
+            let body = &self.identity.body;
+            vec![
+                (Encoding::Br, Variant::new(brotli_compress(body))),
+                (Encoding::Gzip, Variant::new(gzip_compress(body))),
+            ]
+        });
+    }
+
+    /// The compressed variants computed so far (none before [`StaticAsset::warm`]).
+    fn compressed(&self) -> &[(Encoding, Variant)] {
+        self.compressed.get().map(Vec::as_slice).unwrap_or(&[])
     }
 
     /// The ETag of the uncompressed body.
@@ -172,7 +189,7 @@ impl StaticAsset {
 
     /// The ETag of a precompressed variant, when there is one.
     pub fn compressed_etag(&self, encoding: Encoding) -> Option<&str> {
-        self.compressed
+        self.compressed()
             .iter()
             .find(|(e, _)| *e == encoding)
             .map(|(_, v)| v.etag.as_str())
@@ -254,6 +271,13 @@ impl StaticAssets {
 
     pub fn push(&mut self, asset: StaticAsset) {
         self.assets.push(Arc::new(asset));
+    }
+
+    /// Compresses every file's variants; see [`StaticAsset::warm`]. Blocking.
+    pub fn warm_all(&self) {
+        for asset in &self.assets {
+            asset.warm();
+        }
     }
 
     pub fn len(&self) -> usize {
@@ -389,7 +413,7 @@ fn negotiate<'a>(asset: &'a StaticAsset, headers: &HeaderMap) -> (Option<Encodin
                 continue;
             }
             let Some(index) = asset
-                .compressed
+                .compressed()
                 .iter()
                 .position(|(e, _)| e.name().eq_ignore_ascii_case(coding))
             else {
@@ -405,7 +429,7 @@ fn negotiate<'a>(asset: &'a StaticAsset, headers: &HeaderMap) -> (Option<Encodin
         }
     }
     match best {
-        Some((_, i)) => (Some(asset.compressed[i].0), &asset.compressed[i].1),
+        Some((_, i)) => (Some(asset.compressed()[i].0), &asset.compressed()[i].1),
         None => (None, &asset.identity),
     }
 }
@@ -711,19 +735,22 @@ mod tests {
         use std::io::Read;
         let body = "body { color: red; }\n".repeat(200).into_bytes();
         let a = StaticAsset::new("/x.css".into(), "text/css", body.clone(), SystemTime::now());
-        let br = &a.compressed[0].1.body;
+        assert!(a.compressed().is_empty(), "nothing is compressed before warm()");
+        a.warm();
+        let br = &a.compressed()[0].1.body;
         let mut out = Vec::new();
         brotli::Decompressor::new(&br[..], 4096)
             .read_to_end(&mut out)
             .expect("brotli");
         assert_eq!(out, body);
-        let gz = &a.compressed[1].1.body;
+        let gz = &a.compressed()[1].1.body;
         let mut out = Vec::new();
         flate2::read::GzDecoder::new(&gz[..])
             .read_to_end(&mut out)
             .expect("gzip");
         assert_eq!(out, body);
         let png = StaticAsset::new("/x.png".into(), "image/png", vec![1, 2, 3], SystemTime::now());
-        assert!(png.compressed.is_empty());
+        png.warm();
+        assert!(png.compressed().is_empty());
     }
 }

@@ -121,6 +121,9 @@ pub async fn run() -> anyhow::Result<()> {
         );
     }
     let app = pipeline::build(state.clone(), &assets);
+    // The Brotli and gzip variants, after the listener is up; plain bodies until then.
+    let warming = assets.clone();
+    tokio::task::spawn_blocking(move || warming.warm_all());
 
     // First-run automation, in the background while the host starts, as Program.cs ran it.
     tokio::spawn(first_run(state.clone()));
