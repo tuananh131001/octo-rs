@@ -1,8 +1,8 @@
 //! `Services/Library` in the C#: library actions, the upgrade queue, the generated mixes and the
 //! Navidrome song and playlist plumbing.
 //!
-//! STUB(5-A, 5-B, 5-C): of the actions, the queue and the mixes, only the types the Subsonic
-//! answers write exist so far.
+//! STUB(5-A, 5-B): of the actions and the queue, only the types the Subsonic answers write exist
+//! so far.
 
 pub mod duplicate_scan_worker;
 pub mod generated_playlist_service;
@@ -18,7 +18,7 @@ pub mod replacement_handoff;
 pub mod upgrade_queue;
 pub mod upgrade_sources;
 
-pub use generated_playlist_service::GeneratedPlaylist;
+pub use generated_playlist_service::{GeneratedPlaylist, GeneratedPlaylistService};
 pub use heart_ownership::HeartOwnership;
 pub use library_action_executor::LibraryActionOutcome;
 pub use library_action_journal::{LibraryActionEntry, LibraryActionJournal, LibraryActionState};

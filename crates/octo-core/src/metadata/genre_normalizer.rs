@@ -383,7 +383,7 @@ fn title_letter(c: char) -> char {
 /// and the rest of it lower-cased, unless the word has no lower-case letter (an acronym), which
 /// is left as it is. An apostrophe inside a word starts a new stretch that is lower-cased
 /// ("Rock'n'roll").
-fn to_title_case(text: &str) -> String {
+pub fn to_title_case(text: &str) -> String {
     let chars: Vec<char> = text.chars().collect();
     let mut result = String::with_capacity(text.len());
     let mut i = 0;

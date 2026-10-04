@@ -45,7 +45,13 @@ use crate::services::fingerprint::{
 use crate::services::http_client_factory;
 use crate::services::i_download_service::IDownloadService;
 use crate::services::i_music_metadata_service::IMusicMetadataService;
-use crate::services::last_fm::{LastFmScrobbleService, LastFmService};
+use crate::services::last_fm::{
+    FfmpegLastFmRadioAudioTranscoder, LastFmRadioRecommendationService, LastFmRadioRefreshQueue,
+    LastFmRadioRefreshWorker, LastFmRadioStateStore, LastFmRadioStreamService, LastFmRadioStreamServiceParts,
+    LastFmRadioStreamSessionStore, LastFmRadioTrackCache, LastFmRadioWarmupService, LastFmScrobbleService,
+    LastFmService, RandomRadioTuneInSelector,
+};
+use crate::services::library::GeneratedPlaylistService;
 use crate::services::library::{
     HeartOwnership, LibraryOwnership, NavidromePlaylistApi, NavidromeSongPathResolver, OwnershipNavidrome,
     UpgradeQueue, UpgradeSources,
@@ -262,6 +268,28 @@ pub struct AppInner {
     pub heart_acquisition_coordinator: Arc<HeartAcquisitionCoordinator>,
     /// `ExternalSearchService`: the discovery half of a search, once per query.
     pub external_search: Arc<ExternalSearchService>,
+    /// `LastFmRadioStateStore`: per-listener plays and stations, `lastfm-radio-state.json`.
+    pub last_fm_radio_state: Arc<LastFmRadioStateStore>,
+    /// `LastFmRadioRefreshQueue` (singleton): the rebuilds waiting for the refresh worker.
+    pub last_fm_radio_refresh_queue: Arc<LastFmRadioRefreshQueue>,
+    /// `LastFmRadioStreamSessionStore` (singleton): the radio stream tokens, in memory.
+    pub last_fm_radio_stream_sessions: Arc<LastFmRadioStreamSessionStore>,
+    /// `LastFmRadioTrackCache` (singleton): `<temp>/octo-cache/radio`.
+    pub last_fm_radio_track_cache: Arc<LastFmRadioTrackCache>,
+    /// `LastFmRadioRecommendationService` (scoped in C#; it holds nothing between builds).
+    pub last_fm_radio_recommendations: Arc<LastFmRadioRecommendationService>,
+    /// `LastFmRadioStreamService` (scoped) over the background proxy, with the singleton
+    /// transcoder (`FfmpegLastFmRadioAudioTranscoder`) and tune-in selector
+    /// (`RandomRadioTuneInSelector`). A handler takes its request's scope with `scoped(proxy)`.
+    pub last_fm_radio_streams: LastFmRadioStreamService,
+    /// `LastFmRadioWarmupService`, singleton AND hosted: its loop is the
+    /// "LastFmRadioWarmupService" worker.
+    pub last_fm_radio_warmup: Arc<LastFmRadioWarmupService>,
+    /// `LastFmRadioRefreshWorker` (hosted): the "LastFmRadioRefreshWorker" worker, and the only
+    /// settings `OnChange` subscriber.
+    pub last_fm_radio_refresh_worker: Arc<LastFmRadioRefreshWorker>,
+    /// `GeneratedPlaylistService`: the genre and decade mixes, `generated-playlists.json`.
+    pub generated_playlists: Arc<GeneratedPlaylistService>,
 }
 
 /// The acquisition pipeline of task 4-D, over the services it routes to. The C# broke two
@@ -790,6 +818,100 @@ impl SoulseekServices {
     }
 }
 
+/// Last.fm radio and the generated mixes (5-C).
+struct Radio {
+    state: Arc<LastFmRadioStateStore>,
+    refresh_queue: Arc<LastFmRadioRefreshQueue>,
+    sessions: Arc<LastFmRadioStreamSessionStore>,
+    cache: Arc<LastFmRadioTrackCache>,
+    recommendations: Arc<LastFmRadioRecommendationService>,
+    streams: LastFmRadioStreamService,
+    warmup: Arc<LastFmRadioWarmupService>,
+    refresh_worker: Arc<LastFmRadioRefreshWorker>,
+    generated_playlists: Arc<GeneratedPlaylistService>,
+}
+
+impl Radio {
+    fn build(
+        settings: &Arc<SettingsStore>,
+        config_dir: &Path,
+        stores: &Stores,
+        navidrome: &NavidromeServices,
+        integrations: &Integrations,
+        music_metadata: Arc<dyn IMusicMetadataService>,
+        downloads: Arc<dyn IDownloadService>,
+    ) -> Radio {
+        let state = Arc::new(LastFmRadioStateStore::new(
+            config_dir.join("lastfm-radio-state.json"),
+            settings.clone(),
+            stores.external_id_registry.clone(),
+        ));
+        let refresh_queue = Arc::new(LastFmRadioRefreshQueue::new());
+        let sessions = Arc::new(LastFmRadioStreamSessionStore::new());
+        let cache = Arc::new(LastFmRadioTrackCache::new());
+        let recommendations = Arc::new(LastFmRadioRecommendationService::new(
+            integrations.last_fm.clone(),
+            state.clone(),
+            settings.clone(),
+        ));
+        let streams = LastFmRadioStreamService::new(LastFmRadioStreamServiceParts {
+            state: state.clone(),
+            settings: settings.clone(),
+            library: navidrome.local_library.clone(),
+            proxy: navidrome.subsonic_proxy.clone(),
+            downloads,
+            transcoder: Arc::new(FfmpegLastFmRadioAudioTranscoder),
+            cache: cache.clone(),
+            sessions: sessions.clone(),
+            registry: stores.external_id_registry.clone(),
+            metadata: music_metadata,
+            queues: stores.radio_queues.clone(),
+            refresh_queue: refresh_queue.clone(),
+            tune_in: Arc::new(RandomRadioTuneInSelector),
+            last_fm: Some(integrations.last_fm.clone()),
+            listen_brainz: Some(integrations.listen_brainz.clone()),
+            last_fm_scrobbles: Some(integrations.last_fm_scrobbles.clone()),
+        });
+        let warmup = Arc::new(LastFmRadioWarmupService::new(streams.clone(), state.clone()));
+        let refresh_worker = Arc::new(LastFmRadioRefreshWorker::new(
+            refresh_queue.clone(),
+            recommendations.clone(),
+            state.clone(),
+            settings.clone(),
+            Some(warmup.clone()),
+        ));
+        let generated_playlists = Arc::new(GeneratedPlaylistService::new(
+            Some(config_dir.join("generated-playlists.json")),
+            navidrome.subsonic_proxy.clone(),
+            settings.clone(),
+        ));
+        Radio {
+            state,
+            refresh_queue,
+            sessions,
+            cache,
+            recommendations,
+            streams,
+            warmup,
+            refresh_worker,
+            generated_playlists,
+        }
+    }
+
+    /// `AddHostedService<LastFmRadioWarmupService>` (the singleton) and
+    /// `AddHostedService<LastFmRadioRefreshWorker>`.
+    fn register_workers(&self, workers: &WorkerSupervisor) {
+        let warmup = self.warmup.clone();
+        workers.register("LastFmRadioWarmupService", move |stopping| {
+            warmup.clone().run(stopping)
+        });
+        let refresh = self.refresh_worker.clone();
+        workers.register("LastFmRadioRefreshWorker", move |stopping| {
+            refresh.clone().run(stopping)
+        });
+    }
+}
+
 impl AppInner {
     /// `IHostApplicationLifetime.StopApplication()`: begins a graceful shutdown.
     pub fn stop_application(&self) {
@@ -854,6 +976,16 @@ impl AppState {
             soulseek.link.clone(),
         );
         acquisition.register_workers(&workers, &settings, &stores, &integrations.notifications);
+        let radio = Radio::build(
+            &settings,
+            &config_dir,
+            &stores,
+            &navidrome,
+            &integrations,
+            soulseek.metadata.clone(),
+            acquisition.download_service.clone(),
+        );
+        radio.register_workers(&workers);
         let inner = AppInner {
             settings_writer,
             restart_tracker: Arc::new(restart_tracker),
@@ -927,6 +1059,15 @@ impl AppState {
             heart_ownership: acquisition.heart_ownership,
             heart_acquisition_coordinator: acquisition.heart_acquisition_coordinator,
             external_search: acquisition.external_search,
+            last_fm_radio_state: radio.state,
+            last_fm_radio_refresh_queue: radio.refresh_queue,
+            last_fm_radio_stream_sessions: radio.sessions,
+            last_fm_radio_track_cache: radio.cache,
+            last_fm_radio_recommendations: radio.recommendations,
+            last_fm_radio_streams: radio.streams,
+            last_fm_radio_warmup: radio.warmup,
+            last_fm_radio_refresh_worker: radio.refresh_worker,
+            generated_playlists: radio.generated_playlists,
         };
         AppState {
             inner: Arc::new(inner),
@@ -963,6 +1104,16 @@ impl AppState {
             &clients,
             soulseek.metadata.clone(),
             soulseek.link.clone(),
+        );
+        // The radio's state files sit in the test's config directory; its workers are not run.
+        let radio = Radio::build(
+            &settings,
+            &config_dir,
+            &stores,
+            &navidrome,
+            &integrations,
+            soulseek.metadata.clone(),
+            acquisition.download_service.clone(),
         );
         let inner = AppInner {
             restart_tracker,
@@ -1035,6 +1186,15 @@ impl AppState {
             heart_ownership: acquisition.heart_ownership,
             heart_acquisition_coordinator: acquisition.heart_acquisition_coordinator,
             external_search: acquisition.external_search,
+            last_fm_radio_state: radio.state,
+            last_fm_radio_refresh_queue: radio.refresh_queue,
+            last_fm_radio_stream_sessions: radio.sessions,
+            last_fm_radio_track_cache: radio.cache,
+            last_fm_radio_recommendations: radio.recommendations,
+            last_fm_radio_streams: radio.streams,
+            last_fm_radio_warmup: radio.warmup,
+            last_fm_radio_refresh_worker: radio.refresh_worker,
+            generated_playlists: radio.generated_playlists,
         };
         AppState {
             inner: Arc::new(inner),
@@ -1196,6 +1356,35 @@ mod tests {
         );
         assert!(!state.lidarr_album_claims.upgrade_busy("anything"));
         assert!(state.lidarr_import_handoff.take("anything").is_none());
+    }
+
+    /// Last.fm radio (5-C): the warmup and the refresh worker run as workers, the refresh worker
+    /// hands its rebuilds to the warmup, and the stores share the external id registry.
+    #[tokio::test]
+    async fn the_radio_is_wired_as_program_cs_registered_it() {
+        let state = AppState::build(SettingsStore::from_env(Vec::new(), None));
+        let names: Vec<String> = state.workers.status().into_iter().map(|s| s.name).collect();
+        for name in ["LastFmRadioWarmupService", "LastFmRadioRefreshWorker"] {
+            assert!(names.iter().any(|n| n == name), "{name} in {names:?}");
+        }
+
+        let state = AppState::for_tests(AppSettings::default());
+        assert!(state.last_fm_radio_state.known_users().is_empty());
+        assert!(state.last_fm_radio_refresh_queue.enqueue("alice", None));
+        assert!(state.last_fm_radio_warmup.queue_user("alice"));
+        assert!(!state.last_fm_radio_warmup.queue_user("ALICE"));
+        assert!(
+            state
+                .last_fm_radio_state
+                .path()
+                .ends_with("lastfm-radio-state.json")
+        );
+        assert!(state.generated_playlists.find("alice", "og1").is_none());
+        let token = state
+            .last_fm_radio_stream_sessions
+            .issue("alice", "or1", [("u", "alice")], None);
+        let session = state.last_fm_radio_stream_sessions.get(&token, None).unwrap();
+        assert!(state.last_fm_radio_streams.resolve(&session).is_none());
     }
 
     #[test]

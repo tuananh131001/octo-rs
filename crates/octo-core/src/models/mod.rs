@@ -43,10 +43,12 @@ pub mod download {
 }
 
 pub mod radio {
-    // STUB(5-C): the station types only, until 5-C ports the whole file.
     pub mod last_fm_radio_state;
 
-    pub use last_fm_radio_state::{LastFmRadioStation, LastFmRadioTrack};
+    pub use last_fm_radio_state::{
+        LastFmRadioPlay, LastFmRadioStateDocument, LastFmRadioStation, LastFmRadioStationKind,
+        LastFmRadioTrack, LastFmRadioUnavailableTrack, LastFmRadioUserState, LastFmRadioUserSummary,
+    };
 }
 
 pub mod subsonic {
