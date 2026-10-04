@@ -5,6 +5,7 @@ pub mod host;
 pub mod http;
 pub mod logging;
 pub mod middleware;
+pub mod services;
 pub mod workers;
 
 pub use host::run;
