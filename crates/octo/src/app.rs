@@ -24,14 +24,18 @@ use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use octo_core::common::Clock;
 use octo_core::settings::{AppSettings, RestartTracker, SettingsFileWriter, SettingsStore};
 use tokio_util::sync::CancellationToken;
 
 use crate::services::admin::{BrowseSessionStore, DirectoryBrowser};
 use crate::services::common::{DownloadConcurrency, SoulseekHoldStore};
 use crate::services::local::DownloadHistoryService;
+use crate::services::lyrics::LyricsChoiceStore;
+use crate::services::metadata::{GenreBackfillJournal, GenreBackfillStore};
 use crate::services::soulseek::{ExternalIdRegistry, RadioQueueStore, RejectedPeerRegistry};
 use crate::services::updates::ReleaseCheck;
+use crate::services::updates::UpdateHost;
 use crate::services::you_tube::YouTubeResolver;
 use crate::workers::WorkerSupervisor;
 
@@ -60,6 +64,15 @@ pub struct AppInner {
     pub settings_writer: Arc<SettingsFileWriter>,
     /// The background workers (`AddHostedService`).
     pub workers: Arc<WorkerSupervisor>,
+    /// `LyricsChoiceStore`: the lyrics pins, `<config>/lyrics-choices.json`.
+    pub lyrics_choice_store: Arc<LyricsChoiceStore>,
+    /// `GenreBackfillStore`: the genre backfill run, `<config>/genre-backfill.json`. Its
+    /// coalescing flush (a timer in C#) is the "GenreBackfillStore" worker.
+    pub genre_backfill_store: Arc<GenreBackfillStore>,
+    /// `GenreBackfillJournal`: the genre undo log, `<config>/genre-backfill-journal.jsonl`.
+    pub genre_backfill_journal: Arc<GenreBackfillJournal>,
+    /// `UpdateHost`: the handshake files with the host updater, `<config>/update/`.
+    pub update_host: Arc<UpdateHost>,
     /// `IHostApplicationLifetime`: cancel it (see [`AppInner::stop_application`]) to shut the
     /// process down gracefully, as `StopApplication()` did.
     pub lifetime: CancellationToken,
@@ -175,11 +188,32 @@ impl AppState {
         let stores = Stores::build(&settings, &config_dir);
         let workers = Arc::new(WorkerSupervisor::new());
         stores.register_workers(&workers);
+
+        let genre_backfill_store = Arc::new(GenreBackfillStore::new(Some(
+            config_dir.join("genre-backfill.json"),
+        )));
+        let flushed = genre_backfill_store.clone();
+        workers.register("GenreBackfillStore", move |stopping| {
+            let store = flushed.clone();
+            async move {
+                store.run_flusher(stopping).await;
+                Ok(())
+            }
+        });
+
         let inner = AppInner {
             settings_writer: Arc::new(SettingsFileWriter::new(settings_path)),
             restart_tracker: Arc::new(restart_tracker),
             settings,
             workers,
+            lyrics_choice_store: Arc::new(LyricsChoiceStore::new(Some(
+                config_dir.join("lyrics-choices.json"),
+            ))),
+            genre_backfill_store,
+            genre_backfill_journal: Arc::new(GenreBackfillJournal::new(Some(
+                config_dir.join("genre-backfill-journal.jsonl"),
+            ))),
+            update_host: Arc::new(UpdateHost::new(config_dir.join("update"), Clock::system())),
             lifetime: CancellationToken::new(),
             download_history: stores.download_history,
             download_concurrency: stores.download_concurrency,
@@ -198,7 +232,7 @@ impl AppState {
     }
 
     /// A state for handler tests: `settings` as the live snapshot, no configuration behind it,
-    /// and a settings writer and the state files pointed at a fresh directory in the temp
+    /// and a settings writer, the update folder and the state files pointed at a fresh directory in the temp
     /// directory that nothing creates until a test writes. No workers are registered.
     pub fn for_tests(settings: AppSettings) -> AppState {
         let store = SettingsStore::for_tests(settings);
@@ -211,6 +245,10 @@ impl AppState {
             settings,
             settings_writer: Arc::new(SettingsFileWriter::new(config_dir.join("settings.json"))),
             workers: Arc::new(WorkerSupervisor::new()),
+            lyrics_choice_store: Arc::new(LyricsChoiceStore::new(None)),
+            genre_backfill_store: Arc::new(GenreBackfillStore::new(None)),
+            genre_backfill_journal: Arc::new(GenreBackfillJournal::new(None)),
+            update_host: Arc::new(UpdateHost::new(config_dir.join("update"), Clock::system())),
             lifetime: CancellationToken::new(),
             download_history: stores.download_history,
             download_concurrency: stores.download_concurrency,

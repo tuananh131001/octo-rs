@@ -4,12 +4,14 @@ pub mod common;
 pub mod config;
 pub mod fingerprint;
 pub mod json;
+pub mod lyrics;
 pub mod metadata;
 pub mod models;
 pub mod settings;
 pub mod soulseek;
 pub mod tagging;
 pub mod updates;
+pub mod validation;
 
 /// The release this build is, as the dashboard and the User-Agent show it (`2026.10.03.2`).
 /// The release build sets `OCTO_VERSION` (the octo crate's build passes it on, since

@@ -172,11 +172,11 @@ impl ReleaseCheck {
             Vec::new()
         };
         let latest = releases.first().cloned();
-        let running = ReleaseVersion::try_parse(Some(self.running.as_str()));
+        let running = ReleaseVersion::try_parse(self.running.as_str());
         let newer: Vec<ReleaseNote> = match running {
             Some(running) => releases
                 .iter()
-                .filter(|r| ReleaseVersion::try_parse(Some(r.tag.as_str())).is_some_and(|v| v > running))
+                .filter(|r| ReleaseVersion::try_parse(r.tag.as_str()).is_some_and(|v| v > running))
                 .take(Self::SHOWN_NEWER)
                 .cloned()
                 .collect(),
@@ -185,7 +185,7 @@ impl ReleaseCheck {
         };
         let newest = latest
             .as_ref()
-            .and_then(|l| ReleaseVersion::try_parse(Some(l.tag.as_str())));
+            .and_then(|l| ReleaseVersion::try_parse(l.tag.as_str()));
         let standing = match (running, newest) {
             (Some(running), Some(newest)) => {
                 if !newer.is_empty() {
@@ -313,7 +313,7 @@ impl ReleaseCheck {
                 continue;
             }
             let tag = json_text(release, "tag_name");
-            let Some(version) = ReleaseVersion::try_parse(tag) else {
+            let Some(version) = ReleaseVersion::try_parse(tag.unwrap_or_default()) else {
                 continue;
             };
             let tag = tag.unwrap_or_default();

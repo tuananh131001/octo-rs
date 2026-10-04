@@ -1,7 +1,5 @@
-//! Updates: the pure parts of `Services/Updates`.
-//!
-//! STUB(2-B): only `release_version` exists yet, as the release check (3-F) needs it; replaced
-//! when 2-B lands.
+//! Updates, the pure part (`Services/Updates`): release versions. The handshake with the host
+//! helper and the GitHub release check are `octo::services::updates`.
 
 pub mod release_version;
 

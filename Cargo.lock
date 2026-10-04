@@ -1590,6 +1590,7 @@ dependencies = [
  "chrono",
  "futures",
  "hex",
+ "http",
  "indexmap",
  "insta",
  "md-5",
