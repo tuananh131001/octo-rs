@@ -4,10 +4,8 @@
 
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Duration;
 
-use async_trait::async_trait;
 use octo_core::lyrics::{
     ILyricsSource, LyricsLookup, LyricsResult, LyricsTiming, SongLyrics, SongLyricsPlace,
 };
@@ -15,7 +13,6 @@ use octo_core::settings::{AppSettings, LyricsSaveTo, MetadataSettings, SettingsS
 use tokio_util::sync::CancellationToken;
 
 use super::{LyricsJob, LyricsSidecarWriter, LyricsWriteOutcome};
-use crate::services::local::ILocalLibraryService;
 use crate::services::lyrics::lyrics_service::LyricsService;
 use crate::services::lyrics::lyrics_undo_journal::{LyricsUndoEntry, LyricsUndoJournal};
 use crate::services::lyrics::song_lyrics;
@@ -561,26 +558,8 @@ fn a_full_queue_drops_the_job() {
     assert!(!writer.try_enqueue(job(&song.root.join("one too many.mp3"))));
 }
 
-struct CountingLibrary {
-    scans: AtomicUsize,
-}
-
-#[async_trait]
-impl ILocalLibraryService for CountingLibrary {
-    async fn find_mapping_by_tags(
-        &self,
-        _artist: Option<&str>,
-        _title: Option<&str>,
-        _album: Option<&str>,
-    ) -> Option<crate::services::local::LocalSongMapping> {
-        None
-    }
-
-    async fn trigger_library_scan(&self, _force: bool) -> bool {
-        self.scans.fetch_add(1, Ordering::SeqCst);
-        true
-    }
-}
+/// Counts the scans asked for.
+type CountingLibrary = crate::services::local::test_support::FakeLocalLibrary;
 
 #[tokio::test(start_paused = true)]
 async fn lyrics_written_inside_ask_for_one_scan_a_little_later() {
@@ -591,9 +570,7 @@ async fn lyrics_written_inside_ask_for_one_scan_a_little_later() {
         LyricsSaveTo::INSIDE,
         LyricsResult::new("KuGou", Some(WORDS.into()), None, false),
     );
-    let library = Arc::new(CountingLibrary {
-        scans: AtomicUsize::new(0),
-    });
+    let library = Arc::new(CountingLibrary::default());
     writer.set_library(library.clone());
 
     writer.write(&job(&first), false, &none()).await.expect("written");
@@ -602,9 +579,9 @@ async fn lyrics_written_inside_ask_for_one_scan_a_little_later() {
         .await
         .expect("written");
     tokio::time::sleep(Duration::from_secs(30)).await;
-    assert_eq!(library.scans.load(Ordering::SeqCst), 0);
+    assert_eq!(library.scans(), 0);
     tokio::time::sleep(LyricsSidecarWriter::SCAN_DELAY).await;
-    assert_eq!(library.scans.load(Ordering::SeqCst), 1);
+    assert_eq!(library.scans(), 1);
 }
 
 #[test]

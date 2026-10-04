@@ -4,6 +4,7 @@
 
 pub mod search_profile;
 pub mod song_length;
+pub mod soulseek_link;
 pub mod soulseek_metadata_service;
 
 pub use search_profile::SearchProfile;

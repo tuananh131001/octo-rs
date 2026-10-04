@@ -9,7 +9,7 @@
 //! file that is a DIFFERENT recording, and the byte-size check is what catches that.
 
 use super::*;
-use crate::services::local::LocalLibraryService;
+use crate::services::local::test_support::FakeLocalLibrary;
 use octo_core::settings::AppSettings;
 
 struct Fixture {
@@ -56,7 +56,7 @@ fn resolver() -> NavidromeSongPathResolver {
     let http = crate::services::http_client_factory::default_client();
     NavidromeSongPathResolver::new(
         NavidromeIdentityService::new(Arc::clone(&settings), http.clone()),
-        Arc::new(LocalLibraryService::new()),
+        Arc::new(FakeLocalLibrary::default()),
         http,
         settings,
     )
