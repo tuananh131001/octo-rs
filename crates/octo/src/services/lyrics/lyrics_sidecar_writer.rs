@@ -94,6 +94,29 @@ pub trait LyricsTagAccess: Send + Sync {
 
     /// `file.Properties.Duration`, rounded to whole seconds; None when unknown or not positive.
     fn duration_seconds(&self, path: &Path) -> Option<i32>;
+
+    /// What the library job reads of a song (`TagLib.File.Create(path)`): its tags and length.
+    /// `Ok(None)` when the file cannot be read as audio (TagLib's own exceptions, which the job
+    /// skips the song for); `Err` for an I/O error (`IOException`/`UnauthorizedAccessException`,
+    /// which a scan counts as failed).
+    fn read_song(&self, path: &Path) -> io::Result<Option<LyricsSongTags>>;
+}
+
+/// A song's tags as the library job reads them.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct LyricsSongTags {
+    /// `Tag.FirstPerformer`: the first performer, None when there is none.
+    pub first_performer: Option<String>,
+    /// `Tag.FirstAlbumArtist`.
+    pub first_album_artist: Option<String>,
+    /// `Tag.Title`.
+    pub title: Option<String>,
+    /// `Tag.Album`.
+    pub album: Option<String>,
+    /// `Tag.Lyrics`.
+    pub lyrics: Option<String>,
+    /// `Properties.Duration`, rounded (`Math.Round`) to whole seconds; None when not positive.
+    pub duration_seconds: Option<i32>,
 }
 
 /// The song's tags, through the tags port.
@@ -112,6 +135,12 @@ impl LyricsTagAccess for TagLibLyricsTags {
 
     fn duration_seconds(&self, _path: &Path) -> Option<i32> {
         None
+    }
+
+    // STUB(3-D tags): no tags are read yet, so every song reads as one without an artist and a
+    // title (the library job skips it); a file that cannot be opened is still an I/O error.
+    fn read_song(&self, path: &Path) -> io::Result<Option<LyricsSongTags>> {
+        std::fs::metadata(path).map(|_| None)
     }
 }
 
@@ -440,8 +469,14 @@ impl LyricsSidecarWriter {
         song_lyrics::is_octos(lrc_path)
     }
 
+    /// The tags seam the writer reads and writes songs through, which the library job reads
+    /// songs through too.
+    pub fn tags(&self) -> &Arc<dyn LyricsTagAccess> {
+        &self.tags
+    }
+
     /// `SongLyrics.Of`, with the tags read through the seam.
-    fn song_lyrics(&self, audio_path: &Path) -> SongLyrics {
+    pub fn song_lyrics(&self, audio_path: &Path) -> SongLyrics {
         let inside = self.tags.read_lyrics(audio_path).ok().flatten();
         song_lyrics::of_with_tag_lyrics(audio_path, inside.as_deref())
     }

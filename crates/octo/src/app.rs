@@ -55,8 +55,8 @@ use crate::services::listen_brainz::ListenBrainzService;
 use crate::services::local::DownloadHistoryService;
 use crate::services::local::{ILocalLibraryService, LocalLibraryService};
 use crate::services::lyrics::{
-    LyricsChoiceService, LyricsChoiceStore, LyricsService, LyricsSidecarWriter, LyricsUndoJournal,
-    lyrics_http,
+    LyricsChoiceService, LyricsChoiceStore, LyricsLibraryStore, LyricsLibraryWorker, LyricsService,
+    LyricsSidecarWriter, LyricsUndoJournal, lyrics_http,
 };
 use crate::services::metadata::{DeezerMetadataService, DeezerRateLimitHandler, DeezerRateLimiter};
 use crate::services::metadata::{GenreBackfillJournal, GenreBackfillStore};
@@ -116,6 +116,11 @@ pub struct AppInner {
     pub lyrics_sidecar_writer: Arc<LyricsSidecarWriter>,
     /// `LyricsUndoJournal`: what the lyrics page's Save wrote over, `<config>/lyrics-undo.jsonl`.
     pub lyrics_undo_journal: Arc<LyricsUndoJournal>,
+    /// `LyricsLibraryStore`: the "find lyrics for the library" run, `<config>/lyrics-library.json`.
+    /// Its coalescing flush (a timer in C#) is the "LyricsLibraryStore" worker.
+    pub lyrics_library_store: Arc<LyricsLibraryStore>,
+    /// `LyricsLibraryWorker`, singleton and hosted: its queue is the "LyricsLibraryWorker" worker.
+    pub lyrics_library_worker: Arc<LyricsLibraryWorker>,
     /// `GenreBackfillStore`: the genre backfill run, `<config>/genre-backfill.json`. Its
     /// coalescing flush (a timer in C#) is the "GenreBackfillStore" worker.
     pub genre_backfill_store: Arc<GenreBackfillStore>,
@@ -652,6 +657,50 @@ impl Lyrics {
             writer.clone().run(stopping)
         });
     }
+
+    /// The library job of task 5-E, over the library service and the music folder, which exist
+    /// only once Navidrome's services are built. `config_dir` None keeps the run in memory.
+    fn library_job(
+        &self,
+        settings: &Arc<SettingsStore>,
+        config_dir: Option<&Path>,
+        navidrome: &NavidromeServices,
+    ) -> LyricsLibraryJob {
+        let store = Arc::new(LyricsLibraryStore::new(
+            config_dir.map(|dir| dir.join("lyrics-library.json")),
+        ));
+        let resolver = navidrome.navidrome_song_path_resolver.clone();
+        let worker = Arc::new(LyricsLibraryWorker::new(
+            store.clone(),
+            self.sidecar_writer.clone(),
+            settings.clone(),
+            navidrome.local_library.clone(),
+            move || resolver.music_root(),
+            self.undo_journal.clone(),
+        ));
+        LyricsLibraryJob { store, worker }
+    }
+}
+
+/// `LyricsLibraryStore` and `LyricsLibraryWorker`.
+struct LyricsLibraryJob {
+    store: Arc<LyricsLibraryStore>,
+    worker: Arc<LyricsLibraryWorker>,
+}
+
+impl LyricsLibraryJob {
+    /// The store's flush timer (and the flush its `Dispose` did), and the worker, singleton AND
+    /// hosted: the dashboard enqueues into the loop the host is running.
+    fn register_workers(&self, workers: &WorkerSupervisor) {
+        let store = self.store.clone();
+        workers.register("LyricsLibraryStore", move |stopping| {
+            store.clone().run_flusher(stopping)
+        });
+        let worker = self.worker.clone();
+        workers.register("LyricsLibraryWorker", move |stopping| {
+            worker.clone().run(stopping)
+        });
+    }
 }
 
 /// The Soulseek services of task 4-A, over the stores and clients they read.
@@ -739,6 +788,8 @@ impl AppState {
         let soulseek = SoulseekServices::build(&settings, &stores, &clients, &integrations.last_fm);
         let navidrome = NavidromeServices::build(&settings, &stores, true, vec![soulseek.validator]);
         lyrics.sidecar_writer.set_library(navidrome.local_library.clone());
+        let lyrics_library = lyrics.library_job(&settings, Some(&config_dir), &navidrome);
+        lyrics_library.register_workers(&workers);
         let acquisition = Acquisition::build(
             &settings,
             &stores,
@@ -758,6 +809,8 @@ impl AppState {
             lyrics_choice_service: lyrics.choice_service,
             lyrics_sidecar_writer: lyrics.sidecar_writer,
             lyrics_undo_journal: lyrics.undo_journal,
+            lyrics_library_store: lyrics_library.store,
+            lyrics_library_worker: lyrics_library.worker,
             genre_backfill_store,
             genre_backfill_journal: Arc::new(GenreBackfillJournal::new(Some(
                 config_dir.join("genre-backfill-journal.jsonl"),
@@ -841,6 +894,7 @@ impl AppState {
         let soulseek = SoulseekServices::build(&settings, &stores, &clients, &integrations.last_fm);
         let navidrome = NavidromeServices::build(&settings, &stores, false, vec![soulseek.validator]);
         lyrics.sidecar_writer.set_library(navidrome.local_library.clone());
+        let lyrics_library = lyrics.library_job(&settings, None, &navidrome);
         // No workers: the acquisition worker, the resumer and the cache cleanup are not run.
         let acquisition = Acquisition::build(
             &settings,
@@ -860,6 +914,8 @@ impl AppState {
             lyrics_choice_service: lyrics.choice_service,
             lyrics_sidecar_writer: lyrics.sidecar_writer,
             lyrics_undo_journal: lyrics.undo_journal,
+            lyrics_library_store: lyrics_library.store,
+            lyrics_library_worker: lyrics_library.worker,
             genre_backfill_store: Arc::new(GenreBackfillStore::new(None)),
             genre_backfill_journal: Arc::new(GenreBackfillJournal::new(None)),
             update_host: Arc::new(UpdateHost::new(config_dir.join("update"), Clock::system())),
@@ -992,6 +1048,8 @@ mod tests {
             "RejectedPeerRegistry",
             "ReleaseCheck",
             "LyricsSidecarWriter",
+            "LyricsLibraryStore",
+            "LyricsLibraryWorker",
         ] {
             assert!(names.iter().any(|n| n == name), "{name} in {names:?}");
         }

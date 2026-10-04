@@ -1,5 +1,6 @@
 //! Lyrics, the pure parts (`Services/Lyrics`): the models, LRC reading and writing, the rule for
-//! which entry is the song, the Lyricsfile reader, what a song file has now, and the pin model.
+//! which entry is the song, the Lyricsfile reader, what a song file has now, the pin model, and
+//! the library job's run and the lyrics page's rules.
 //! The sources, the service, the sidecar writer and the pin store live in `octo` under
 //! `octo::services::lyrics`.
 //!
@@ -10,6 +11,8 @@
 
 pub mod lyrics_choices;
 pub mod lyrics_identity;
+pub mod lyrics_library_job;
+pub mod lyrics_library_steps;
 pub mod lyrics_models;
 pub mod lyrics_text;
 pub mod lyricsfile_reader;
@@ -17,6 +20,10 @@ pub mod song_lyrics;
 
 pub use lyrics_choices::{LyricsChoiceCandidate, LyricsPin};
 pub use lyrics_identity::LyricsIdentity;
+pub use lyrics_library_job::{
+    LyricsLibraryMode, LyricsLibraryRequest, LyricsLibraryRow, LyricsLibraryRun, LyricsLibraryStatus,
+    LyricsReviewEntry,
+};
 pub use lyrics_models::{
     ILyricsSource, LyricsCandidate, LyricsLookup, LyricsQuery, LyricsResult, LyricsSearch, LyricsTiming,
 };
