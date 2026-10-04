@@ -192,20 +192,24 @@ pub fn json_status(status: StatusCode, body: &impl serde::Serialize) -> Response
 /// What `[ApiController]` turns a bodiless client-error result (`NotFound()`, `BadRequest()`,
 /// `StatusCode(4xx)`) into: an RFC 7807 problem document.
 pub fn problem(status: StatusCode) -> Response {
-    let (kind, title) = problem_type(status);
-    let body = json!({
-        "type": kind,
-        "title": title,
-        "status": status.as_u16(),
-        "traceId": trace_id(),
-    });
+    // A status ASP.NET has no ClientErrorMapping for (502, 503, ...) gets neither a type nor a
+    // title: the factory leaves both null and STJ's ProblemDetails converter skips nulls.
+    let body = match problem_type(status) {
+        Some((kind, title)) => json!({
+            "type": kind,
+            "title": title,
+            "status": status.as_u16(),
+            "traceId": trace_id(),
+        }),
+        None => json!({ "status": status.as_u16(), "traceId": trace_id() }),
+    };
     json_response(status, &body, "application/problem+json; charset=utf-8")
 }
 
 /// The type URI and title ASP.NET's ProblemDetailsFactory gives a status (its
 /// `ClientErrorMapping` defaults).
-fn problem_type(status: StatusCode) -> (&'static str, &'static str) {
-    match status.as_u16() {
+fn problem_type(status: StatusCode) -> Option<(&'static str, &'static str)> {
+    Some(match status.as_u16() {
         400 => (
             "https://tools.ietf.org/html/rfc9110#section-15.5.1",
             "Bad Request",
@@ -249,8 +253,8 @@ fn problem_type(status: StatusCode) -> (&'static str, &'static str) {
             "https://tools.ietf.org/html/rfc9110#section-15.6.1",
             "An error occurred while processing your request.",
         ),
-        _ => ("about:blank", ""),
-    }
+        _ => return None,
+    })
 }
 
 /// The automatic `400` `[ApiController]` answers when model validation fails before the
