@@ -38,15 +38,18 @@ use crate::services::fingerprint::{
     AcoustIdClient, AcoustIdRateLimitHandler, AcoustIdRateLimiter, MusicBrainzClient,
 };
 use crate::services::http_client_factory;
+use crate::services::last_fm::{LastFmScrobbleService, LastFmService};
 use crate::services::library::{NavidromePlaylistApi, NavidromeSongPathResolver};
+use crate::services::listen_brainz::ListenBrainzService;
 use crate::services::local::DownloadHistoryService;
 use crate::services::local::{ILocalLibraryService, LocalLibraryService};
 use crate::services::lyrics::LyricsChoiceStore;
 use crate::services::metadata::{DeezerMetadataService, DeezerRateLimitHandler, DeezerRateLimiter};
 use crate::services::metadata::{GenreBackfillJournal, GenreBackfillStore};
+use crate::services::notifications::{DiscordSink, INotificationSink, NotificationService, NtfySink};
 use crate::services::soulseek::{ExternalIdRegistry, RadioQueueStore, RejectedPeerRegistry};
 use crate::services::subsonic::{
-    CredentialCheck, NavidromeIdentityService, RequestIdentity, SearchSongOrderCache,
+    CredentialCheck, NavidromeIdentityService, RecentScrobbles, RequestIdentity, SearchSongOrderCache,
     SubsonicDiscoveryService, SubsonicProxyService,
 };
 use crate::services::updates::ReleaseCheck;
@@ -163,6 +166,58 @@ pub struct AppInner {
     pub rejected_peers: Arc<RejectedPeerRegistry>,
     /// `ReleaseCheck`: whether a newer release is out, `update/release.json`; also a worker.
     pub release_check: Arc<ReleaseCheck>,
+    /// `LastFmService` (`AddHttpClient<LastFmService>` + singleton): the web service the radio
+    /// and the search bar read, its Accept-Language captured at startup.
+    pub last_fm: Arc<LastFmService>,
+    /// `LastFmScrobbleService` (singleton, "lastfm-scrobble" client): the scrobble queue and the
+    /// dashboard's Connect flow, saving sessions through `settings_writer`.
+    pub last_fm_scrobbles: Arc<LastFmScrobbleService>,
+    /// `ListenBrainzService` (singleton, "listenbrainz" client).
+    pub listen_brainz: Arc<ListenBrainzService>,
+    /// `NotificationService` over the `INotificationSink`s in registration order (ntfy, then
+    /// Discord), sharing the "notifications" client, with Deezer for missing covers.
+    pub notifications: Arc<NotificationService>,
+    /// `RecentScrobbles`: completed plays reported lately, so one sent twice is learned from once.
+    pub recent_scrobbles: Arc<RecentScrobbles>,
+}
+
+/// The Last.fm, ListenBrainz and notification services (3-B). None runs in the background
+/// until it is used: the scrobble queue drains on a task of its own while plays wait.
+struct Integrations {
+    last_fm: Arc<LastFmService>,
+    last_fm_scrobbles: Arc<LastFmScrobbleService>,
+    listen_brainz: Arc<ListenBrainzService>,
+    notifications: Arc<NotificationService>,
+    recent_scrobbles: Arc<RecentScrobbles>,
+}
+
+impl Integrations {
+    fn build(
+        settings: &Arc<SettingsStore>,
+        settings_writer: &Arc<SettingsFileWriter>,
+        deezer: &Arc<DeezerMetadataService>,
+    ) -> Self {
+        let notifications_client = NotificationService::client();
+        // IEnumerable<INotificationSink>, so adding a transport is one line here.
+        let sinks: Vec<Arc<dyn INotificationSink>> = vec![
+            Arc::new(NtfySink::new(notifications_client.clone(), Arc::clone(settings))),
+            Arc::new(DiscordSink::new(notifications_client, Arc::clone(settings))),
+        ];
+        Self {
+            last_fm: Arc::new(LastFmService::new(Arc::clone(settings))),
+            last_fm_scrobbles: Arc::new(LastFmScrobbleService::new(
+                Arc::clone(settings),
+                Arc::clone(settings_writer),
+            )),
+            listen_brainz: Arc::new(ListenBrainzService::new(Arc::clone(settings))),
+            notifications: Arc::new(NotificationService::new(
+                sinks,
+                Arc::clone(settings),
+                Some(Arc::clone(deezer)),
+            )),
+            recent_scrobbles: Arc::new(RecentScrobbles::new()),
+        }
+    }
 }
 
 /// The Navidrome-facing services, built in dependency order (3-E).
@@ -373,8 +428,10 @@ impl AppState {
             let itunes = Arc::clone(&itunes);
             async move { itunes.run_flush_loop(stopping).await }
         });
+        let settings_writer = Arc::new(SettingsFileWriter::new(settings_path));
+        let integrations = Integrations::build(&settings, &settings_writer, &clients.deezer_metadata);
         let inner = AppInner {
-            settings_writer: Arc::new(SettingsFileWriter::new(settings_path)),
+            settings_writer,
             restart_tracker: Arc::new(restart_tracker),
             settings,
             workers,
@@ -417,6 +474,11 @@ impl AppState {
             itunes_cover_art: clients.itunes_cover_art,
             cover_art_aggregator: clients.cover_art_aggregator,
             cover_art_archive: clients.cover_art_archive,
+            last_fm: integrations.last_fm,
+            last_fm_scrobbles: integrations.last_fm_scrobbles,
+            listen_brainz: integrations.listen_brainz,
+            notifications: integrations.notifications,
+            recent_scrobbles: integrations.recent_scrobbles,
         };
         AppState {
             inner: Arc::new(inner),
@@ -436,10 +498,14 @@ impl AppState {
         // The clients point at the real hosts but ask nothing until a test calls them, and
         // the iTunes matches stay in memory.
         let clients = MetadataClients::build(&settings, None);
+        // The Last.fm, ListenBrainz and notification clients point at the real hosts too, and
+        // the default settings give none of them a key, token or URL to use.
+        let settings_writer = Arc::new(SettingsFileWriter::new(config_dir.join("settings.json")));
+        let integrations = Integrations::build(&settings, &settings_writer, &clients.deezer_metadata);
         let inner = AppInner {
             restart_tracker,
             settings,
-            settings_writer: Arc::new(SettingsFileWriter::new(config_dir.join("settings.json"))),
+            settings_writer,
             workers: Arc::new(WorkerSupervisor::new()),
             lyrics_choice_store: Arc::new(LyricsChoiceStore::new(None)),
             genre_backfill_store: Arc::new(GenreBackfillStore::new(None)),
@@ -476,6 +542,11 @@ impl AppState {
             itunes_cover_art: clients.itunes_cover_art,
             cover_art_aggregator: clients.cover_art_aggregator,
             cover_art_archive: clients.cover_art_archive,
+            last_fm: integrations.last_fm,
+            last_fm_scrobbles: integrations.last_fm_scrobbles,
+            listen_brainz: integrations.listen_brainz,
+            notifications: integrations.notifications,
+            recent_scrobbles: integrations.recent_scrobbles,
         };
         AppState {
             inner: Arc::new(inner),
@@ -524,6 +595,24 @@ mod tests {
             state.deezer_client.limiter(),
             &state.deezer_rate_limiter
         ));
+    }
+
+    /// The sinks in `Program.cs` registration order, ntfy then Discord, and nothing of 3-B's
+    /// sent anywhere with the default settings.
+    #[tokio::test]
+    async fn the_notification_sinks_and_scrobblers_are_wired_as_program_cs_registered_them() {
+        let state = AppState::for_tests(AppSettings::default());
+        let results = state.notifications.send_test().await;
+        let sinks: Vec<(&str, bool)> = results.iter().map(|r| (r.sink.as_str(), r.configured)).collect();
+        assert_eq!(sinks, [("ntfy", false), ("discord", false)]);
+        assert!(!state.last_fm.has_api_key());
+        assert!(!state.last_fm_scrobbles.is_ready());
+        assert!(!state.listen_brainz.is_enabled_for("alice"));
+        assert!(
+            state
+                .recent_scrobbles
+                .first_report("alice", "1", None, chrono::Utc::now())
+        );
     }
 
     #[test]
