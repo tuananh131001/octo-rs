@@ -42,6 +42,13 @@ pub mod download {
     pub use download_status::DownloadStatus;
 }
 
+pub mod radio {
+    // STUB(5-C): the station types only, until 5-C ports the whole file.
+    pub mod last_fm_radio_state;
+
+    pub use last_fm_radio_state::{LastFmRadioStation, LastFmRadioTrack};
+}
+
 pub mod subsonic {
     pub mod external_playlist;
     pub mod scan_status;

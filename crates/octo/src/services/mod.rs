@@ -4,10 +4,12 @@
 
 pub mod admin;
 pub mod common;
+pub mod library;
 pub mod local;
 pub mod lyrics;
 pub mod metadata;
 pub mod soulseek;
 pub mod state_file;
+pub mod subsonic;
 pub mod updates;
 pub mod you_tube;

@@ -26,6 +26,7 @@ use std::sync::Arc;
 
 use octo_core::common::Clock;
 use octo_core::settings::{AppSettings, RestartTracker, SettingsFileWriter, SettingsStore};
+use octo_subsonic::SubsonicResponseBuilder;
 use tokio_util::sync::CancellationToken;
 
 use crate::services::admin::{BrowseSessionStore, DirectoryBrowser};
@@ -34,6 +35,7 @@ use crate::services::local::DownloadHistoryService;
 use crate::services::lyrics::LyricsChoiceStore;
 use crate::services::metadata::{GenreBackfillJournal, GenreBackfillStore};
 use crate::services::soulseek::{ExternalIdRegistry, RadioQueueStore, RejectedPeerRegistry};
+use crate::services::subsonic::new_subsonic_response_builder;
 use crate::services::updates::ReleaseCheck;
 use crate::services::updates::UpdateHost;
 use crate::services::you_tube::YouTubeResolver;
@@ -97,6 +99,10 @@ pub struct AppInner {
     pub rejected_peers: Arc<RejectedPeerRegistry>,
     /// `ReleaseCheck`: whether a newer release is out, `update/release.json`; also a worker.
     pub release_check: Arc<ReleaseCheck>,
+    /// `SubsonicResponseBuilder`: every Subsonic answer Octo writes itself, over the external id
+    /// registry, with `Subsonic:WaitForLosslessOnPlay` captured at startup (`IOptions`).
+    /// The app-type answers come with `services::subsonic::SubsonicResponseBuilderExt`.
+    pub subsonic_response_builder: Arc<SubsonicResponseBuilder>,
 }
 
 /// The stores and clients of task 3-F, over the config directory every state file sits in
@@ -112,11 +118,15 @@ struct Stores {
     browse_sessions: Arc<BrowseSessionStore>,
     rejected_peers: Arc<RejectedPeerRegistry>,
     release_check: Arc<ReleaseCheck>,
+    subsonic_response_builder: Arc<SubsonicResponseBuilder>,
 }
 
 impl Stores {
     fn build(settings: &Arc<SettingsStore>, config_dir: &Path) -> Stores {
         let ttl_settings = settings.clone();
+        let external_id_registry = Arc::new(ExternalIdRegistry::new(Some(
+            config_dir.join("external-ids.json"),
+        )));
         Stores {
             download_history: Arc::new(DownloadHistoryService::new(
                 config_dir.join("downloads-history.json"),
@@ -126,9 +136,11 @@ impl Stores {
                 config_dir.join("soulseek-holds.json"),
             ))),
             you_tube_resolver: Arc::new(YouTubeResolver::new(settings)),
-            external_id_registry: Arc::new(ExternalIdRegistry::new(Some(
-                config_dir.join("external-ids.json"),
-            ))),
+            subsonic_response_builder: Arc::new(new_subsonic_response_builder(
+                external_id_registry.clone(),
+                &settings.current().subsonic,
+            )),
+            external_id_registry,
             radio_queues: Arc::new(RadioQueueStore::new()),
             directory_browser: Arc::new(DirectoryBrowser::new()),
             browse_sessions: Arc::new(BrowseSessionStore::new(Some(
@@ -225,6 +237,7 @@ impl AppState {
             browse_sessions: stores.browse_sessions,
             rejected_peers: stores.rejected_peers,
             release_check: stores.release_check,
+            subsonic_response_builder: stores.subsonic_response_builder,
         };
         AppState {
             inner: Arc::new(inner),
@@ -260,6 +273,7 @@ impl AppState {
             browse_sessions: stores.browse_sessions,
             rejected_peers: stores.rejected_peers,
             release_check: stores.release_check,
+            subsonic_response_builder: stores.subsonic_response_builder,
         };
         AppState {
             inner: Arc::new(inner),
