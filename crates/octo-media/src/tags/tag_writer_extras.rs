@@ -425,6 +425,43 @@ pub fn is_compilation(file: &TagFile) -> bool {
         || file.apple.as_ref().is_some_and(AppleTag::is_compilation)
 }
 
+/// The frame names a barcode is kept under, in the order they are asked.
+const BARCODE_NAMES: [&str; 3] = ["BARCODE", "UPC", "EAN"];
+
+/// `CoverUpgradeWorker.BarcodeOf` (`Services/CoverArt/CoverUpgrade.cs`), here because it reads
+/// the containers' own tags: the album's barcode when the song carries one (about one song in
+/// ten of Brandon's), from the Vorbis comment, then the ID3v2 TXXX frames in frame order, then
+/// the iTunes freeform boxes. With it, the album needs no lookup to be matched at Apple.
+pub fn barcode_of(file: &TagFile) -> Option<String> {
+    let usable = |value: &String| !value.is_empty();
+    if let Some(xiph) = &file.xiph {
+        for name in BARCODE_NAMES {
+            if let Some(value) = xiph.first_field(name).filter(usable) {
+                return Some(value.trim().to_string());
+            }
+        }
+    }
+    if let Some(id3) = &file.id3v2 {
+        for (description, values) in id3.user_texts() {
+            if BARCODE_NAMES
+                .iter()
+                .any(|name| octo_core::common::dotnet::eq_ignore_case(name, &description))
+                && let Some(value) = values.first().filter(|value| usable(value))
+            {
+                return Some(value.trim().to_string());
+            }
+        }
+    }
+    if let Some(apple) = &file.apple {
+        for name in BARCODE_NAMES {
+            if let Some(value) = apple.dash_box(APPLE_MEAN, name).filter(usable) {
+                return Some(value.trim().to_string());
+            }
+        }
+    }
+    None
+}
+
 /// The album a file already names, for a download whose source named none.
 pub fn read_album(path: &Path) -> (Option<String>, Option<String>, bool) {
     match TagFile::open(path) {
