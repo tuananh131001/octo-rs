@@ -1,0 +1,845 @@
+{
+ "group": "subsonic-lyrics",
+ "entries": [
+  {
+   "name": "by-id-sidecar-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsBySongId?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=2A1r2OKTiTVuvPfmtePIIe",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "345"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:51 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 345,
+    "sha256": "39bf8e453dc6331612f5dae9818d3bc0adab6c39ec5bd563c6ea8dc8fb408da2",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"lyricsList\":{\"structuredLyrics\":[{\"displayArtist\":\"Aurora Vale\",\"displayTitle\":\"Caf\\u00E9 del Mar\",\"lang\":\"xxx\",\"line\":[{\"start\":0,\"value\":\"Sol y mar\"},{\"start\":1000,\"value\":\"Caf\\u00E9 del Mar\"}],\"synced\":true}]}}}"
+   }
+  },
+  {
+   "name": "by-id-sidecar-enhanced-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsBySongId?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=2A1r2OKTiTVuvPfmtePIIe&enhanced=true",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "351"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:51 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 351,
+    "sha256": "6a0c289b01f1b5a46412a9a3c44177d070b82c30b7c169072f19d05bd2fb3390",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"lyricsList\":{\"structuredLyrics\":[{\"displayArtist\":\"Aurora Vale\",\"displayTitle\":\"Café del Mar\",\"kind\":\"main\",\"lang\":\"xxx\",\"line\":[{\"start\":0,\"value\":\"Sol y mar\"},{\"start\":1000,\"value\":\"Café del Mar\"}],\"synced\":true}]}}}"
+   }
+  },
+  {
+   "name": "by-id-sidecar-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsBySongId.view?u=admin&p=parity-admin&v=1.16.1&c=parity&id=2A1r2OKTiTVuvPfmtePIIe",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "390"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:51 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 390,
+    "sha256": "5feac39a66f41d1a29e86b6ca82788793ee24b5ff98399367c28a896d83cf5f4",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><lyricsList><structuredLyrics displayArtist=\"Aurora Vale\" displayTitle=\"Café del Mar\" lang=\"xxx\" synced=\"true\"><line start=\"0\">Sol y mar</line><line start=\"1000\">Café del Mar</line></structuredLyrics></lyricsList></subsonic-response>"
+   }
+  },
+  {
+   "name": "by-id-lrclib-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsBySongId?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=6TOMTUtoEzhnB8tjXmNY5V",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:51 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 275,
+    "sha256": "c984267c0446e85dffcdcf192760e6483d19751b78a56f529467d110835d7bd1",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"lyricsList\":{\"structuredLyrics\":[{\"lang\":\"xxx\",\"synced\":true,\"displayArtist\":\"Aurora Vale\",\"displayTitle\":\"Polar Night\",\"offset\":0,\"line\":[{\"start\":500,\"value\":\"Long dark sky\"},{\"start\":1800,\"value\":\"Stars above\"}]}]}}}"
+   }
+  },
+  {
+   "name": "by-id-lrclib-xml-enhanced",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsBySongId?u=admin&p=parity-admin&v=1.16.1&c=parity&id=6TOMTUtoEzhnB8tjXmNY5V&enhanced=1",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "200"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:51 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 200,
+    "sha256": "0176eab4a91c6c30a6fb0e2db8afaec70aad07f1a86708f4004cf32c03aae240",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><lyricsList></lyricsList></subsonic-response>"
+   }
+  },
+  {
+   "name": "by-id-none-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsBySongId?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=5otsGv02qpt74TwMlpLAoF",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "147"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:52 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 147,
+    "sha256": "a4b8adc2f66ca4bca4ba725bf313b667bdd47655f5d004138785e58c685d1e53",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"lyricsList\":{}}}"
+   }
+  },
+  {
+   "name": "by-id-none-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsBySongId.view?u=admin&p=parity-admin&v=1.16.1&c=parity&id=2Xc6Ix4qDl2csRPeaPnwau",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "200"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:52 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 200,
+    "sha256": "0176eab4a91c6c30a6fb0e2db8afaec70aad07f1a86708f4004cf32c03aae240",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><lyricsList></lyricsList></subsonic-response>"
+   }
+  },
+  {
+   "name": "by-id-external-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsBySongId?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=CwoXcVhGn95tWIOvqaFKt6",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:53 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 268,
+    "sha256": "7f13d04f0b204609909382a1fc43d588dfc622c9e420f90eb449351b3c51786c",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"lyricsList\":{\"structuredLyrics\":[{\"lang\":\"xxx\",\"synced\":false,\"displayArtist\":\"Zephyr Echo\",\"displayTitle\":\"Glass Harbor\",\"offset\":0,\"line\":[{\"value\":\"Glass harbor, glass harbor\"},{\"value\":\"Waves of light\"}]}]}}}"
+   }
+  },
+  {
+   "name": "by-id-external-octo-client-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsBySongId?u=admin&p=parity-admin&v=1.16.1&c=Octo&f=json&id=yy5PCYFGn1qhbOho4j6OF1",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:53 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 93,
+    "sha256": "a82421808d2cb59090788192c3710f8bcbe69950b432196a1d950f5a3d8b8975",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"lyricsList\":{\"structuredLyrics\":[]}}}"
+   }
+  },
+  {
+   "name": "by-id-badpass-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsBySongId?u=admin&p=wrong-password&v=1.16.1&c=parity&f=json&id=2A1r2OKTiTVuvPfmtePIIe",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "194"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:53 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 194,
+    "sha256": "26d0cfb90f5ffb7c852fdc26875725a12f467aa83b751e5f07d9d658996ffc9e",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "by-id-missing-id-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsBySongId?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "191"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:53 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 191,
+    "sha256": "114571ec65ac601f68e0d14cb1289464eb85f3fe4002f61c9c547da261e7b233",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":10,\"message\":\"missing parameter: 'id'\"}}}"
+   }
+  },
+  {
+   "name": "lyrics-sidecar-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyrics.view?u=admin&p=parity-admin&v=1.16.1&c=parity&artist=Aurora%20Vale&title=Caf%C3%A9%20del%20Mar",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "267"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:53 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 267,
+    "sha256": "92abeefc74c0bf237c573c1a09be2c0a9b0d5332c2603cbf3efccd897e8082fc",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><lyrics artist=\"Aurora Vale\" title=\"Café del Mar\">Sol y mar&#xA;Café del Mar&#xA;</lyrics></subsonic-response>"
+   }
+  },
+  {
+   "name": "lyrics-sidecar-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyrics?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&artist=Aurora%20Vale&title=Caf%C3%A9%20del%20Mar",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "226"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:54 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 226,
+    "sha256": "5c2eb0d68b5b7e54062f423fe19890be17ca0d97e35aa2dff372b17ae83c8bf8",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"lyrics\":{\"artist\":\"Aurora Vale\",\"title\":\"Café del Mar\",\"value\":\"Sol y mar\\nCafé del Mar\\n\"}}}"
+   }
+  },
+  {
+   "name": "lyrics-live-fill-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyrics?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&artist=Zephyr%20Echo&title=Glass%20Harbor",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:54 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 166,
+    "sha256": "d97227d452465000c58c5aec219778488e5fddbd944249aaf281f2f47c7b7c82",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"lyrics\":{\"value\":\"Glass harbor, glass harbor\\nWaves of light\",\"artist\":\"Zephyr Echo\",\"title\":\"Glass Harbor\"}}}"
+   }
+  },
+  {
+   "name": "lyrics-nothing-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyrics?u=admin&p=parity-admin&v=1.16.1&c=parity&artist=Nobody&title=Nothing",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "192"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:55 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 192,
+    "sha256": "92d29225fc355d709327c826fd1c2d87bd821c6ae79595d39b966b5bf00ba7cd",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><lyrics></lyrics></subsonic-response>"
+   }
+  },
+  {
+   "name": "lyrics-badpass-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyrics?u=admin&p=wrong-password&v=1.16.1&c=parity&f=json&artist=Aurora%20Vale&title=Polar%20Night",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "194"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:55 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 194,
+    "sha256": "26d0cfb90f5ffb7c852fdc26875725a12f467aa83b751e5f07d9d658996ffc9e",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "candidates-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsCandidates?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=6TOMTUtoEzhnB8tjXmNY5V",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:55 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 361,
+    "sha256": "b7d3f9364e4bc9ee6f9d2ee2c6628acd148e059272c2e0eb8538b74e9b881f31",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"octo\",\"lyricsCandidates\":{\"id\":\"6TOMTUtoEzhnB8tjXmNY5V\",\"choice\":\"auto\",\"candidate\":[{\"id\":\"lrclib:9001\",\"source\":\"lrclib\",\"title\":\"Polar Night\",\"artist\":\"Aurora Vale\",\"album\":\"Northern Lights\",\"duration\":3,\"kind\":\"line\",\"sameSong\":true,\"chosen\":false,\"preview\":[\"Long dark sky\",\"Stars above\"]}]}}}"
+   }
+  },
+  {
+   "name": "candidates-xml-still-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsCandidates.view?u=admin&p=parity-admin&v=1.16.1&c=parity&id=2A1r2OKTiTVuvPfmtePIIe",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 152,
+    "sha256": "872c0763500ada5b0754d0a39d124ab0f05495af91d6bf8cb8cc813b273400c7",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"octo\",\"lyricsCandidates\":{\"id\":\"2A1r2OKTiTVuvPfmtePIIe\",\"choice\":\"auto\",\"candidate\":[]}}}"
+   }
+  },
+  {
+   "name": "candidates-missing-id",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsCandidates?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 126,
+    "sha256": "b82bcecef4430d989890a424d80aafe22227de1cf53116bffa60c84902005e12",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":10,\"message\":\"Required parameter is missing: id\"}}}"
+   }
+  },
+  {
+   "name": "candidates-unknown-song",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsCandidates?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=doesnotexist000000000x",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 107,
+    "sha256": "83c3898c3b4c52dec98e977f3b76a2fb26b60a41f4759c3cbab1a2bd2979cc32",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":70,\"message\":\"Song not found\"}}}"
+   }
+  },
+  {
+   "name": "candidates-badpass",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLyricsCandidates?u=admin&p=wrong-password&v=1.16.1&c=parity&f=json&id=6TOMTUtoEzhnB8tjXmNY5V",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 119,
+    "sha256": "4273be2480b5cbcd6424e5cc7bebd9c4c13ee0ec5c46a94c7942b9c7570a5c4b",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "set-choice-missing",
+   "request": {
+    "method": "GET",
+    "target": "/rest/setLyricsChoice?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=6TOMTUtoEzhnB8tjXmNY5V",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 140,
+    "sha256": "d8125d5557731b9244a8ada9a29eff464b2a2fb03dfcb3fb561ace421e567fef",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":10,\"message\":\"Required parameter is missing: id and candidate\"}}}"
+   }
+  },
+  {
+   "name": "set-choice-auto-unknown-song",
+   "request": {
+    "method": "GET",
+    "target": "/rest/setLyricsChoice.view?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=doesnotexist000000000x&candidate=auto",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 133,
+    "sha256": "53caf6a784bb04aa152c15cb082dd022a894cc9358735234a953bd440c1ebdd3",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"octo\",\"lyricsChoice\":{\"id\":\"doesnotexist000000000x\",\"choice\":\"auto\"}}}"
+   }
+  },
+  {
+   "name": "set-choice-bogus-candidate",
+   "request": {
+    "method": "GET",
+    "target": "/rest/setLyricsChoice?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=5otsGv02qpt74TwMlpLAoF&candidate=lrclib%3A0",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 154,
+    "sha256": "64540bb1541be1b64a10082495d891a36ac2adcfc2b424ca4015653e44620f93",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":70,\"message\":\"Those lyrics could not be found; ask for the candidates again\"}}}"
+   }
+  }
+ ]
+}

@@ -1,0 +1,882 @@
+{
+ "group": "subsonic-search",
+ "entries": [
+  {
+   "name": "s3-local-only-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=polar",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:45 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 1153,
+    "sha256": "d28969fbdcacb4cebd5d9b78d226c825df25667e1be4f4e475a61c05dc2f533e",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult3\":{\"song\":[{\"id\":\"6TOMTUtoEzhnB8tjXmNY5V\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Polar Night\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":2,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":33513,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":3,\"bitRate\":67,\"path\":\"Aurora Vale/Northern Lights/01-02 - Polar Night.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.85624551Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"polar night\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[],\"isExternal\":false}],\"album\":[],\"artist\":[]}}}"
+   }
+  },
+  {
+   "name": "s3-local-only-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3.view?u=admin&p=parity-admin&v=1.16.1&c=parity&query=polar",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "1027"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:45 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 1027,
+    "sha256": "012a2f414242aeb8112c8add13652f1d6a205bda4adfc45f2432f8c2586d462b",
+    "text": "<subsonic-response status=\"ok\" version=\"1.16.1\" xmlns=\"http://subsonic.org/restapi\">\n  <searchResult3>\n    <song id=\"6TOMTUtoEzhnB8tjXmNY5V\" parent=\"5KkmjLAmQA5mvuA6BVtGuD\" isDir=\"false\" title=\"Polar Night\" album=\"Northern Lights\" artist=\"Aurora Vale\" track=\"2\" year=\"2020\" genre=\"Electronic\" coverArt=\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\" size=\"33513\" contentType=\"audio/flac\" suffix=\"flac\" duration=\"3\" bitRate=\"67\" path=\"Aurora Vale/Northern Lights/01-02 - Polar Night.flac\" discNumber=\"1\" created=\"2026-10-04T08:07:33.85624551Z\" albumId=\"5KkmjLAmQA5mvuA6BVtGuD\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" type=\"music\" sortName=\"polar night\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\" isExternal=\"false\">\n      <genres name=\"Electronic\"></genres>\n      <artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists>\n      <albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists>\n    </song>\n  </searchResult3>\n</subsonic-response>"
+   }
+  },
+  {
+   "name": "s3-mixed-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=aurora",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:45 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 5856,
+    "sha256": "fad27a5bcc151c29d60e82c24ea8b7800ab5fb4c39dd59cea26b893866e64915",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult3\":{\"song\":[{\"id\":\"3cQUCXxV4YyCfbBaBp2UFT\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Aurora (Live)\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":4,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":43518,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":4,\"bitRate\":70,\"path\":\"Aurora Vale/Northern Lights/01-04 - Aurora (Live).flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.853022565Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"aurora (live)\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[],\"isExternal\":false},{\"id\":\"1REy4tCLzfZLRjFxpQBwVM\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Midnight Sun\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":3,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":25481,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":2,\"bitRate\":68,\"path\":\"Aurora Vale/Northern Lights/01-03 - Midnight Sun.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.857166766Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"midnight sun\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[],\"isExternal\":false},{\"id\":\"6TOMTUtoEzhnB8tjXmNY5V\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Polar Night\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":2,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":33513,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":3,\"bitRate\":67,\"path\":\"Aurora Vale/Northern Lights/01-02 - Polar Night.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.85624551Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"polar night\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[],\"isExternal\":false},{\"id\":\"2A1r2OKTiTVuvPfmtePIIe\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Caf\\u00E9 del Mar\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":1,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":24984,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":2,\"bitRate\":66,\"path\":\"Aurora Vale/Northern Lights/01-01 - Caf\\u00E9 del Mar.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.854286043Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"cafe del mar\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[],\"isExternal\":false},{\"id\":\"rhcHCXhQyCj24j4PjWSZF4\",\"parent\":\"uqnZPEjsKEWJNll7U7pdI2\",\"isDir\":false,\"title\":\"Borealis\",\"album\":\"Borealis\",\"artist\":\"Aurora Vale\",\"track\":1,\"genre\":\"\",\"coverArt\":\"rhcHCXhQyCj24j4PjWSZF4\",\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":180,\"bitRate\":128,\"albumId\":\"uqnZPEjsKEWJNll7U7pdI2\",\"artistId\":\"wP1rGcgpDKwnqnDwArmMO3\",\"type\":\"music\",\"isVideo\":false,\"mediaType\":\"song\",\"artists\":[{\"id\":\"wP1rGcgpDKwnqnDwArmMO3\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"wP1rGcgpDKwnqnDwArmMO3\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"explicitStatus\":\"\",\"isrc\":[],\"genres\":[],\"moods\":[],\"replayGain\":{},\"sortName\":\"borealis\",\"isExternal\":true}],\"album\":[{\"id\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"name\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"coverArt\":\"al-5KkmjLAmQA5mvuA6BVtGuD_b9d685baa046af1b\",\"songCount\":4,\"duration\":11,\"created\":\"2026-10-04T07:40:52.105627636Z\",\"year\":2020,\"genre\":\"Electronic\",\"userRating\":0,\"genres\":[{\"name\":\"Electronic\"}],\"musicBrainzId\":\"\",\"isCompilation\":false,\"sortName\":\"northern lights\",\"discTitles\":[],\"originalReleaseDate\":{},\"releaseDate\":{},\"releaseTypes\":[],\"recordLabels\":[],\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"explicitStatus\":\"\",\"version\":\"\",\"isExternal\":false}],\"artist\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\",\"albumCount\":1,\"musicBrainzId\":\"\",\"sortName\":\"aurora vale\",\"roles\":[\"albumartist\",\"artist\",\"maincredit\"],\"isExternal\":false}]}}}"
+   }
+  },
+  {
+   "name": "s3-mixed-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3.view?u=admin&p=parity-admin&v=1.16.1&c=parity&query=aurora",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "4888"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:45 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 4888,
+    "sha256": "f868282e08c4311c271f6ad365fa664507abb0c930225b8a83b9f2492c35038e",
+    "text": "<subsonic-response status=\"ok\" version=\"1.16.1\" xmlns=\"http://subsonic.org/restapi\">\n  <searchResult3>\n    <artist id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\" albumCount=\"1\" sortName=\"aurora vale\" isExternal=\"false\">\n      <roles>artist</roles>\n      <roles>maincredit</roles>\n      <roles>albumartist</roles>\n    </artist>\n    <album id=\"5KkmjLAmQA5mvuA6BVtGuD\" name=\"Northern Lights\" artist=\"Aurora Vale\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" coverArt=\"al-5KkmjLAmQA5mvuA6BVtGuD_b9d685baa046af1b\" songCount=\"4\" duration=\"11\" created=\"2026-10-04T07:40:52.105627636Z\" year=\"2020\" genre=\"Electronic\" sortName=\"northern lights\" displayArtist=\"Aurora Vale\" isExternal=\"false\">\n      <genres name=\"Electronic\"></genres>\n      <artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists>\n    </album>\n    <song id=\"3cQUCXxV4YyCfbBaBp2UFT\" parent=\"5KkmjLAmQA5mvuA6BVtGuD\" isDir=\"false\" title=\"Aurora (Live)\" album=\"Northern Lights\" artist=\"Aurora Vale\" track=\"4\" year=\"2020\" genre=\"Electronic\" coverArt=\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\" size=\"43518\" contentType=\"audio/flac\" suffix=\"flac\" duration=\"4\" bitRate=\"70\" path=\"Aurora Vale/Northern Lights/01-04 - Aurora (Live).flac\" discNumber=\"1\" created=\"2026-10-04T08:07:33.853022565Z\" albumId=\"5KkmjLAmQA5mvuA6BVtGuD\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" type=\"music\" sortName=\"aurora (live)\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\" isExternal=\"false\">\n      <genres name=\"Electronic\"></genres>\n      <artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists>\n      <albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists>\n    </song>\n    <song id=\"1REy4tCLzfZLRjFxpQBwVM\" parent=\"5KkmjLAmQA5mvuA6BVtGuD\" isDir=\"false\" title=\"Midnight Sun\" album=\"Northern Lights\" artist=\"Aurora Vale\" track=\"3\" year=\"2020\" genre=\"Electronic\" coverArt=\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\" size=\"25481\" contentType=\"audio/flac\" suffix=\"flac\" duration=\"2\" bitRate=\"68\" path=\"Aurora Vale/Northern Lights/01-03 - Midnight Sun.flac\" discNumber=\"1\" created=\"2026-10-04T08:07:33.857166766Z\" albumId=\"5KkmjLAmQA5mvuA6BVtGuD\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" type=\"music\" sortName=\"midnight sun\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\" isExternal=\"false\">\n      <genres name=\"Electronic\"></genres>\n      <artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists>\n      <albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists>\n    </song>\n    <song id=\"6TOMTUtoEzhnB8tjXmNY5V\" parent=\"5KkmjLAmQA5mvuA6BVtGuD\" isDir=\"false\" title=\"Polar Night\" album=\"Northern Lights\" artist=\"Aurora Vale\" track=\"2\" year=\"2020\" genre=\"Electronic\" coverArt=\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\" size=\"33513\" contentType=\"audio/flac\" suffix=\"flac\" duration=\"3\" bitRate=\"67\" path=\"Aurora Vale/Northern Lights/01-02 - Polar Night.flac\" discNumber=\"1\" created=\"2026-10-04T08:07:33.85624551Z\" albumId=\"5KkmjLAmQA5mvuA6BVtGuD\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" type=\"music\" sortName=\"polar night\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\" isExternal=\"false\">\n      <genres name=\"Electronic\"></genres>\n      <artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists>\n      <albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists>\n    </song>\n    <song id=\"2A1r2OKTiTVuvPfmtePIIe\" parent=\"5KkmjLAmQA5mvuA6BVtGuD\" isDir=\"false\" title=\"Café del Mar\" album=\"Northern Lights\" artist=\"Aurora Vale\" track=\"1\" year=\"2020\" genre=\"Electronic\" coverArt=\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\" size=\"24984\" contentType=\"audio/flac\" suffix=\"flac\" duration=\"2\" bitRate=\"66\" path=\"Aurora Vale/Northern Lights/01-01 - Café del Mar.flac\" discNumber=\"1\" created=\"2026-10-04T08:07:33.854286043Z\" albumId=\"5KkmjLAmQA5mvuA6BVtGuD\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" type=\"music\" sortName=\"cafe del mar\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\" isExternal=\"false\">\n      <genres name=\"Electronic\"></genres>\n      <artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists>\n      <albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists>\n    </song>\n    <song id=\"rhcHCXhQyCj24j4PjWSZF4\" parent=\"uqnZPEjsKEWJNll7U7pdI2\" isDir=\"false\" title=\"Borealis\" album=\"Borealis\" artist=\"Aurora Vale\" track=\"1\" genre=\"\" coverArt=\"rhcHCXhQyCj24j4PjWSZF4\" contentType=\"audio/mp4\" suffix=\"m4a\" duration=\"180\" bitRate=\"128\" albumId=\"uqnZPEjsKEWJNll7U7pdI2\" artistId=\"wP1rGcgpDKwnqnDwArmMO3\" type=\"music\" isVideo=\"false\" mediaType=\"song\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\" explicitStatus=\"\" sortName=\"borealis\" isExternal=\"true\" />\n  </searchResult3>\n</subsonic-response>"
+   }
+  },
+  {
+   "name": "s3-discovery-only-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&query=zephyr",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "2257"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:45 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 2257,
+    "sha256": "6d41ecf82d96bef065e13e55bb36ab10261c33b7e52ded22e2e71bb8291c261b",
+    "text": "<subsonic-response status=\"ok\" version=\"1.16.1\" xmlns=\"http://subsonic.org/restapi\">\n  <searchResult3>\n    <artist id=\"NdCCz1eNDVR3vKwUWVaAO1\" name=\"Zephyr Echo\" albumCount=\"2\" coverArt=\"NdCCz1eNDVR3vKwUWVaAO1\" isExternal=\"true\" />\n    <album id=\"wIfqpf1IeFS337TdaMfNC3\" parent=\"NdCCz1eNDVR3vKwUWVaAO1\" isDir=\"true\" title=\"Glass Harbor\" name=\"Glass Harbor\" album=\"Glass Harbor\" artist=\"Zephyr Echo\" artistId=\"NdCCz1eNDVR3vKwUWVaAO1\" songCount=\"3\" duration=\"0\" genre=\"\" coverArt=\"wIfqpf1IeFS337TdaMfNC3\" created=\"2026-10-04T08:07:46.890Z\" mediaType=\"album\" displayArtist=\"Zephyr Echo\" sortName=\"glass harbor\" isExternal=\"true\">\n      <releaseTypes>album</releaseTypes>\n    </album>\n    <song id=\"CwoXcVhGn95tWIOvqaFKt6\" parent=\"wIfqpf1IeFS337TdaMfNC3\" isDir=\"false\" title=\"Glass Harbor\" album=\"Glass Harbor\" artist=\"Zephyr Echo\" track=\"1\" genre=\"\" coverArt=\"CwoXcVhGn95tWIOvqaFKt6\" contentType=\"audio/mp4\" suffix=\"m4a\" duration=\"241\" bitRate=\"128\" albumId=\"wIfqpf1IeFS337TdaMfNC3\" artistId=\"NdCCz1eNDVR3vKwUWVaAO1\" type=\"music\" isVideo=\"false\" mediaType=\"song\" displayArtist=\"Zephyr Echo\" displayAlbumArtist=\"Zephyr Echo\" explicitStatus=\"\" sortName=\"glass harbor\" isExternal=\"true\" year=\"2019\" />\n    <song id=\"yy5PCYFGn1qhbOho4j6OF1\" parent=\"wIfqpf1IeFS337TdaMfNC3\" isDir=\"false\" title=\"Neon Tide\" album=\"Glass Harbor\" artist=\"Zephyr Echo\" track=\"1\" genre=\"\" coverArt=\"yy5PCYFGn1qhbOho4j6OF1\" contentType=\"audio/mp4\" suffix=\"m4a\" duration=\"215\" bitRate=\"128\" albumId=\"wIfqpf1IeFS337TdaMfNC3\" artistId=\"NdCCz1eNDVR3vKwUWVaAO1\" type=\"music\" isVideo=\"false\" mediaType=\"song\" displayArtist=\"Zephyr Echo\" displayAlbumArtist=\"Zephyr Echo\" explicitStatus=\"\" sortName=\"neon tide\" isExternal=\"true\" year=\"2019\" />\n    <song id=\"DUlkxONpTyX8xFkBJo1fi4\" parent=\"wIfqpf1IeFS337TdaMfNC3\" isDir=\"false\" title=\"Paper Moons\" album=\"Glass Harbor\" artist=\"Zephyr Echo\" track=\"1\" genre=\"\" coverArt=\"DUlkxONpTyX8xFkBJo1fi4\" contentType=\"audio/mp4\" suffix=\"m4a\" duration=\"244\" bitRate=\"128\" albumId=\"wIfqpf1IeFS337TdaMfNC3\" artistId=\"NdCCz1eNDVR3vKwUWVaAO1\" type=\"music\" isVideo=\"false\" mediaType=\"song\" displayArtist=\"Zephyr Echo\" displayAlbumArtist=\"Zephyr Echo\" explicitStatus=\"\" sortName=\"paper moons\" isExternal=\"true\" year=\"2019\" />\n  </searchResult3>\n</subsonic-response>"
+   }
+  },
+  {
+   "name": "s3-discovery-only-json-repeat",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3.view?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=zephyr",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:46 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 2874,
+    "sha256": "aad2ae65992e5baabc1d5429fc42f2b24b99285f9cc4fce405214f724971ab0d",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult3\":{\"song\":[{\"id\":\"CwoXcVhGn95tWIOvqaFKt6\",\"parent\":\"wIfqpf1IeFS337TdaMfNC3\",\"isDir\":false,\"title\":\"Glass Harbor\",\"album\":\"Glass Harbor\",\"artist\":\"Zephyr Echo\",\"track\":1,\"genre\":\"\",\"coverArt\":\"CwoXcVhGn95tWIOvqaFKt6\",\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":241,\"bitRate\":128,\"albumId\":\"wIfqpf1IeFS337TdaMfNC3\",\"artistId\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"type\":\"music\",\"isVideo\":false,\"mediaType\":\"song\",\"artists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayArtist\":\"Zephyr Echo\",\"albumArtists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayAlbumArtist\":\"Zephyr Echo\",\"contributors\":[],\"explicitStatus\":\"\",\"isrc\":[],\"genres\":[],\"moods\":[],\"replayGain\":{},\"sortName\":\"glass harbor\",\"isExternal\":true,\"year\":2019},{\"id\":\"yy5PCYFGn1qhbOho4j6OF1\",\"parent\":\"wIfqpf1IeFS337TdaMfNC3\",\"isDir\":false,\"title\":\"Neon Tide\",\"album\":\"Glass Harbor\",\"artist\":\"Zephyr Echo\",\"track\":1,\"genre\":\"\",\"coverArt\":\"yy5PCYFGn1qhbOho4j6OF1\",\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":215,\"bitRate\":128,\"albumId\":\"wIfqpf1IeFS337TdaMfNC3\",\"artistId\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"type\":\"music\",\"isVideo\":false,\"mediaType\":\"song\",\"artists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayArtist\":\"Zephyr Echo\",\"albumArtists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayAlbumArtist\":\"Zephyr Echo\",\"contributors\":[],\"explicitStatus\":\"\",\"isrc\":[],\"genres\":[],\"moods\":[],\"replayGain\":{},\"sortName\":\"neon tide\",\"isExternal\":true,\"year\":2019},{\"id\":\"DUlkxONpTyX8xFkBJo1fi4\",\"parent\":\"wIfqpf1IeFS337TdaMfNC3\",\"isDir\":false,\"title\":\"Paper Moons\",\"album\":\"Glass Harbor\",\"artist\":\"Zephyr Echo\",\"track\":1,\"genre\":\"\",\"coverArt\":\"DUlkxONpTyX8xFkBJo1fi4\",\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":244,\"bitRate\":128,\"albumId\":\"wIfqpf1IeFS337TdaMfNC3\",\"artistId\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"type\":\"music\",\"isVideo\":false,\"mediaType\":\"song\",\"artists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayArtist\":\"Zephyr Echo\",\"albumArtists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayAlbumArtist\":\"Zephyr Echo\",\"contributors\":[],\"explicitStatus\":\"\",\"isrc\":[],\"genres\":[],\"moods\":[],\"replayGain\":{},\"sortName\":\"paper moons\",\"isExternal\":true,\"year\":2019}],\"album\":[{\"id\":\"wIfqpf1IeFS337TdaMfNC3\",\"parent\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"isDir\":true,\"title\":\"Glass Harbor\",\"name\":\"Glass Harbor\",\"album\":\"Glass Harbor\",\"artist\":\"Zephyr Echo\",\"artistId\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"songCount\":3,\"duration\":0,\"genre\":\"\",\"coverArt\":\"wIfqpf1IeFS337TdaMfNC3\",\"created\":\"2026-10-04T08:07:46.942Z\",\"mediaType\":\"album\",\"displayArtist\":\"Zephyr Echo\",\"releaseTypes\":[\"album\"],\"sortName\":\"glass harbor\",\"isExternal\":true}],\"artist\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\",\"albumCount\":2,\"coverArt\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"isExternal\":true}]}}}"
+   }
+  },
+  {
+   "name": "s3-cjk-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=%E5%AE%87%E5%A4%9A%E7%94%B0",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:46 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 4711,
+    "sha256": "72d6df1b3847b4d9baf07ab8a10e484a83cd9e7689518fa54275e1201c684b8c",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult3\":{\"song\":[{\"id\":\"7LQvU7JOETUgfLldHu8laT\",\"parent\":\"7hVkqYsGKelPO8XiRTyRC8\",\"isDir\":false,\"title\":\"First Love\",\"album\":\"\\u521D\\u604B\\u30C6\\u30B9\\u30C8\",\"artist\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\",\"track\":1,\"year\":2021,\"genre\":\"J-Pop\",\"coverArt\":\"dc-7hVkqYsGKelPO8XiRTyRC8:1\",\"size\":13749,\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":3,\"bitRate\":33,\"path\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8/\\u521D\\u604B\\u30C6\\u30B9\\u30C8/01-01 - First Love.m4a\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.865764938Z\",\"albumId\":\"7hVkqYsGKelPO8XiRTyRC8\",\"artistId\":\"2Wu7LNfklbYON0StTcDZwM\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"first love\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"J-Pop\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\"}],\"displayArtist\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\",\"albumArtists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\"}],\"displayAlbumArtist\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[],\"isExternal\":false},{\"id\":\"5otsGv02qpt74TwMlpLAoF\",\"parent\":\"7hVkqYsGKelPO8XiRTyRC8\",\"isDir\":false,\"title\":\"\\u00D1and\\u00FA (Remix)\",\"album\":\"\\u521D\\u604B\\u30C6\\u30B9\\u30C8\",\"artist\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\",\"track\":3,\"year\":2021,\"genre\":\"J-Pop\",\"coverArt\":\"dc-7hVkqYsGKelPO8XiRTyRC8:1\",\"size\":9643,\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":2,\"bitRate\":33,\"path\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8/\\u521D\\u604B\\u30C6\\u30B9\\u30C8/01-03 - \\u00D1and\\u00FA (Remix).m4a\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.86973621Z\",\"albumId\":\"7hVkqYsGKelPO8XiRTyRC8\",\"artistId\":\"2Wu7LNfklbYON0StTcDZwM\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"nandu (remix)\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"J-Pop\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\"}],\"displayArtist\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\",\"albumArtists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\"}],\"displayAlbumArtist\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[],\"isExternal\":false},{\"id\":\"3KY9U3kJDrcZF3A5otp8L4\",\"parent\":\"7hVkqYsGKelPO8XiRTyRC8\",\"isDir\":false,\"title\":\"\\u685C\\u306E\\u6B4C\",\"album\":\"\\u521D\\u604B\\u30C6\\u30B9\\u30C8\",\"artist\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\",\"track\":2,\"year\":2021,\"genre\":\"J-Pop\",\"coverArt\":\"dc-7hVkqYsGKelPO8XiRTyRC8:1\",\"size\":9643,\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":2,\"bitRate\":33,\"path\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8/\\u521D\\u604B\\u30C6\\u30B9\\u30C8/01-02 - \\u685C\\u306E\\u6B4C.m4a\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.867217392Z\",\"albumId\":\"7hVkqYsGKelPO8XiRTyRC8\",\"artistId\":\"2Wu7LNfklbYON0StTcDZwM\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"\\u685C\\u306E\\u6B4C\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"J-Pop\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\"}],\"displayArtist\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\",\"albumArtists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\"}],\"displayAlbumArtist\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[],\"isExternal\":false}],\"album\":[{\"id\":\"7hVkqYsGKelPO8XiRTyRC8\",\"name\":\"\\u521D\\u604B\\u30C6\\u30B9\\u30C8\",\"artist\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\",\"artistId\":\"2Wu7LNfklbYON0StTcDZwM\",\"songCount\":3,\"duration\":7,\"created\":\"2026-10-04T07:40:52.63562472Z\",\"year\":2021,\"genre\":\"J-Pop\",\"userRating\":0,\"genres\":[{\"name\":\"J-Pop\"}],\"musicBrainzId\":\"\",\"isCompilation\":false,\"sortName\":\"\\u521D\\u604B\\u30C6\\u30B9\\u30C8\",\"discTitles\":[],\"originalReleaseDate\":{},\"releaseDate\":{\"year\":2021},\"releaseTypes\":[],\"recordLabels\":[],\"moods\":[],\"artists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\"}],\"displayArtist\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\",\"explicitStatus\":\"\",\"version\":\"\",\"isExternal\":false}],\"artist\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\",\"albumCount\":1,\"musicBrainzId\":\"\",\"sortName\":\"\\u5B87\\u591A\\u7530\\u30C6\\u30B9\\u30C8\",\"roles\":[\"maincredit\",\"albumartist\",\"artist\"],\"isExternal\":false}]}}}"
+   }
+  },
+  {
+   "name": "s3-diacritics-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=%C3%9E%C3%B6gn",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:46 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 1235,
+    "sha256": "7980ebe78a498e61329589a88a2a7a2acc6ed117a0dccc8b0c8610d58c592f46",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult3\":{\"song\":[{\"id\":\"3RGeVWguT715DnjkCJcs99\",\"parent\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"isDir\":false,\"title\":\"\\u00DE\\u00F6gn\",\"album\":\"\\u00C1g\\u00E6tis Pr\\u00F3fun\",\"artist\":\"Bj\\u00F8rn \\u00C5lund\",\"track\":3,\"year\":2018,\"genre\":\"Post-Rock\",\"coverArt\":\"dc-3sYt5hQaQpB2FKOkr3RxZT:1\",\"size\":12404,\"contentType\":\"audio/mpeg\",\"suffix\":\"mp3\",\"duration\":3,\"bitRate\":32,\"path\":\"Bj\\u00F8rn \\u00C5lund/\\u00C1g\\u00E6tis Pr\\u00F3fun/01-03 - \\u00DE\\u00F6gn.mp3\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.844903906Z\",\"albumId\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"artistId\":\"17qiGGo3gM1YI35DUCa4fC\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"thogn\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Post-Rock\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":0,\"moods\":[],\"artists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bj\\u00F8rn \\u00C5lund\"}],\"displayArtist\":\"Bj\\u00F8rn \\u00C5lund\",\"albumArtists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bj\\u00F8rn \\u00C5lund\"}],\"displayAlbumArtist\":\"Bj\\u00F8rn \\u00C5lund\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[],\"isExternal\":false}],\"album\":[],\"artist\":[]}}}"
+   }
+  },
+  {
+   "name": "s3-quoted-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=%22Polar%20Night%22",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:46 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 1153,
+    "sha256": "d28969fbdcacb4cebd5d9b78d226c825df25667e1be4f4e475a61c05dc2f533e",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult3\":{\"song\":[{\"id\":\"6TOMTUtoEzhnB8tjXmNY5V\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Polar Night\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":2,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":33513,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":3,\"bitRate\":67,\"path\":\"Aurora Vale/Northern Lights/01-02 - Polar Night.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.85624551Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"polar night\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[],\"isExternal\":false}],\"album\":[],\"artist\":[]}}}"
+   }
+  },
+  {
+   "name": "s3-typeahead-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=zep&songCount=5&albumCount=3&artistCount=3",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:46 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 107,
+    "sha256": "22f8776db28809b395be464fcc2ffd5ed7dc3cdaa631b113efba3c3ba93902b7",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult3\":{\"song\":[],\"album\":[],\"artist\":[]}}}"
+   }
+  },
+  {
+   "name": "s3-songs-only-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=zephyr&songCount=10&albumCount=0&artistCount=0",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:46 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 107,
+    "sha256": "22f8776db28809b395be464fcc2ffd5ed7dc3cdaa631b113efba3c3ba93902b7",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult3\":{\"song\":[],\"album\":[],\"artist\":[]}}}"
+   }
+  },
+  {
+   "name": "s3-albums-only-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=zephyr&songCount=0&albumCount=10&artistCount=0",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:48 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 542,
+    "sha256": "d78e06ec1ffdc28e9aac6b24f9ecfae408f3de208f14510062b5a8efa3401505",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult3\":{\"song\":[],\"album\":[{\"id\":\"wIfqpf1IeFS337TdaMfNC3\",\"parent\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"isDir\":true,\"title\":\"Glass Harbor\",\"name\":\"Glass Harbor\",\"album\":\"Glass Harbor\",\"artist\":\"Zephyr Echo\",\"artistId\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"songCount\":3,\"duration\":0,\"genre\":\"\",\"coverArt\":\"wIfqpf1IeFS337TdaMfNC3\",\"created\":\"2026-10-04T08:07:49.749Z\",\"mediaType\":\"album\",\"displayArtist\":\"Zephyr Echo\",\"releaseTypes\":[\"album\"],\"sortName\":\"glass harbor\",\"isExternal\":true}],\"artist\":[]}}}"
+   }
+  },
+  {
+   "name": "s3-album-offset-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=zephyr&albumOffset=5&artistOffset=5",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:48 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 2318,
+    "sha256": "27ac473079e36b7d3b042d1245e03a8b45ab54957fffd1a198ab8fb869eed5a4",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult3\":{\"song\":[{\"id\":\"CwoXcVhGn95tWIOvqaFKt6\",\"parent\":\"wIfqpf1IeFS337TdaMfNC3\",\"isDir\":false,\"title\":\"Glass Harbor\",\"album\":\"Glass Harbor\",\"artist\":\"Zephyr Echo\",\"track\":1,\"genre\":\"\",\"coverArt\":\"CwoXcVhGn95tWIOvqaFKt6\",\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":241,\"bitRate\":128,\"albumId\":\"wIfqpf1IeFS337TdaMfNC3\",\"artistId\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"type\":\"music\",\"isVideo\":false,\"mediaType\":\"song\",\"artists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayArtist\":\"Zephyr Echo\",\"albumArtists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayAlbumArtist\":\"Zephyr Echo\",\"contributors\":[],\"explicitStatus\":\"\",\"isrc\":[],\"genres\":[],\"moods\":[],\"replayGain\":{},\"sortName\":\"glass harbor\",\"isExternal\":true,\"year\":2019},{\"id\":\"yy5PCYFGn1qhbOho4j6OF1\",\"parent\":\"wIfqpf1IeFS337TdaMfNC3\",\"isDir\":false,\"title\":\"Neon Tide\",\"album\":\"Glass Harbor\",\"artist\":\"Zephyr Echo\",\"track\":1,\"genre\":\"\",\"coverArt\":\"yy5PCYFGn1qhbOho4j6OF1\",\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":215,\"bitRate\":128,\"albumId\":\"wIfqpf1IeFS337TdaMfNC3\",\"artistId\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"type\":\"music\",\"isVideo\":false,\"mediaType\":\"song\",\"artists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayArtist\":\"Zephyr Echo\",\"albumArtists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayAlbumArtist\":\"Zephyr Echo\",\"contributors\":[],\"explicitStatus\":\"\",\"isrc\":[],\"genres\":[],\"moods\":[],\"replayGain\":{},\"sortName\":\"neon tide\",\"isExternal\":true,\"year\":2019},{\"id\":\"DUlkxONpTyX8xFkBJo1fi4\",\"parent\":\"wIfqpf1IeFS337TdaMfNC3\",\"isDir\":false,\"title\":\"Paper Moons\",\"album\":\"Glass Harbor\",\"artist\":\"Zephyr Echo\",\"track\":1,\"genre\":\"\",\"coverArt\":\"DUlkxONpTyX8xFkBJo1fi4\",\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":244,\"bitRate\":128,\"albumId\":\"wIfqpf1IeFS337TdaMfNC3\",\"artistId\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"type\":\"music\",\"isVideo\":false,\"mediaType\":\"song\",\"artists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayArtist\":\"Zephyr Echo\",\"albumArtists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayAlbumArtist\":\"Zephyr Echo\",\"contributors\":[],\"explicitStatus\":\"\",\"isrc\":[],\"genres\":[],\"moods\":[],\"replayGain\":{},\"sortName\":\"paper moons\",\"isExternal\":true,\"year\":2019}],\"album\":[],\"artist\":[]}}}"
+   }
+  },
+  {
+   "name": "s3-song-page2-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=zephyr&songCount=2&songOffset=2",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "150"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:48 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 150,
+    "sha256": "8f245250eeef5331b187a5be2fc52031b7f297f356413301ede628b589d9a73a",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"searchResult3\":{}}}"
+   }
+  },
+  {
+   "name": "s3-empty-query-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=&songCount=100&albumCount=10&artistCount=10",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "12910"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:48 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 12910,
+    "sha256": "3e74423a42e9a960fc05e598db7af28e6ebc10dbc8e9916b6bde1de240ca65ac",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"searchResult3\":{\"artist\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\",\"albumCount\":1,\"musicBrainzId\":\"\",\"sortName\":\"bjorn alund\",\"roles\":[\"maincredit\",\"albumartist\",\"artist\"]},{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\",\"albumCount\":1,\"musicBrainzId\":\"\",\"sortName\":\"aurora vale\",\"roles\":[\"maincredit\",\"albumartist\",\"artist\"]},{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\",\"albumCount\":1,\"musicBrainzId\":\"\",\"sortName\":\"宇多田テスト\",\"roles\":[\"albumartist\",\"artist\",\"maincredit\"]}],\"album\":[{\"id\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"name\":\"Ágætis Prófun\",\"artist\":\"Bjørn Ålund\",\"artistId\":\"17qiGGo3gM1YI35DUCa4fC\",\"coverArt\":\"al-3sYt5hQaQpB2FKOkr3RxZT_e0d327805ce38bc7\",\"songCount\":3,\"duration\":8,\"created\":\"2026-10-04T07:40:52.392626057Z\",\"year\":2018,\"genre\":\"Post-Rock\",\"userRating\":0,\"genres\":[{\"name\":\"Post-Rock\"}],\"musicBrainzId\":\"\",\"isCompilation\":false,\"sortName\":\"agaetis profun\",\"discTitles\":[],\"originalReleaseDate\":{},\"releaseDate\":{},\"releaseTypes\":[],\"recordLabels\":[],\"moods\":[],\"artists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayArtist\":\"Bjørn Ålund\",\"explicitStatus\":\"\",\"version\":\"\"},{\"id\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"name\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"coverArt\":\"al-5KkmjLAmQA5mvuA6BVtGuD_b9d685baa046af1b\",\"songCount\":4,\"duration\":11,\"created\":\"2026-10-04T07:40:52.105627636Z\",\"year\":2020,\"genre\":\"Electronic\",\"userRating\":0,\"genres\":[{\"name\":\"Electronic\"}],\"musicBrainzId\":\"\",\"isCompilation\":false,\"sortName\":\"northern lights\",\"discTitles\":[],\"originalReleaseDate\":{},\"releaseDate\":{},\"releaseTypes\":[],\"recordLabels\":[],\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"explicitStatus\":\"\",\"version\":\"\"},{\"id\":\"7hVkqYsGKelPO8XiRTyRC8\",\"name\":\"初恋テスト\",\"artist\":\"宇多田テスト\",\"artistId\":\"2Wu7LNfklbYON0StTcDZwM\",\"songCount\":3,\"duration\":7,\"created\":\"2026-10-04T07:40:52.63562472Z\",\"year\":2021,\"genre\":\"J-Pop\",\"userRating\":0,\"genres\":[{\"name\":\"J-Pop\"}],\"musicBrainzId\":\"\",\"isCompilation\":false,\"sortName\":\"初恋テスト\",\"discTitles\":[],\"originalReleaseDate\":{},\"releaseDate\":{\"year\":2021},\"releaseTypes\":[],\"recordLabels\":[],\"moods\":[],\"artists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayArtist\":\"宇多田テスト\",\"explicitStatus\":\"\",\"version\":\"\"}],\"song\":[{\"id\":\"79UbMHtfpdvxM9dnNYPHLu\",\"parent\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"isDir\":false,\"title\":\"Hjarta\",\"album\":\"Ágætis Prófun\",\"artist\":\"Bjørn Ålund\",\"track\":1,\"year\":2018,\"genre\":\"Post-Rock\",\"coverArt\":\"dc-3sYt5hQaQpB2FKOkr3RxZT:1\",\"size\":12404,\"contentType\":\"audio/mpeg\",\"suffix\":\"mp3\",\"duration\":3,\"bitRate\":32,\"path\":\"Bjørn Ålund/Ágætis Prófun/01-01 - Hjarta.mp3\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.841521902Z\",\"albumId\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"artistId\":\"17qiGGo3gM1YI35DUCa4fC\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"hjarta\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Post-Rock\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":0,\"moods\":[],\"artists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayArtist\":\"Bjørn Ålund\",\"albumArtists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayAlbumArtist\":\"Bjørn Ålund\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"2Xc6Ix4qDl2csRPeaPnwau\",\"parent\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"isDir\":false,\"title\":\"Ljós í myrkri\",\"album\":\"Ágætis Prófun\",\"artist\":\"Bjørn Ålund\",\"track\":2,\"year\":2018,\"genre\":\"Post-Rock\",\"coverArt\":\"dc-3sYt5hQaQpB2FKOkr3RxZT:1\",\"size\":8443,\"contentType\":\"audio/mpeg\",\"suffix\":\"mp3\",\"duration\":2,\"bitRate\":32,\"path\":\"Bjørn Ålund/Ágætis Prófun/01-02 - Ljós í myrkri.mp3\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.842930364Z\",\"albumId\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"artistId\":\"17qiGGo3gM1YI35DUCa4fC\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"ljos i myrkri\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Post-Rock\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":0,\"moods\":[],\"artists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayArtist\":\"Bjørn Ålund\",\"albumArtists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayAlbumArtist\":\"Bjørn Ålund\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"3RGeVWguT715DnjkCJcs99\",\"parent\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"isDir\":false,\"title\":\"Þögn\",\"album\":\"Ágætis Prófun\",\"artist\":\"Bjørn Ålund\",\"track\":3,\"year\":2018,\"genre\":\"Post-Rock\",\"coverArt\":\"dc-3sYt5hQaQpB2FKOkr3RxZT:1\",\"size\":12404,\"contentType\":\"audio/mpeg\",\"suffix\":\"mp3\",\"duration\":3,\"bitRate\":32,\"path\":\"Bjørn Ålund/Ágætis Prófun/01-03 - Þögn.mp3\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.844903906Z\",\"albumId\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"artistId\":\"17qiGGo3gM1YI35DUCa4fC\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"thogn\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Post-Rock\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":0,\"moods\":[],\"artists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayArtist\":\"Bjørn Ålund\",\"albumArtists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayAlbumArtist\":\"Bjørn Ålund\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"3cQUCXxV4YyCfbBaBp2UFT\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Aurora (Live)\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":4,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":43518,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":4,\"bitRate\":70,\"path\":\"Aurora Vale/Northern Lights/01-04 - Aurora (Live).flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.853022565Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"aurora (live)\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"2A1r2OKTiTVuvPfmtePIIe\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Café del Mar\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":1,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":24984,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":2,\"bitRate\":66,\"path\":\"Aurora Vale/Northern Lights/01-01 - Café del Mar.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.854286043Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"cafe del mar\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"6TOMTUtoEzhnB8tjXmNY5V\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Polar Night\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":2,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":33513,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":3,\"bitRate\":67,\"path\":\"Aurora Vale/Northern Lights/01-02 - Polar Night.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.85624551Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"polar night\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"1REy4tCLzfZLRjFxpQBwVM\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Midnight Sun\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":3,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":25481,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":2,\"bitRate\":68,\"path\":\"Aurora Vale/Northern Lights/01-03 - Midnight Sun.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.857166766Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"midnight sun\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"7LQvU7JOETUgfLldHu8laT\",\"parent\":\"7hVkqYsGKelPO8XiRTyRC8\",\"isDir\":false,\"title\":\"First Love\",\"album\":\"初恋テスト\",\"artist\":\"宇多田テスト\",\"track\":1,\"year\":2021,\"genre\":\"J-Pop\",\"coverArt\":\"dc-7hVkqYsGKelPO8XiRTyRC8:1\",\"size\":13749,\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":3,\"bitRate\":33,\"path\":\"宇多田テスト/初恋テスト/01-01 - First Love.m4a\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.865764938Z\",\"albumId\":\"7hVkqYsGKelPO8XiRTyRC8\",\"artistId\":\"2Wu7LNfklbYON0StTcDZwM\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"first love\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"J-Pop\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayArtist\":\"宇多田テスト\",\"albumArtists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayAlbumArtist\":\"宇多田テスト\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"3KY9U3kJDrcZF3A5otp8L4\",\"parent\":\"7hVkqYsGKelPO8XiRTyRC8\",\"isDir\":false,\"title\":\"桜の歌\",\"album\":\"初恋テスト\",\"artist\":\"宇多田テスト\",\"track\":2,\"year\":2021,\"genre\":\"J-Pop\",\"coverArt\":\"dc-7hVkqYsGKelPO8XiRTyRC8:1\",\"size\":9643,\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":2,\"bitRate\":33,\"path\":\"宇多田テスト/初恋テスト/01-02 - 桜の歌.m4a\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.867217392Z\",\"albumId\":\"7hVkqYsGKelPO8XiRTyRC8\",\"artistId\":\"2Wu7LNfklbYON0StTcDZwM\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"桜の歌\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"J-Pop\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayArtist\":\"宇多田テスト\",\"albumArtists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayAlbumArtist\":\"宇多田テスト\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"5otsGv02qpt74TwMlpLAoF\",\"parent\":\"7hVkqYsGKelPO8XiRTyRC8\",\"isDir\":false,\"title\":\"Ñandú (Remix)\",\"album\":\"初恋テスト\",\"artist\":\"宇多田テスト\",\"track\":3,\"year\":2021,\"genre\":\"J-Pop\",\"coverArt\":\"dc-7hVkqYsGKelPO8XiRTyRC8:1\",\"size\":9643,\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":2,\"bitRate\":33,\"path\":\"宇多田テスト/初恋テスト/01-03 - Ñandú (Remix).m4a\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.86973621Z\",\"albumId\":\"7hVkqYsGKelPO8XiRTyRC8\",\"artistId\":\"2Wu7LNfklbYON0StTcDZwM\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"nandu (remix)\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"J-Pop\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayArtist\":\"宇多田テスト\",\"albumArtists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayAlbumArtist\":\"宇多田テスト\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]}]}}}"
+   }
+  },
+  {
+   "name": "s3-empty-query-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3.view?u=admin&p=parity-admin&v=1.16.1&c=parity&query=%22%22&songCount=20",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "10458"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:48 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 10458,
+    "sha256": "e45059ef5782abe2215d662d977d0b215de37746c85fd25c15e18cc956155aa7",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><searchResult3><artist id=\"17qiGGo3gM1YI35DUCa4fC\" name=\"Bjørn Ålund\" albumCount=\"1\" sortName=\"bjorn alund\"><roles>albumartist</roles><roles>artist</roles><roles>maincredit</roles></artist><artist id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\" albumCount=\"1\" sortName=\"aurora vale\"><roles>albumartist</roles><roles>artist</roles><roles>maincredit</roles></artist><artist id=\"2Wu7LNfklbYON0StTcDZwM\" name=\"宇多田テスト\" albumCount=\"1\" sortName=\"宇多田テスト\"><roles>maincredit</roles><roles>albumartist</roles><roles>artist</roles></artist><album id=\"3sYt5hQaQpB2FKOkr3RxZT\" name=\"Ágætis Prófun\" artist=\"Bjørn Ålund\" artistId=\"17qiGGo3gM1YI35DUCa4fC\" coverArt=\"al-3sYt5hQaQpB2FKOkr3RxZT_e0d327805ce38bc7\" songCount=\"3\" duration=\"8\" created=\"2026-10-04T07:40:52.392626057Z\" year=\"2018\" genre=\"Post-Rock\" sortName=\"agaetis profun\" displayArtist=\"Bjørn Ålund\"><genres name=\"Post-Rock\"></genres><artists id=\"17qiGGo3gM1YI35DUCa4fC\" name=\"Bjørn Ålund\"></artists></album><album id=\"5KkmjLAmQA5mvuA6BVtGuD\" name=\"Northern Lights\" artist=\"Aurora Vale\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" coverArt=\"al-5KkmjLAmQA5mvuA6BVtGuD_b9d685baa046af1b\" songCount=\"4\" duration=\"11\" created=\"2026-10-04T07:40:52.105627636Z\" year=\"2020\" genre=\"Electronic\" sortName=\"northern lights\" displayArtist=\"Aurora Vale\"><genres name=\"Electronic\"></genres><artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists></album><album id=\"7hVkqYsGKelPO8XiRTyRC8\" name=\"初恋テスト\" artist=\"宇多田テスト\" artistId=\"2Wu7LNfklbYON0StTcDZwM\" songCount=\"3\" duration=\"7\" created=\"2026-10-04T07:40:52.63562472Z\" year=\"2021\" genre=\"J-Pop\" sortName=\"初恋テスト\" displayArtist=\"宇多田テスト\"><genres name=\"J-Pop\"></genres><releaseDate year=\"2021\"></releaseDate><artists id=\"2Wu7LNfklbYON0StTcDZwM\" name=\"宇多田テスト\"></artists></album><song id=\"79UbMHtfpdvxM9dnNYPHLu\" parent=\"3sYt5hQaQpB2FKOkr3RxZT\" isDir=\"false\" title=\"Hjarta\" album=\"Ágætis Prófun\" artist=\"Bjørn Ålund\" track=\"1\" year=\"2018\" genre=\"Post-Rock\" coverArt=\"dc-3sYt5hQaQpB2FKOkr3RxZT:1\" size=\"12404\" contentType=\"audio/mpeg\" suffix=\"mp3\" duration=\"3\" bitRate=\"32\" path=\"Bjørn Ålund/Ágætis Prófun/01-01 - Hjarta.mp3\" discNumber=\"1\" created=\"2026-10-04T08:07:33.841521902Z\" albumId=\"3sYt5hQaQpB2FKOkr3RxZT\" artistId=\"17qiGGo3gM1YI35DUCa4fC\" type=\"music\" sortName=\"hjarta\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" displayArtist=\"Bjørn Ålund\" displayAlbumArtist=\"Bjørn Ålund\"><genres name=\"Post-Rock\"></genres><artists id=\"17qiGGo3gM1YI35DUCa4fC\" name=\"Bjørn Ålund\"></artists><albumArtists id=\"17qiGGo3gM1YI35DUCa4fC\" name=\"Bjørn Ålund\"></albumArtists></song><song id=\"2Xc6Ix4qDl2csRPeaPnwau\" parent=\"3sYt5hQaQpB2FKOkr3RxZT\" isDir=\"false\" title=\"Ljós í myrkri\" album=\"Ágætis Prófun\" artist=\"Bjørn Ålund\" track=\"2\" year=\"2018\" genre=\"Post-Rock\" coverArt=\"dc-3sYt5hQaQpB2FKOkr3RxZT:1\" size=\"8443\" contentType=\"audio/mpeg\" suffix=\"mp3\" duration=\"2\" bitRate=\"32\" path=\"Bjørn Ålund/Ágætis Prófun/01-02 - Ljós í myrkri.mp3\" discNumber=\"1\" created=\"2026-10-04T08:07:33.842930364Z\" albumId=\"3sYt5hQaQpB2FKOkr3RxZT\" artistId=\"17qiGGo3gM1YI35DUCa4fC\" type=\"music\" sortName=\"ljos i myrkri\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" displayArtist=\"Bjørn Ålund\" displayAlbumArtist=\"Bjørn Ålund\"><genres name=\"Post-Rock\"></genres><artists id=\"17qiGGo3gM1YI35DUCa4fC\" name=\"Bjørn Ålund\"></artists><albumArtists id=\"17qiGGo3gM1YI35DUCa4fC\" name=\"Bjørn Ålund\"></albumArtists></song><song id=\"3RGeVWguT715DnjkCJcs99\" parent=\"3sYt5hQaQpB2FKOkr3RxZT\" isDir=\"false\" title=\"Þögn\" album=\"Ágætis Prófun\" artist=\"Bjørn Ålund\" track=\"3\" year=\"2018\" genre=\"Post-Rock\" coverArt=\"dc-3sYt5hQaQpB2FKOkr3RxZT:1\" size=\"12404\" contentType=\"audio/mpeg\" suffix=\"mp3\" duration=\"3\" bitRate=\"32\" path=\"Bjørn Ålund/Ágætis Prófun/01-03 - Þögn.mp3\" discNumber=\"1\" created=\"2026-10-04T08:07:33.844903906Z\" albumId=\"3sYt5hQaQpB2FKOkr3RxZT\" artistId=\"17qiGGo3gM1YI35DUCa4fC\" type=\"music\" sortName=\"thogn\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" displayArtist=\"Bjørn Ålund\" displayAlbumArtist=\"Bjørn Ålund\"><genres name=\"Post-Rock\"></genres><artists id=\"17qiGGo3gM1YI35DUCa4fC\" name=\"Bjørn Ålund\"></artists><albumArtists id=\"17qiGGo3gM1YI35DUCa4fC\" name=\"Bjørn Ålund\"></albumArtists></song><song id=\"3cQUCXxV4YyCfbBaBp2UFT\" parent=\"5KkmjLAmQA5mvuA6BVtGuD\" isDir=\"false\" title=\"Aurora (Live)\" album=\"Northern Lights\" artist=\"Aurora Vale\" track=\"4\" year=\"2020\" genre=\"Electronic\" coverArt=\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\" size=\"43518\" contentType=\"audio/flac\" suffix=\"flac\" duration=\"4\" bitRate=\"70\" path=\"Aurora Vale/Northern Lights/01-04 - Aurora (Live).flac\" discNumber=\"1\" created=\"2026-10-04T08:07:33.853022565Z\" albumId=\"5KkmjLAmQA5mvuA6BVtGuD\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" type=\"music\" sortName=\"aurora (live)\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\"><genres name=\"Electronic\"></genres><artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists><albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists></song><song id=\"2A1r2OKTiTVuvPfmtePIIe\" parent=\"5KkmjLAmQA5mvuA6BVtGuD\" isDir=\"false\" title=\"Café del Mar\" album=\"Northern Lights\" artist=\"Aurora Vale\" track=\"1\" year=\"2020\" genre=\"Electronic\" coverArt=\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\" size=\"24984\" contentType=\"audio/flac\" suffix=\"flac\" duration=\"2\" bitRate=\"66\" path=\"Aurora Vale/Northern Lights/01-01 - Café del Mar.flac\" discNumber=\"1\" created=\"2026-10-04T08:07:33.854286043Z\" albumId=\"5KkmjLAmQA5mvuA6BVtGuD\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" type=\"music\" sortName=\"cafe del mar\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\"><genres name=\"Electronic\"></genres><artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists><albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists></song><song id=\"6TOMTUtoEzhnB8tjXmNY5V\" parent=\"5KkmjLAmQA5mvuA6BVtGuD\" isDir=\"false\" title=\"Polar Night\" album=\"Northern Lights\" artist=\"Aurora Vale\" track=\"2\" year=\"2020\" genre=\"Electronic\" coverArt=\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\" size=\"33513\" contentType=\"audio/flac\" suffix=\"flac\" duration=\"3\" bitRate=\"67\" path=\"Aurora Vale/Northern Lights/01-02 - Polar Night.flac\" discNumber=\"1\" created=\"2026-10-04T08:07:33.85624551Z\" albumId=\"5KkmjLAmQA5mvuA6BVtGuD\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" type=\"music\" sortName=\"polar night\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\"><genres name=\"Electronic\"></genres><artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists><albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists></song><song id=\"1REy4tCLzfZLRjFxpQBwVM\" parent=\"5KkmjLAmQA5mvuA6BVtGuD\" isDir=\"false\" title=\"Midnight Sun\" album=\"Northern Lights\" artist=\"Aurora Vale\" track=\"3\" year=\"2020\" genre=\"Electronic\" coverArt=\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\" size=\"25481\" contentType=\"audio/flac\" suffix=\"flac\" duration=\"2\" bitRate=\"68\" path=\"Aurora Vale/Northern Lights/01-03 - Midnight Sun.flac\" discNumber=\"1\" created=\"2026-10-04T08:07:33.857166766Z\" albumId=\"5KkmjLAmQA5mvuA6BVtGuD\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" type=\"music\" sortName=\"midnight sun\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\"><genres name=\"Electronic\"></genres><artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists><albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists></song><song id=\"7LQvU7JOETUgfLldHu8laT\" parent=\"7hVkqYsGKelPO8XiRTyRC8\" isDir=\"false\" title=\"First Love\" album=\"初恋テスト\" artist=\"宇多田テスト\" track=\"1\" year=\"2021\" genre=\"J-Pop\" coverArt=\"dc-7hVkqYsGKelPO8XiRTyRC8:1\" size=\"13749\" contentType=\"audio/mp4\" suffix=\"m4a\" duration=\"3\" bitRate=\"33\" path=\"宇多田テスト/初恋テスト/01-01 - First Love.m4a\" discNumber=\"1\" created=\"2026-10-04T08:07:33.865764938Z\" albumId=\"7hVkqYsGKelPO8XiRTyRC8\" artistId=\"2Wu7LNfklbYON0StTcDZwM\" type=\"music\" sortName=\"first love\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"宇多田テスト\" displayAlbumArtist=\"宇多田テスト\"><genres name=\"J-Pop\"></genres><artists id=\"2Wu7LNfklbYON0StTcDZwM\" name=\"宇多田テスト\"></artists><albumArtists id=\"2Wu7LNfklbYON0StTcDZwM\" name=\"宇多田テスト\"></albumArtists></song><song id=\"3KY9U3kJDrcZF3A5otp8L4\" parent=\"7hVkqYsGKelPO8XiRTyRC8\" isDir=\"false\" title=\"桜の歌\" album=\"初恋テスト\" artist=\"宇多田テスト\" track=\"2\" year=\"2021\" genre=\"J-Pop\" coverArt=\"dc-7hVkqYsGKelPO8XiRTyRC8:1\" size=\"9643\" contentType=\"audio/mp4\" suffix=\"m4a\" duration=\"2\" bitRate=\"33\" path=\"宇多田テスト/初恋テスト/01-02 - 桜の歌.m4a\" discNumber=\"1\" created=\"2026-10-04T08:07:33.867217392Z\" albumId=\"7hVkqYsGKelPO8XiRTyRC8\" artistId=\"2Wu7LNfklbYON0StTcDZwM\" type=\"music\" sortName=\"桜の歌\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"宇多田テスト\" displayAlbumArtist=\"宇多田テスト\"><genres name=\"J-Pop\"></genres><artists id=\"2Wu7LNfklbYON0StTcDZwM\" name=\"宇多田テスト\"></artists><albumArtists id=\"2Wu7LNfklbYON0StTcDZwM\" name=\"宇多田テスト\"></albumArtists></song><song id=\"5otsGv02qpt74TwMlpLAoF\" parent=\"7hVkqYsGKelPO8XiRTyRC8\" isDir=\"false\" title=\"Ñandú (Remix)\" album=\"初恋テスト\" artist=\"宇多田テスト\" track=\"3\" year=\"2021\" genre=\"J-Pop\" coverArt=\"dc-7hVkqYsGKelPO8XiRTyRC8:1\" size=\"9643\" contentType=\"audio/mp4\" suffix=\"m4a\" duration=\"2\" bitRate=\"33\" path=\"宇多田テスト/初恋テスト/01-03 - Ñandú (Remix).m4a\" discNumber=\"1\" created=\"2026-10-04T08:07:33.86973621Z\" albumId=\"7hVkqYsGKelPO8XiRTyRC8\" artistId=\"2Wu7LNfklbYON0StTcDZwM\" type=\"music\" sortName=\"nandu (remix)\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"宇多田テスト\" displayAlbumArtist=\"宇多田テスト\"><genres name=\"J-Pop\"></genres><artists id=\"2Wu7LNfklbYON0StTcDZwM\" name=\"宇多田テスト\"></artists><albumArtists id=\"2Wu7LNfklbYON0StTcDZwM\" name=\"宇多田テスト\"></albumArtists></song></searchResult3></subsonic-response>"
+   }
+  },
+  {
+   "name": "s3-sync-walk-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=Symfonium&f=json&query=&songCount=500&albumCount=500&artistCount=500",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "12910"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:48 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 12910,
+    "sha256": "02949efc292c94be7878a8526c2b6fb5b1c16f037e69a45a41566883298d478e",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"searchResult3\":{\"artist\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\",\"albumCount\":1,\"musicBrainzId\":\"\",\"sortName\":\"bjorn alund\",\"roles\":[\"artist\",\"maincredit\",\"albumartist\"]},{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\",\"albumCount\":1,\"musicBrainzId\":\"\",\"sortName\":\"aurora vale\",\"roles\":[\"albumartist\",\"artist\",\"maincredit\"]},{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\",\"albumCount\":1,\"musicBrainzId\":\"\",\"sortName\":\"宇多田テスト\",\"roles\":[\"artist\",\"maincredit\",\"albumartist\"]}],\"album\":[{\"id\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"name\":\"Ágætis Prófun\",\"artist\":\"Bjørn Ålund\",\"artistId\":\"17qiGGo3gM1YI35DUCa4fC\",\"coverArt\":\"al-3sYt5hQaQpB2FKOkr3RxZT_e0d327805ce38bc7\",\"songCount\":3,\"duration\":8,\"created\":\"2026-10-04T07:40:52.392626057Z\",\"year\":2018,\"genre\":\"Post-Rock\",\"userRating\":0,\"genres\":[{\"name\":\"Post-Rock\"}],\"musicBrainzId\":\"\",\"isCompilation\":false,\"sortName\":\"agaetis profun\",\"discTitles\":[],\"originalReleaseDate\":{},\"releaseDate\":{},\"releaseTypes\":[],\"recordLabels\":[],\"moods\":[],\"artists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayArtist\":\"Bjørn Ålund\",\"explicitStatus\":\"\",\"version\":\"\"},{\"id\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"name\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"coverArt\":\"al-5KkmjLAmQA5mvuA6BVtGuD_b9d685baa046af1b\",\"songCount\":4,\"duration\":11,\"created\":\"2026-10-04T07:40:52.105627636Z\",\"year\":2020,\"genre\":\"Electronic\",\"userRating\":0,\"genres\":[{\"name\":\"Electronic\"}],\"musicBrainzId\":\"\",\"isCompilation\":false,\"sortName\":\"northern lights\",\"discTitles\":[],\"originalReleaseDate\":{},\"releaseDate\":{},\"releaseTypes\":[],\"recordLabels\":[],\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"explicitStatus\":\"\",\"version\":\"\"},{\"id\":\"7hVkqYsGKelPO8XiRTyRC8\",\"name\":\"初恋テスト\",\"artist\":\"宇多田テスト\",\"artistId\":\"2Wu7LNfklbYON0StTcDZwM\",\"songCount\":3,\"duration\":7,\"created\":\"2026-10-04T07:40:52.63562472Z\",\"year\":2021,\"genre\":\"J-Pop\",\"userRating\":0,\"genres\":[{\"name\":\"J-Pop\"}],\"musicBrainzId\":\"\",\"isCompilation\":false,\"sortName\":\"初恋テスト\",\"discTitles\":[],\"originalReleaseDate\":{},\"releaseDate\":{\"year\":2021},\"releaseTypes\":[],\"recordLabels\":[],\"moods\":[],\"artists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayArtist\":\"宇多田テスト\",\"explicitStatus\":\"\",\"version\":\"\"}],\"song\":[{\"id\":\"79UbMHtfpdvxM9dnNYPHLu\",\"parent\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"isDir\":false,\"title\":\"Hjarta\",\"album\":\"Ágætis Prófun\",\"artist\":\"Bjørn Ålund\",\"track\":1,\"year\":2018,\"genre\":\"Post-Rock\",\"coverArt\":\"dc-3sYt5hQaQpB2FKOkr3RxZT:1\",\"size\":12404,\"contentType\":\"audio/mpeg\",\"suffix\":\"mp3\",\"duration\":3,\"bitRate\":32,\"path\":\"Bjørn Ålund/Ágætis Prófun/01-01 - Hjarta.mp3\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.841521902Z\",\"albumId\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"artistId\":\"17qiGGo3gM1YI35DUCa4fC\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"hjarta\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Post-Rock\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":0,\"moods\":[],\"artists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayArtist\":\"Bjørn Ålund\",\"albumArtists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayAlbumArtist\":\"Bjørn Ålund\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"2Xc6Ix4qDl2csRPeaPnwau\",\"parent\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"isDir\":false,\"title\":\"Ljós í myrkri\",\"album\":\"Ágætis Prófun\",\"artist\":\"Bjørn Ålund\",\"track\":2,\"year\":2018,\"genre\":\"Post-Rock\",\"coverArt\":\"dc-3sYt5hQaQpB2FKOkr3RxZT:1\",\"size\":8443,\"contentType\":\"audio/mpeg\",\"suffix\":\"mp3\",\"duration\":2,\"bitRate\":32,\"path\":\"Bjørn Ålund/Ágætis Prófun/01-02 - Ljós í myrkri.mp3\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.842930364Z\",\"albumId\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"artistId\":\"17qiGGo3gM1YI35DUCa4fC\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"ljos i myrkri\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Post-Rock\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":0,\"moods\":[],\"artists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayArtist\":\"Bjørn Ålund\",\"albumArtists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayAlbumArtist\":\"Bjørn Ålund\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"3RGeVWguT715DnjkCJcs99\",\"parent\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"isDir\":false,\"title\":\"Þögn\",\"album\":\"Ágætis Prófun\",\"artist\":\"Bjørn Ålund\",\"track\":3,\"year\":2018,\"genre\":\"Post-Rock\",\"coverArt\":\"dc-3sYt5hQaQpB2FKOkr3RxZT:1\",\"size\":12404,\"contentType\":\"audio/mpeg\",\"suffix\":\"mp3\",\"duration\":3,\"bitRate\":32,\"path\":\"Bjørn Ålund/Ágætis Prófun/01-03 - Þögn.mp3\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.844903906Z\",\"albumId\":\"3sYt5hQaQpB2FKOkr3RxZT\",\"artistId\":\"17qiGGo3gM1YI35DUCa4fC\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"thogn\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Post-Rock\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":0,\"moods\":[],\"artists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayArtist\":\"Bjørn Ålund\",\"albumArtists\":[{\"id\":\"17qiGGo3gM1YI35DUCa4fC\",\"name\":\"Bjørn Ålund\"}],\"displayAlbumArtist\":\"Bjørn Ålund\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"3cQUCXxV4YyCfbBaBp2UFT\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Aurora (Live)\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":4,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":43518,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":4,\"bitRate\":70,\"path\":\"Aurora Vale/Northern Lights/01-04 - Aurora (Live).flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.853022565Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"aurora (live)\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"2A1r2OKTiTVuvPfmtePIIe\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Café del Mar\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":1,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":24984,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":2,\"bitRate\":66,\"path\":\"Aurora Vale/Northern Lights/01-01 - Café del Mar.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.854286043Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"cafe del mar\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"6TOMTUtoEzhnB8tjXmNY5V\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Polar Night\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":2,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":33513,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":3,\"bitRate\":67,\"path\":\"Aurora Vale/Northern Lights/01-02 - Polar Night.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.85624551Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"polar night\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"1REy4tCLzfZLRjFxpQBwVM\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Midnight Sun\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":3,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":25481,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":2,\"bitRate\":68,\"path\":\"Aurora Vale/Northern Lights/01-03 - Midnight Sun.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.857166766Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"midnight sun\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"7LQvU7JOETUgfLldHu8laT\",\"parent\":\"7hVkqYsGKelPO8XiRTyRC8\",\"isDir\":false,\"title\":\"First Love\",\"album\":\"初恋テスト\",\"artist\":\"宇多田テスト\",\"track\":1,\"year\":2021,\"genre\":\"J-Pop\",\"coverArt\":\"dc-7hVkqYsGKelPO8XiRTyRC8:1\",\"size\":13749,\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":3,\"bitRate\":33,\"path\":\"宇多田テスト/初恋テスト/01-01 - First Love.m4a\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.865764938Z\",\"albumId\":\"7hVkqYsGKelPO8XiRTyRC8\",\"artistId\":\"2Wu7LNfklbYON0StTcDZwM\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"first love\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"J-Pop\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayArtist\":\"宇多田テスト\",\"albumArtists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayAlbumArtist\":\"宇多田テスト\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"3KY9U3kJDrcZF3A5otp8L4\",\"parent\":\"7hVkqYsGKelPO8XiRTyRC8\",\"isDir\":false,\"title\":\"桜の歌\",\"album\":\"初恋テスト\",\"artist\":\"宇多田テスト\",\"track\":2,\"year\":2021,\"genre\":\"J-Pop\",\"coverArt\":\"dc-7hVkqYsGKelPO8XiRTyRC8:1\",\"size\":9643,\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":2,\"bitRate\":33,\"path\":\"宇多田テスト/初恋テスト/01-02 - 桜の歌.m4a\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.867217392Z\",\"albumId\":\"7hVkqYsGKelPO8XiRTyRC8\",\"artistId\":\"2Wu7LNfklbYON0StTcDZwM\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"桜の歌\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"J-Pop\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayArtist\":\"宇多田テスト\",\"albumArtists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayAlbumArtist\":\"宇多田テスト\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]},{\"id\":\"5otsGv02qpt74TwMlpLAoF\",\"parent\":\"7hVkqYsGKelPO8XiRTyRC8\",\"isDir\":false,\"title\":\"Ñandú (Remix)\",\"album\":\"初恋テスト\",\"artist\":\"宇多田テスト\",\"track\":3,\"year\":2021,\"genre\":\"J-Pop\",\"coverArt\":\"dc-7hVkqYsGKelPO8XiRTyRC8:1\",\"size\":9643,\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":2,\"bitRate\":33,\"path\":\"宇多田テスト/初恋テスト/01-03 - Ñandú (Remix).m4a\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.86973621Z\",\"albumId\":\"7hVkqYsGKelPO8XiRTyRC8\",\"artistId\":\"2Wu7LNfklbYON0StTcDZwM\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"nandu (remix)\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"J-Pop\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayArtist\":\"宇多田テスト\",\"albumArtists\":[{\"id\":\"2Wu7LNfklbYON0StTcDZwM\",\"name\":\"宇多田テスト\"}],\"displayAlbumArtist\":\"宇多田テスト\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[]}]}}}"
+   }
+  },
+  {
+   "name": "s3-music-folder-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=polar&musicFolderId=1",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:48 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 1153,
+    "sha256": "d28969fbdcacb4cebd5d9b78d226c825df25667e1be4f4e475a61c05dc2f533e",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult3\":{\"song\":[{\"id\":\"6TOMTUtoEzhnB8tjXmNY5V\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Polar Night\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":2,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":33513,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":3,\"bitRate\":67,\"path\":\"Aurora Vale/Northern Lights/01-02 - Polar Night.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.85624551Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"polar night\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[],\"isExternal\":false}],\"album\":[],\"artist\":[]}}}"
+   }
+  },
+  {
+   "name": "s3-badpass-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=wrong-password&v=1.16.1&c=parity&f=json&query=zephyr",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "194"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:48 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 194,
+    "sha256": "26d0cfb90f5ffb7c852fdc26875725a12f467aa83b751e5f07d9d658996ffc9e",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "s3-badpass-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=wrong-password&v=1.16.1&c=parity&query=polar",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "241"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:48 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 241,
+    "sha256": "71b6952e17b857970c775ba1a4e42a7e1ca7f89a056bf489ad30fafa9b2316d8",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"failed\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><error code=\"40\" message=\"Wrong username or password\"></error></subsonic-response>"
+   }
+  },
+  {
+   "name": "s3-jsonp",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search3?u=admin&p=parity-admin&v=1.16.1&c=parity&f=jsonp&query=polar&callback=cb",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "125"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:48 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 125,
+    "sha256": "39fe239a90791d788b24dc308c086e8c065027c0a9c241cb55e7e21b9013b638",
+    "text": "<subsonic-response status=\"ok\" version=\"1.16.1\" xmlns=\"http://subsonic.org/restapi\">\n  <searchResult3 />\n</subsonic-response>"
+   }
+  },
+  {
+   "name": "s3-post-form-json",
+   "request": {
+    "method": "POST",
+    "target": "/rest/search3.view",
+    "headers": {
+     "Content-Type": "application/x-www-form-urlencoded"
+    },
+    "body": "u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=midnight"
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 1157,
+    "sha256": "8fd17ff0f2ba274ce1b968d12639bcf7a04c31ffc6d01b9c58e398914f68d93d",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult3\":{\"song\":[{\"id\":\"1REy4tCLzfZLRjFxpQBwVM\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Midnight Sun\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":3,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":25481,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":2,\"bitRate\":68,\"path\":\"Aurora Vale/Northern Lights/01-03 - Midnight Sun.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.857166766Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"midnight sun\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[],\"isExternal\":false}],\"album\":[],\"artist\":[]}}}"
+   }
+  },
+  {
+   "name": "s2-local-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search2?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=polar",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 1153,
+    "sha256": "3b9bc891f7546fd6c7850819c2428e39ccb330b75b58d790ff50f466ac2b659e",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult2\":{\"song\":[{\"id\":\"6TOMTUtoEzhnB8tjXmNY5V\",\"parent\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"isDir\":false,\"title\":\"Polar Night\",\"album\":\"Northern Lights\",\"artist\":\"Aurora Vale\",\"track\":2,\"year\":2020,\"genre\":\"Electronic\",\"coverArt\":\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\",\"size\":33513,\"contentType\":\"audio/flac\",\"suffix\":\"flac\",\"duration\":3,\"bitRate\":67,\"path\":\"Aurora Vale/Northern Lights/01-02 - Polar Night.flac\",\"discNumber\":1,\"created\":\"2026-10-04T08:07:33.85624551Z\",\"albumId\":\"5KkmjLAmQA5mvuA6BVtGuD\",\"artistId\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"type\":\"music\",\"bpm\":0,\"comment\":\"\",\"sortName\":\"polar night\",\"mediaType\":\"song\",\"musicBrainzId\":\"\",\"isrc\":[],\"genres\":[{\"name\":\"Electronic\"}],\"replayGain\":{},\"channelCount\":1,\"samplingRate\":22050,\"bitDepth\":16,\"moods\":[],\"artists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayArtist\":\"Aurora Vale\",\"albumArtists\":[{\"id\":\"2Rd8htgPSbDGv6lZq1D8WW\",\"name\":\"Aurora Vale\"}],\"displayAlbumArtist\":\"Aurora Vale\",\"contributors\":[],\"displayComposer\":\"\",\"explicitStatus\":\"\",\"groupings\":[],\"works\":[],\"movements\":[],\"isExternal\":false}],\"album\":[],\"artist\":[]}}}"
+   }
+  },
+  {
+   "name": "s2-mixed-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search2.view?u=admin&p=parity-admin&v=1.16.1&c=parity&query=aurora",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "4979"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 4979,
+    "sha256": "879272bddcca3ca39bcd3ba42ce7dff897cb1720d39cbc904f941b9f43033cc1",
+    "text": "<subsonic-response status=\"ok\" version=\"1.16.1\" xmlns=\"http://subsonic.org/restapi\">\n  <searchResult2>\n    <artist id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\" isExternal=\"false\"></artist>\n    <album id=\"5KkmjLAmQA5mvuA6BVtGuD\" parent=\"2Rd8htgPSbDGv6lZq1D8WW\" isDir=\"true\" title=\"Northern Lights\" name=\"Northern Lights\" album=\"Northern Lights\" artist=\"Aurora Vale\" year=\"2020\" genre=\"Electronic\" coverArt=\"al-5KkmjLAmQA5mvuA6BVtGuD_b9d685baa046af1b\" duration=\"11\" created=\"2026-10-04T07:40:52.105627636Z\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" songCount=\"4\" sortName=\"northern lights\" mediaType=\"album\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\" isExternal=\"false\">\n      <genres name=\"Electronic\"></genres>\n      <artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists>\n      <albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists>\n    </album>\n    <song id=\"3cQUCXxV4YyCfbBaBp2UFT\" parent=\"5KkmjLAmQA5mvuA6BVtGuD\" isDir=\"false\" title=\"Aurora (Live)\" album=\"Northern Lights\" artist=\"Aurora Vale\" track=\"4\" year=\"2020\" genre=\"Electronic\" coverArt=\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\" size=\"43518\" contentType=\"audio/flac\" suffix=\"flac\" duration=\"4\" bitRate=\"70\" path=\"Aurora Vale/Northern Lights/01-04 - Aurora (Live).flac\" discNumber=\"1\" created=\"2026-10-04T08:07:33.853022565Z\" albumId=\"5KkmjLAmQA5mvuA6BVtGuD\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" type=\"music\" sortName=\"aurora (live)\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\" isExternal=\"false\">\n      <genres name=\"Electronic\"></genres>\n      <artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists>\n      <albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists>\n    </song>\n    <song id=\"1REy4tCLzfZLRjFxpQBwVM\" parent=\"5KkmjLAmQA5mvuA6BVtGuD\" isDir=\"false\" title=\"Midnight Sun\" album=\"Northern Lights\" artist=\"Aurora Vale\" track=\"3\" year=\"2020\" genre=\"Electronic\" coverArt=\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\" size=\"25481\" contentType=\"audio/flac\" suffix=\"flac\" duration=\"2\" bitRate=\"68\" path=\"Aurora Vale/Northern Lights/01-03 - Midnight Sun.flac\" discNumber=\"1\" created=\"2026-10-04T08:07:33.857166766Z\" albumId=\"5KkmjLAmQA5mvuA6BVtGuD\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" type=\"music\" sortName=\"midnight sun\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\" isExternal=\"false\">\n      <genres name=\"Electronic\"></genres>\n      <artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists>\n      <albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists>\n    </song>\n    <song id=\"6TOMTUtoEzhnB8tjXmNY5V\" parent=\"5KkmjLAmQA5mvuA6BVtGuD\" isDir=\"false\" title=\"Polar Night\" album=\"Northern Lights\" artist=\"Aurora Vale\" track=\"2\" year=\"2020\" genre=\"Electronic\" coverArt=\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\" size=\"33513\" contentType=\"audio/flac\" suffix=\"flac\" duration=\"3\" bitRate=\"67\" path=\"Aurora Vale/Northern Lights/01-02 - Polar Night.flac\" discNumber=\"1\" created=\"2026-10-04T08:07:33.85624551Z\" albumId=\"5KkmjLAmQA5mvuA6BVtGuD\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" type=\"music\" sortName=\"polar night\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\" isExternal=\"false\">\n      <genres name=\"Electronic\"></genres>\n      <artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists>\n      <albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists>\n    </song>\n    <song id=\"2A1r2OKTiTVuvPfmtePIIe\" parent=\"5KkmjLAmQA5mvuA6BVtGuD\" isDir=\"false\" title=\"Café del Mar\" album=\"Northern Lights\" artist=\"Aurora Vale\" track=\"1\" year=\"2020\" genre=\"Electronic\" coverArt=\"dc-5KkmjLAmQA5mvuA6BVtGuD:1\" size=\"24984\" contentType=\"audio/flac\" suffix=\"flac\" duration=\"2\" bitRate=\"66\" path=\"Aurora Vale/Northern Lights/01-01 - Café del Mar.flac\" discNumber=\"1\" created=\"2026-10-04T08:07:33.854286043Z\" albumId=\"5KkmjLAmQA5mvuA6BVtGuD\" artistId=\"2Rd8htgPSbDGv6lZq1D8WW\" type=\"music\" sortName=\"cafe del mar\" mediaType=\"song\" channelCount=\"1\" samplingRate=\"22050\" bitDepth=\"16\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\" isExternal=\"false\">\n      <genres name=\"Electronic\"></genres>\n      <artists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></artists>\n      <albumArtists id=\"2Rd8htgPSbDGv6lZq1D8WW\" name=\"Aurora Vale\"></albumArtists>\n    </song>\n    <song id=\"rhcHCXhQyCj24j4PjWSZF4\" parent=\"uqnZPEjsKEWJNll7U7pdI2\" isDir=\"false\" title=\"Borealis\" album=\"Borealis\" artist=\"Aurora Vale\" track=\"1\" genre=\"\" coverArt=\"rhcHCXhQyCj24j4PjWSZF4\" contentType=\"audio/mp4\" suffix=\"m4a\" duration=\"180\" bitRate=\"128\" albumId=\"uqnZPEjsKEWJNll7U7pdI2\" artistId=\"wP1rGcgpDKwnqnDwArmMO3\" type=\"music\" isVideo=\"false\" mediaType=\"song\" displayArtist=\"Aurora Vale\" displayAlbumArtist=\"Aurora Vale\" explicitStatus=\"\" sortName=\"borealis\" isExternal=\"true\" />\n  </searchResult2>\n</subsonic-response>"
+   }
+  },
+  {
+   "name": "s2-discovery-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/search2?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&query=zephyr",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 2874,
+    "sha256": "ae4a21e43c216551b720ce65b56fc4ac1f905d201f6a5f8448ef0683a6d04fca",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"searchResult2\":{\"song\":[{\"id\":\"CwoXcVhGn95tWIOvqaFKt6\",\"parent\":\"wIfqpf1IeFS337TdaMfNC3\",\"isDir\":false,\"title\":\"Glass Harbor\",\"album\":\"Glass Harbor\",\"artist\":\"Zephyr Echo\",\"track\":1,\"genre\":\"\",\"coverArt\":\"CwoXcVhGn95tWIOvqaFKt6\",\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":241,\"bitRate\":128,\"albumId\":\"wIfqpf1IeFS337TdaMfNC3\",\"artistId\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"type\":\"music\",\"isVideo\":false,\"mediaType\":\"song\",\"artists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayArtist\":\"Zephyr Echo\",\"albumArtists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayAlbumArtist\":\"Zephyr Echo\",\"contributors\":[],\"explicitStatus\":\"\",\"isrc\":[],\"genres\":[],\"moods\":[],\"replayGain\":{},\"sortName\":\"glass harbor\",\"isExternal\":true,\"year\":2019},{\"id\":\"yy5PCYFGn1qhbOho4j6OF1\",\"parent\":\"wIfqpf1IeFS337TdaMfNC3\",\"isDir\":false,\"title\":\"Neon Tide\",\"album\":\"Glass Harbor\",\"artist\":\"Zephyr Echo\",\"track\":1,\"genre\":\"\",\"coverArt\":\"yy5PCYFGn1qhbOho4j6OF1\",\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":215,\"bitRate\":128,\"albumId\":\"wIfqpf1IeFS337TdaMfNC3\",\"artistId\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"type\":\"music\",\"isVideo\":false,\"mediaType\":\"song\",\"artists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayArtist\":\"Zephyr Echo\",\"albumArtists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayAlbumArtist\":\"Zephyr Echo\",\"contributors\":[],\"explicitStatus\":\"\",\"isrc\":[],\"genres\":[],\"moods\":[],\"replayGain\":{},\"sortName\":\"neon tide\",\"isExternal\":true,\"year\":2019},{\"id\":\"DUlkxONpTyX8xFkBJo1fi4\",\"parent\":\"wIfqpf1IeFS337TdaMfNC3\",\"isDir\":false,\"title\":\"Paper Moons\",\"album\":\"Glass Harbor\",\"artist\":\"Zephyr Echo\",\"track\":1,\"genre\":\"\",\"coverArt\":\"DUlkxONpTyX8xFkBJo1fi4\",\"contentType\":\"audio/mp4\",\"suffix\":\"m4a\",\"duration\":244,\"bitRate\":128,\"albumId\":\"wIfqpf1IeFS337TdaMfNC3\",\"artistId\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"type\":\"music\",\"isVideo\":false,\"mediaType\":\"song\",\"artists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayArtist\":\"Zephyr Echo\",\"albumArtists\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\"}],\"displayAlbumArtist\":\"Zephyr Echo\",\"contributors\":[],\"explicitStatus\":\"\",\"isrc\":[],\"genres\":[],\"moods\":[],\"replayGain\":{},\"sortName\":\"paper moons\",\"isExternal\":true,\"year\":2019}],\"album\":[{\"id\":\"wIfqpf1IeFS337TdaMfNC3\",\"parent\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"isDir\":true,\"title\":\"Glass Harbor\",\"name\":\"Glass Harbor\",\"album\":\"Glass Harbor\",\"artist\":\"Zephyr Echo\",\"artistId\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"songCount\":3,\"duration\":0,\"genre\":\"\",\"coverArt\":\"wIfqpf1IeFS337TdaMfNC3\",\"created\":\"2026-10-04T08:07:50.300Z\",\"mediaType\":\"album\",\"displayArtist\":\"Zephyr Echo\",\"releaseTypes\":[\"album\"],\"sortName\":\"glass harbor\",\"isExternal\":true}],\"artist\":[{\"id\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"name\":\"Zephyr Echo\",\"albumCount\":2,\"coverArt\":\"NdCCz1eNDVR3vKwUWVaAO1\",\"isExternal\":true}]}}}"
+   }
+  }
+ ]
+}

@@ -1,0 +1,26 @@
+{
+  "group": "subsonic-playlists-radio",
+  "description": "endpoints.md 3.5 (read side): getPlaylists/getInternetRadioStations merges with radio and mixes off, getPlaylist relays and Octo-id checks, and the read-only refusals for Octo playlist ids (which mutate nothing). The create/update/delete round trip lives in 90-mutations.json.",
+  "defaults": {"auth": "p"},
+  "requests": [
+    {"name": "playlists-json", "path": "/rest/getPlaylists", "f": "json"},
+    {"name": "playlists-xml", "path": "/rest/getPlaylists.view"},
+    {"name": "playlists-listener-json", "path": "/rest/getPlaylists", "auth": "listener", "f": "json"},
+    {"name": "playlists-badpass-json", "path": "/rest/getPlaylists", "auth": "bad", "f": "json"},
+    {"name": "playlists-badpass-xml", "path": "/rest/getPlaylists.view", "auth": "bad"},
+    {"name": "playlists-jsonp", "path": "/rest/getPlaylists", "f": "jsonp", "query": [["callback", "cb"]]},
+    {"name": "playlist-unknown-json", "path": "/rest/getPlaylist", "f": "json", "query": [["id", "doesnotexist000000000x"]]},
+    {"name": "playlist-octo-station-id-xml", "path": "/rest/getPlaylist.view", "query": [["id", "or00000000000000000000"]]},
+    {"name": "playlist-octo-mix-id-json", "path": "/rest/getPlaylist", "f": "json", "query": [["id", "og00000000000000000000"]]},
+    {"name": "create-playlist-octo-id-readonly-json", "path": "/rest/createPlaylist", "f": "json", "query": [["playlistId", "og00000000000000000000"], ["songId", "{{song_flac1}}"]]},
+    {"name": "update-playlist-octo-id-readonly-xml", "path": "/rest/updatePlaylist.view", "query": [["playlistId", "or00000000000000000000"]]},
+    {"name": "delete-playlist-octo-id-readonly-json", "path": "/rest/deletePlaylist", "f": "json", "query": [["id", "og00000000000000000000"]]},
+    {"name": "delete-playlist-unknown-json", "path": "/rest/deletePlaylist.view", "f": "json", "query": [["id", "doesnotexist000000000x"]]},
+    {"name": "radio-stations-json", "path": "/rest/getInternetRadioStations", "f": "json"},
+    {"name": "radio-stations-xml", "path": "/rest/getInternetRadioStations.view"},
+    {"name": "radio-stations-badpass-json", "path": "/rest/getInternetRadioStations", "auth": "bad", "f": "json"},
+    {"name": "create-station-octo-id-readonly-json", "path": "/rest/createInternetRadioStation", "f": "json", "query": [["id", "or00000000000000000000"]]},
+    {"name": "delete-station-octo-id-readonly-xml", "path": "/rest/deleteInternetRadioStation.view", "query": [["id", "og00000000000000000000"]]},
+    {"name": "update-station-unknown-json", "path": "/rest/updateInternetRadioStation", "f": "json", "query": [["id", "doesnotexist000000000x"], ["streamUrl", "http://example.invalid/s"], ["name", "x"]]}
+  ]
+}
