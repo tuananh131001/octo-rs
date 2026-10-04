@@ -28,6 +28,9 @@ Modules mirror the C# namespaces and file names, in snake case:
 logic and I/O, split it: the pure half goes in `octo-core` and the I/O half in `octo`, under the
 same module path (`octo::services::lyrics::…`).
 
+Async methods drop the C# `Async` suffix (`MeasureAsync` → `measure`). Interfaces keep their C#
+names, `I` included (`ILoudnessMeter`), so a grep for the C# name finds the Rust one.
+
 Type names keep their C# names (`SongIdentity`, `TagPlan`, `ReleaseChooser`). Methods and fields
 are snake case (`NormalizeIsrc` → `normalize_isrc`). A C# static class of helpers becomes a
 module of free functions, or an empty struct with associated functions when call sites read
@@ -155,7 +158,9 @@ The machine has 4 cores and 7 GB of RAM, and several porters share it.
 ## Working alongside other porters
 
 Several porters work at once, each in its own git worktree, and the results are merged after
-each wave.
+each wave. **First check that your worktree is on the `rust-rewrite` branch's history**
+(`git log --oneline -1 rust-rewrite` should be an ancestor of HEAD, and `crates/` should exist).
+If it was created from `main` instead, run `git reset --hard rust-rewrite` before you start.
 
 - Touch only the modules your task names, plus the `mod` lines that register them, and append to
   `test-map.md` and `known-diffs.md`.
