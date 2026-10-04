@@ -21,7 +21,7 @@ pub mod upgrade_sources;
 pub use generated_playlist_service::GeneratedPlaylist;
 pub use heart_ownership::HeartOwnership;
 pub use library_action_executor::LibraryActionOutcome;
-pub use library_action_journal::LibraryActionState;
+pub use library_action_journal::{LibraryActionEntry, LibraryActionJournal, LibraryActionState};
 pub use library_ownership::{LibraryOwnership, OwnedCopy, OwnedDecision, OwnershipNavidrome};
 pub use navidrome_playlist_api::NavidromePlaylistApi;
 pub use navidrome_song_path_resolver::{NavidromeSongPathResolver, PathSource, ResolvedSongFile};

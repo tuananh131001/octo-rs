@@ -1,11 +1,10 @@
-//! Stand-ins for the services later tasks port, so the acquisition pipeline (4-D) can be wired
-//! into the app state now. Not a C# file. Each is replaced in `app.rs` by the real service when
-//! its task lands, and this file goes with the last of them:
+//! A stand-in for the service a later task ports, so the acquisition pipeline (4-D) can be wired
+//! into the app state now. Not a C# file. It is replaced in `app.rs` by the real service when
+//! its task lands, and this file goes with it:
 //!
 //! - STUB(4-C): [`NotPortedDownloadService`] for `SoulseekDownloadService`.
-//! - STUB(4-E): [`NotPortedLidarr`] for `LidarrHeartAcquisitionService`.
 //!
-//! They know nothing and fetch nothing: a heart that reaches one fails with a reason that says
+//! It knows nothing and fetches nothing: a heart that reaches it fails with a reason that says
 //! so.
 
 use std::sync::Arc;
@@ -17,7 +16,6 @@ use tokio_util::sync::CancellationToken;
 
 use crate::services::i_download_service::{AudioStream, DirectStreamInfo, IDownloadService};
 use crate::services::library::ReplacementHandoff;
-use crate::services::lidarr::ILidarrHeartAcquisitionService;
 
 fn not_ported(what: &str) -> anyhow::Error {
     anyhow::anyhow!("{what} is not available in this build yet")
@@ -90,19 +88,5 @@ impl IDownloadService for NotPortedDownloadService {
         _: &CancellationToken,
     ) -> anyhow::Result<Option<DirectStreamInfo>> {
         Ok(None)
-    }
-}
-
-/// STUB(4-E): replaced by `LidarrHeartAcquisitionService`.
-pub struct NotPortedLidarr;
-
-#[async_trait]
-impl ILidarrHeartAcquisitionService for NotPortedLidarr {
-    async fn try_acquire_track(&self, _: &str, _: &str, _: bool, _: Option<&str>) -> anyhow::Result<bool> {
-        Ok(false)
-    }
-
-    async fn try_acquire_album(&self, _: &str, _: &str, _: bool, _: Option<&str>) -> anyhow::Result<bool> {
-        Ok(false)
     }
 }
