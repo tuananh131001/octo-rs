@@ -26,21 +26,26 @@ use std::sync::Arc;
 
 use octo_core::common::Clock;
 use octo_core::settings::{AppSettings, RestartTracker, SettingsFileWriter, SettingsStore};
+use octo_core::tagging::{CatalogLookup, FingerprintVerifier, ReleaseIdentifier, ReleaseLookup, TagPreview};
+use octo_media::audio::{AudioFingerprinter, ILoudnessMeter, LoudnessMeter, SpectrumAnalyzer};
+use octo_media::tags::TagWriterExtras;
 use octo_subsonic::SubsonicResponseBuilder;
 use tokio_util::sync::CancellationToken;
 
 use crate::services::admin::{BrowseSessionStore, DirectoryBrowser};
 use crate::services::common::{
-    AcquisitionActivity, AcquisitionTracker, AcquisitionWorker, CacheCleanupService, DownloadConcurrency,
-    ExternalSearchService, HeartAcquisitionCoordinator, HeartCoordinatorExtras, SoulseekHoldResumer,
-    SoulseekHoldStore, StarNavidrome, StarOnArrival, TrackAcquisitionQueue, TrackerServices,
+    AcquisitionActivity, AcquisitionTracker, AcquisitionWorker, CacheCleanupService, CatalogBlanks,
+    DownloadConcurrency, ExternalSearchService, HeartAcquisitionCoordinator, HeartCoordinatorExtras,
+    MeterPreview, SoulseekHoldResumer, SoulseekHoldStore, StarNavidrome, StarOnArrival,
+    TrackAcquisitionQueue, TrackerServices,
 };
 use crate::services::cover_art::{
-    CoverArtAggregator, CoverArtArchiveLookup, DeezerCoverArtLookup, ICoverArtSource, ITunesCoverArtLookup,
-    LastFmCoverArtLookup,
+    CoverArtAggregator, CoverArtArchiveLookup, DeezerCoverArtLookup, DownloadCoverResolver, ICoverArtSource,
+    ITunesCoverArtLookup, LastFmCoverArtLookup,
 };
 use crate::services::fingerprint::{
-    AcoustIdClient, AcoustIdRateLimitHandler, AcoustIdRateLimiter, MusicBrainzClient,
+    AcoustIdClient, AcoustIdRateLimitHandler, AcoustIdRateLimiter, DownloadVerificationService,
+    MusicBrainzClient,
 };
 use crate::services::http_client_factory;
 use crate::services::i_download_service::IDownloadService;
@@ -290,6 +295,77 @@ pub struct AppInner {
     pub last_fm_radio_refresh_worker: Arc<LastFmRadioRefreshWorker>,
     /// `GeneratedPlaylistService`: the genre and decade mixes, `generated-playlists.json`.
     pub generated_playlists: Arc<GeneratedPlaylistService>,
+    /// `ILoudnessMeter` (`LoudnessMeter`): ReplayGain for downloads and the tag preview.
+    pub loudness_meter: Arc<dyn ILoudnessMeter>,
+    /// `AudioFingerprinter`: fpcalc, for download verification.
+    pub audio_fingerprinter: Arc<AudioFingerprinter>,
+    /// `SpectrumAnalyzer`: the transcode check.
+    pub spectrum_analyzer: Arc<SpectrumAnalyzer>,
+    /// `ReleaseIdentifier`: what a downloaded file is, for the download base and the preview.
+    pub release_identifier: Arc<ReleaseIdentifier>,
+    /// `TagPreview`: "Try it on a song".
+    pub tag_preview: Arc<TagPreview>,
+    /// `DownloadVerificationService`: the fingerprint and ISRC checks of a finished download.
+    pub download_verification: Arc<DownloadVerificationService>,
+    /// `DownloadCoverResolver`: the download-time cover chain (#51).
+    pub download_cover_resolver: Arc<DownloadCoverResolver>,
+}
+
+/// The tagging and verification services of task 4-B, which the download base
+/// (`services::common::BaseDownloadService`) and the tag preview are built over.
+struct Tagging {
+    loudness_meter: Arc<dyn ILoudnessMeter>,
+    audio_fingerprinter: Arc<AudioFingerprinter>,
+    spectrum_analyzer: Arc<SpectrumAnalyzer>,
+    release_identifier: Arc<ReleaseIdentifier>,
+    tag_preview: Arc<TagPreview>,
+    download_verification: Arc<DownloadVerificationService>,
+    download_cover_resolver: Arc<DownloadCoverResolver>,
+}
+
+impl Tagging {
+    fn build(settings: &Arc<SettingsStore>, clients: &MetadataClients) -> Tagging {
+        let loudness_meter: Arc<dyn ILoudnessMeter> = Arc::new(LoudnessMeter::new());
+        let audio_fingerprinter = Arc::new(AudioFingerprinter::new());
+        let spectrum_analyzer = Arc::new(SpectrumAnalyzer::new());
+        let release_identifier = Arc::new(ReleaseIdentifier::new(
+            Arc::clone(settings),
+            Arc::new(TagWriterExtras),
+            Some(Arc::clone(&clients.music_brainz) as Arc<dyn ReleaseLookup>),
+            Some(Arc::clone(&clients.deezer_metadata) as Arc<dyn CatalogLookup>),
+        ));
+        let download_verification = Arc::new(DownloadVerificationService::new(
+            Arc::clone(&audio_fingerprinter),
+            Arc::clone(&clients.acoust_id),
+            Arc::clone(settings),
+            Some(Arc::clone(&clients.music_brainz)),
+            Some(Arc::clone(&spectrum_analyzer)),
+        ));
+        let tag_preview = Arc::new(TagPreview::new(
+            Arc::clone(settings),
+            Arc::clone(&release_identifier),
+            Arc::new(TagWriterExtras),
+            Some(Arc::clone(&download_verification) as Arc<dyn FingerprintVerifier>),
+            Some(Arc::new(MeterPreview(Arc::clone(&loudness_meter)))),
+            Arc::new(CatalogBlanks),
+        ));
+        let download_cover_resolver = Arc::new(DownloadCoverResolver::new(
+            Arc::clone(&clients.cover_art_archive),
+            Arc::clone(&clients.cover_art_aggregator),
+            http_client_factory::default_client(),
+            Arc::clone(settings),
+            Some(Arc::clone(&clients.itunes_cover_art)),
+        ));
+        Tagging {
+            loudness_meter,
+            audio_fingerprinter,
+            spectrum_analyzer,
+            release_identifier,
+            tag_preview,
+            download_verification,
+            download_cover_resolver,
+        }
+    }
 }
 
 /// The acquisition pipeline of task 4-D, over the services it routes to. The C# broke two
@@ -936,6 +1012,7 @@ impl AppState {
         let stores = Stores::build(&settings, &config_dir);
         // Matches survive a restart, so a library is not sent back to Apple album by album.
         let clients = MetadataClients::build(&settings, Some(config_dir.join("itunes-masters.json")));
+        let tagging = Tagging::build(&settings, &clients);
         let lyrics = Lyrics::build(&settings, Some(&config_dir));
         let workers = Arc::new(WorkerSupervisor::new());
         stores.register_workers(&workers);
@@ -1068,6 +1145,13 @@ impl AppState {
             last_fm_radio_warmup: radio.warmup,
             last_fm_radio_refresh_worker: radio.refresh_worker,
             generated_playlists: radio.generated_playlists,
+            loudness_meter: tagging.loudness_meter,
+            audio_fingerprinter: tagging.audio_fingerprinter,
+            spectrum_analyzer: tagging.spectrum_analyzer,
+            release_identifier: tagging.release_identifier,
+            tag_preview: tagging.tag_preview,
+            download_verification: tagging.download_verification,
+            download_cover_resolver: tagging.download_cover_resolver,
         };
         AppState {
             inner: Arc::new(inner),
@@ -1086,6 +1170,7 @@ impl AppState {
         // The clients point at the real hosts but ask nothing until a test calls them, and
         // the iTunes matches stay in memory.
         let clients = MetadataClients::build(&settings, None);
+        let tagging = Tagging::build(&settings, &clients);
         let lyrics = Lyrics::build(&settings, None);
         // The Last.fm, ListenBrainz and notification clients point at the real hosts too, and
         // the default settings give none of them a key, token or URL to use.
@@ -1195,6 +1280,13 @@ impl AppState {
             last_fm_radio_warmup: radio.warmup,
             last_fm_radio_refresh_worker: radio.refresh_worker,
             generated_playlists: radio.generated_playlists,
+            loudness_meter: tagging.loudness_meter,
+            audio_fingerprinter: tagging.audio_fingerprinter,
+            spectrum_analyzer: tagging.spectrum_analyzer,
+            release_identifier: tagging.release_identifier,
+            tag_preview: tagging.tag_preview,
+            download_verification: tagging.download_verification,
+            download_cover_resolver: tagging.download_cover_resolver,
         };
         AppState {
             inner: Arc::new(inner),

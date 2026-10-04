@@ -1,6 +1,7 @@
 //! Shared helpers: `Services/Common` in the C#, its pure parts.
 
 pub mod acquisition_tracker;
+pub mod album_fill_in;
 pub mod clock;
 pub mod dotnet;
 pub mod dotnet_random;
@@ -14,6 +15,7 @@ pub mod single_flight;
 pub mod song_identity;
 pub mod supersedable_build_coordinator;
 
+pub use album_fill_in::{AlbumFillIn, LibraryTrack};
 pub use clock::Clock;
 pub use error::{Error, ErrorType};
 pub use path_helper::PathHelper;

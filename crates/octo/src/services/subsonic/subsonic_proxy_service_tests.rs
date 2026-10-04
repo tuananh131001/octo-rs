@@ -567,3 +567,50 @@ fn cache_control_is_merged_and_reordered_as_dotnet_did() {
     let lines = ["immutable, max-age=x".to_string()];
     assert_eq!(normalize_cache_control(&lines), None);
 }
+
+// ---- RelayedRepeatsTests (the three `RestoreRepeatedParameters` tests; the five that go
+// through the whole app to a fake Navidrome are task 6-A's) ---------------------------------
+
+const REPEAT_A: &str = "3vXkQ9mTz2LbW8rYcN1pDf";
+const REPEAT_B: &str = "7HqRs4uVw0XyZaBcDeFgHi";
+
+fn pairs(values: &[(&str, &str)]) -> Vec<(String, String)> {
+    values
+        .iter()
+        .map(|(k, v)| (k.to_string(), v.to_string()))
+        .collect()
+}
+
+#[test]
+fn restore_a_value_a_handler_changed_goes_out_as_it_is() {
+    let query = parser::parse_query(&format!("id={REPEAT_A}&id={REPEAT_B}&size=50"));
+    let parameters = params(&[("id", "rewritten"), ("size", "50"), ("extra", "1")]);
+
+    let sent = restore_repeated_parameters(&parameters, Some(&query), None, false);
+
+    assert_eq!(
+        sent,
+        pairs(&[("id", "rewritten"), ("size", "50"), ("extra", "1")])
+    );
+}
+
+#[test]
+fn restore_a_single_value_with_a_comma_stays_one_value() {
+    let query = parser::parse_query("query=daft%20punk%2C%20justice");
+    let parameters = params(&[("query", "daft punk, justice")]);
+
+    let sent = restore_repeated_parameters(&parameters, Some(&query), None, false);
+
+    assert_eq!(sent, pairs(&[("query", "daft punk, justice")]));
+}
+
+#[test]
+fn restore_a_changed_form_field_still_reaches_the_query_when_the_body_is_forwarded() {
+    let form = parser::parse_query(&format!("id={REPEAT_A}&id={REPEAT_B}&u=alice"));
+    let parameters = params(&[("id", &format!("{REPEAT_A},{REPEAT_B}")), ("u", "octo")]);
+
+    let sent = restore_repeated_parameters(&parameters, None, Some(&form), true);
+
+    // The unchanged ids ride in the body only; a changed value is never dropped.
+    assert_eq!(sent, pairs(&[("u", "octo")]));
+}

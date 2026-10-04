@@ -2,7 +2,11 @@
 //! into the app state now. Not a C# file. It is replaced in `app.rs` by the real service when
 //! its task lands, and this file goes with it:
 //!
-//! - STUB(4-C): [`NotPortedDownloadService`] for `SoulseekDownloadService`.
+//! - STUB(4-C): [`NotPortedDownloadService`] for `SoulseekDownloadService`. The real one is a
+//!   `DownloadBackend` under `services::common::BaseDownloadService` (4-B), built with
+//!   `BaseDownloadService::new(DownloadCore, DownloadServices, backend)`; the tagging services
+//!   it takes are `AppInner`'s `release_identifier`, `loudness_meter` and
+//!   `download_cover_resolver`.
 //!
 //! It knows nothing and fetches nothing: a heart that reaches it fails with a reason that says
 //! so.
