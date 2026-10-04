@@ -526,3 +526,34 @@ All routes are **S**, using `Validate`.
 7. **XML serialisation.** Octo-built XML is indented and has no declaration, while relayed XML is byte-for-byte Navidrome's. The differ must not normalise one into the other.
 8. **Content-Type spellings.** These must be reproduced exactly: `application/xml` with no charset (ContentResult and File), `application/json` with no charset (File), and `application/json; charset=utf-8` (JsonResult/Ok).
 9. **CORS on `/api/admin*`.** Every `Access-Control-*` header is stripped, including on errors, and OPTIONS gets 204 with no allow headers.
+
+---
+
+## 7. Verified against the running C# image (2026-10-04)
+
+Probed `octo-csharp:csharp-final` (no Navidrome configured, `Updates__Check=false`) with curl. These settle several **(verify)** items above.
+
+- **`GET /`** → `400 application/problem+json; charset=utf-8`:
+  `{"type":"https://tools.ietf.org/html/rfc9110#section-15.5.1","title":"One or more validation errors occurred.","status":400,"errors":{"endpoint":["The endpoint field is required."]},"traceId":"00-…-…-00"}`.
+- **Bodiless 404** (`/favicon.ico`, `/admin/nope.js`): `404 application/problem+json; charset=utf-8` `{"type":"https://tools.ietf.org/html/rfc9110#section-15.5.5","title":"Not Found","status":404,"traceId":"00-<32 hex>-<16 hex>-00"}`. The key order is type, title, status, traceId.
+- **Case and trailing slash:** `/REST/Ping.VIEW` and `/rest/ping/` both reach `ping`. Confirmed.
+- **Method mismatch → catch-all:** `PUT /rest/ping`, `HEAD /rest/stream?id=x` and a non-preflight `OPTIONS /rest/ping` all reach the catch-all and are relayed. With no URL configured they answer 200 `application/xml` with code 0 `Error connecting to Subsonic server: Octo has no valid Navidrome URL. Set SUBSONIC_URL (Subsonic__Url) to your Navidrome server, e.g. http://192.168.1.10:4533 — an absolute URL reachable from the Octo container, not localhost.`
+- **`ping` with no URL:** 200, `Content-Type: application/xml` (no charset), with an explicit `Content-Length`. The body is the code 0 error `Octo isn't configured yet. Open http://localhost:18080/admin and set your Navidrome URL (SUBSONIC_URL), then point this client at Octo instead of Navidrome.` (scheme://host taken from the request). With `f=json` it is `application/json; charset=utf-8`, chunked, and the apostrophe is escaped as `'`. `f=jsonp&callback=cb` gives XML.
+- **`/admin` and `/admin/`** → `302`, `Location: /admin/index.html`, `Content-Length: 0`.
+- **CORS** on a normal request that carries `Origin`: `Access-Control-Allow-Origin: *` and `Access-Control-Expose-Headers: X-Content-Duration,X-Total-Count,X-Nd-Authorization` (comma-separated, no spaces). There is no `Vary`. Without `Origin`, no CORS headers.
+- **CORS preflight** on a non-admin path (`OPTIONS` + `Origin` + `Access-Control-Request-Method`): `204`, `Access-Control-Allow-Headers` echoing the requested headers (comma-joined, no spaces: `X-Foo,content-type`), `Access-Control-Allow-Methods` echoing the requested method, and `Access-Control-Allow-Origin: *`. No body, no `Content-Type`.
+- **Admin guard:**
+  - `GET /api/admin/settings` with `Origin` has no `Access-Control-*` headers.
+  - `OPTIONS /api/admin/settings` → bare `204` with no CORS headers.
+  - `POST` without `X-Octo-Admin` → `403 application/json; charset=utf-8` `{"error":"Admin changes must come from Octo's dashboard. A script can send the X-Octo-Admin header to opt in."}`.
+- **Static files** (`/admin/*.html|css|js|svg`, `/Assets/*`):
+  - `Content-Type` has no charset (`text/html`, `text/css`, `text/javascript`, `image/png`, `image/svg+xml`).
+  - `Accept-Ranges: bytes` appears **twice**.
+  - `Cache-Control: no-cache`.
+  - `ETag: "<base64 of the SHA-256 of the body>"`.
+  - `Last-Modified` is the build time.
+  - `If-None-Match` with the ETag → `304` (same headers, no body).
+  - `Range: bytes=0-9` → `206` with `Content-Range: bytes 0-9/<len>`.
+  - With `Accept-Encoding: gzip, br`, the precompressed Brotli variant is served: `Content-Encoding: br`, `Vary: Content-Encoding`, `ETag: "<sha256 of the compressed body>"` followed by `ETag: W/"<sha256 of the original>"`.
+  - CORS headers are added as for any other request.
+- **Every response** carries `Server: Kestrel` and a `Date` header.

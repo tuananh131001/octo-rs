@@ -91,3 +91,5 @@ __pycache__/
 
 # Rust build output
 /target/
+# Claude Code worktrees
+/.claude/
