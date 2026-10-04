@@ -209,7 +209,7 @@ impl Fixture {
             self.metadata.clone(),
             settings.clone(),
             Some(self.upgrades.clone()),
-            Some(Arc::new(UpgradeSources::new(settings.clone()))),
+            Some(Arc::new(UpgradeSources::new(settings.clone(), None))),
         ));
         HeartAcquisitionCoordinator::new(
             settings,
