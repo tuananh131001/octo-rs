@@ -1,0 +1,52 @@
+duration 0 rate 44100
+id3v2 version 4
+  TIT2 enc 3 ["Teardrop"]
+  TALB enc 3 ["Mezzanine"]
+  TPE2 enc 3 ["Massive Attack", "Tracey Thorn"]
+  TRCK enc 3 ["03/11"]
+  TPOS enc 3 ["1/2"]
+  TDRL enc 3 ["1998-04-20"]
+  TXXX enc 3 desc "ALBUMVERSION" ["Original"]
+  TXXX enc 3 desc "MusicBrainz Album Id" ["1D2B6C3E-7A4F-4E1B-9C2D-3F4A5B6C7D8E"]
+  TXXX enc 3 desc "MusicBrainz Release Track Id" ["{8E7D6C5B-4A3F-4D2C-9B1A-0E9F8D7C6B5A}"]
+  TXXX enc 3 desc "ALBUMARTISTS" ["Massive Attack", "Tracey Thorn"]
+id3v1 title "Teardrop" artist null album "Mezzanine" year 0 comment null track 3 genre null
+tag
+  title "Teardrop"
+  performers []
+  albumartists ["Massive Attack", "Tracey Thorn"]
+  composers []
+  album "Mezzanine"
+  genres []
+  year 0 track 3/11 disc 1/2 bpm 0
+  copyright null
+  lyrics null
+  isrc null publisher null
+  releaseid "1D2B6C3E-7A4F-4E1B-9C2D-3F4A5B6C7D8E" releasegroupid null
+extras
+  isrc null
+  label null
+  catalognumber null
+  barcode null
+  releasetype null
+  releasestatus null
+  releasecountry null
+  releasetrackid "{8E7D6C5B-4A3F-4D2C-9B1A-0E9F8D7C6B5A}"
+  albumartistid null
+  artistid null
+  acoustid null
+  trackgain null
+  trackpeak null
+  albumgain null
+  albumpeak null
+  albumid "1D2B6C3E-7A4F-4E1B-9C2D-3F4A5B6C7D8E"
+  albumartists "Massive Attack"
+  albumversion "Original"
+  releasedate null
+  recordingid null compilation False
+facts 0 ".mp3" 44100 "Teardrop" null "Mezzanine" "Massive Attack" null 3 1 [] null null null null "1D2B6C3E-7A4F-4E1B-9C2D-3F4A5B6C7D8E" False True
+barefacts 0 ".mp3" 44100 False
+identity null 0
+album "Mezzanine" "Massive Attack" False
+kept "Teardrop" "Mezzanine" ["Massive Attack", "Tracey Thorn"] ["Massive Attack", "Tracey Thorn"] "Original" "1998-04-20" "1d2b6c3e-7a4f-4e1b-9c2d-3f4a5b6c7d8e" "8e7d6c5b-4a3f-4d2c-9b1a-0e9f8d7c6b5a" 3/11 1/2 False
+pid "8e7d6c5b-4a3f-4d2c-9b1a-0e9f8d7c6b5a|1d2b6c3e-7a4f-4e1b-9c2d-3f4a5b6c7d8e|Massive Attack\u0001Tracey Thorn|Massive Attack\u0001Tracey Thorn|Mezzanine|Original|1998-04-20|Teardrop"

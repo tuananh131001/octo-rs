@@ -120,10 +120,8 @@ fn read_quietly(path: &Path) -> Option<String> {
 
 /// The lyrics in the song's own tags (TagLib's `Tag.Lyrics`), or an error when the file cannot
 /// be read as audio.
-// STUB(3-D tags): replaced when the tags port lands. Until then a song's tags are taken to hold
-// no lyrics; a file that cannot be opened at all is still an error.
-fn read_tag_lyrics(audio_path: &Path) -> std::io::Result<Option<String>> {
-    std::fs::metadata(audio_path).map(|_| None)
+fn read_tag_lyrics(audio_path: &Path) -> Result<Option<String>, octo_media::tags::TagError> {
+    octo_media::tags::read_lyrics(audio_path)
 }
 
 #[cfg(test)]
@@ -135,6 +133,18 @@ mod tests {
     fn song(dir: &Path) -> PathBuf {
         let audio = dir.join("Artist - Song.mp3");
         std::fs::write(&audio, b"not really audio").expect("written");
+        audio
+    }
+
+    /// A real MP3 (the C# tests' `AudioFixtures.Mp3`: twenty silent MPEG-1 Layer III frames),
+    /// which the tag reader opens.
+    fn readable_song(dir: &Path) -> PathBuf {
+        let audio = dir.join("Artist - Real.mp3");
+        let mut bytes = vec![0u8; 417 * 20];
+        for frame in 0..20 {
+            bytes[frame * 417..frame * 417 + 4].copy_from_slice(&[0xFF, 0xFB, 0x90, 0x64]);
+        }
+        std::fs::write(&audio, bytes).expect("written");
         audio
     }
 
@@ -207,11 +217,36 @@ mod tests {
         assert!(!may_write_beside(&stem, true));
     }
 
+    /// TagLib could not open a missing file or one that is not audio, so neither may be
+    /// written inside.
     #[test]
     fn a_file_that_cannot_be_opened_may_not_be_written_inside() {
         let dir = tempfile::tempdir().expect("a temp dir");
         assert!(!may_write_inside(&dir.path().join("missing.mp3")));
-        assert!(may_write_inside(&song(dir.path())));
+        assert!(!may_write_inside(&song(dir.path())));
+        assert!(may_write_inside(&readable_song(dir.path())));
         assert!(!is_octos(&dir.path().join("missing.lrc")));
+    }
+
+    /// The tags' own lyrics: Octo's may be replaced, the owner's may not, and `Of` reports them.
+    #[test]
+    fn the_lyrics_in_the_tags_are_read() {
+        let dir = tempfile::tempdir().expect("a temp dir");
+        let audio = readable_song(dir.path());
+        assert_eq!(of(&audio), SongLyrics::NOTHING);
+
+        octo_media::tags::write_lyrics(&audio, Some("[re:Octo]\n[00:01.00]line")).expect("written");
+        assert!(may_write_inside(&audio));
+        assert_eq!(
+            of(&audio),
+            SongLyrics::new(SongLyricsPlace::Inside, LyricsTiming::Line, true, false)
+        );
+
+        octo_media::tags::write_lyrics(&audio, Some("the owner's words")).expect("written");
+        assert!(!may_write_inside(&audio));
+        assert_eq!(
+            of(&audio),
+            SongLyrics::new(SongLyricsPlace::Inside, LyricsTiming::Plain, false, false)
+        );
     }
 }

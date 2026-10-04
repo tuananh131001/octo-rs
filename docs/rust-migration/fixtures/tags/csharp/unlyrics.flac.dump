@@ -1,0 +1,41 @@
+duration 0 rate 8000
+xiph vendor "ffmpeg"
+tag
+  title null
+  performers []
+  albumartists []
+  composers []
+  album null
+  genres []
+  year 0 track 0/0 disc 0/0 bpm 0
+  copyright null
+  lyrics null
+  isrc null publisher null
+  releaseid null releasegroupid null
+extras
+  isrc null
+  label null
+  catalognumber null
+  barcode null
+  releasetype null
+  releasestatus null
+  releasecountry null
+  releasetrackid null
+  albumartistid null
+  artistid null
+  acoustid null
+  trackgain null
+  trackpeak null
+  albumgain null
+  albumpeak null
+  albumid null
+  albumartists null
+  albumversion null
+  releasedate null
+  recordingid null compilation False
+facts 0 ".flac" 8000 null null null null null null null [] null null null null null False True
+barefacts 0 ".flac" 8000 False
+identity null 0
+album null null False
+kept "unlyrics" null ["[Unknown Artist]"] [] null null null null 0/0 0/0 False
+pid "||[Unknown Artist]|||||unlyrics"
