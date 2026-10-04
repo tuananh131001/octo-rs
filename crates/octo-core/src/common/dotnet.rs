@@ -328,9 +328,50 @@ pub fn format_optional_decimals(value: f64, decimals: u32) -> String {
     out
 }
 
+/// `Uri.EscapeDataString`: every byte of the UTF-8 encoding percent-encoded (upper-case hex)
+/// except the RFC 3986 unreserved characters `A-Z a-z 0-9 - . _ ~`.
+pub fn escape_data_string(value: &str) -> String {
+    const UNRESERVED: &percent_encoding::AsciiSet = &percent_encoding::NON_ALPHANUMERIC
+        .remove(b'-')
+        .remove(b'.')
+        .remove(b'_')
+        .remove(b'~');
+    percent_encoding::utf8_percent_encode(value, UNRESERVED).to_string()
+}
+
+/// `Uri.UnescapeDataString`: percent-escapes decoded back to text. A sequence that is not
+/// valid UTF-8 is left as it was written, as .NET leaves it.
+pub fn unescape_data_string(value: &str) -> String {
+    match percent_encoding::percent_decode_str(value).decode_utf8() {
+        Ok(text) => text.into_owned(),
+        Err(_) => value.to_string(),
+    }
+}
+
+/// `FormUrlEncodedContent`'s encoding of one name or value: `Uri.EscapeDataString`, then
+/// `%20` written as `+`. So a literal `+` goes out as `%2B`.
+pub fn form_url_encode(value: &str) -> String {
+    escape_data_string(value).replace("%20", "+")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn escape_data_string_keeps_only_the_unreserved_characters() {
+        assert_eq!(escape_data_string("AZaz09-._~"), "AZaz09-._~");
+        assert_eq!(
+            escape_data_string("a b+c/d?e&f=g:h\"i*j'k"),
+            "a%20b%2Bc%2Fd%3Fe%26f%3Dg%3Ah%22i%2Aj%27k"
+        );
+        assert_eq!(escape_data_string("Señorita 紅"), "Se%C3%B1orita%20%E7%B4%85");
+        assert_eq!(unescape_data_string("Se%C3%B1orita%20%E7%B4%85"), "Señorita 紅");
+        assert_eq!(
+            form_url_encode("recordings releasegroups+x"),
+            "recordings+releasegroups%2Bx"
+        );
+    }
 
     #[test]
     fn character_classes_answer_as_dotnet_did() {

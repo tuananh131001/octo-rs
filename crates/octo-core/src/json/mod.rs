@@ -3,6 +3,7 @@
 
 pub mod datetime;
 pub mod dom;
+pub mod element;
 pub mod format;
 pub mod web;
 

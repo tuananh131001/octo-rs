@@ -1,0 +1,197 @@
+//! Rust-only tests of the iTunes lookup: no C# test file covered it. The state file is checked
+//! against its fixture (`docs/rust-migration/fixtures/state/itunes-masters.json`), and the
+//! master search against a mock Apple.
+
+use chrono::TimeZone;
+use wiremock::matchers::{path, query_param};
+use wiremock::{Mock, MockServer, ResponseTemplate};
+
+use super::*;
+
+fn fixture_path() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../docs/rust-migration/fixtures/state/itunes-masters.json")
+}
+
+fn at(h: u32, m: u32, s: u32) -> DateTime<Utc> {
+    Utc.with_ymd_and_hms(2026, 10, 3, h, m, s)
+        .single()
+        .expect("a valid time")
+}
+
+/// Read → write through the file's serde shape gives the fixture back byte for byte.
+#[test]
+fn itunes_masters_fixture_round_trips_byte_for_byte() {
+    let original = std::fs::read(fixture_path()).expect("the fixture is there");
+    let rows: Vec<CachedMaster> = serde_json::from_slice(&original).expect("the fixture reads");
+    assert_eq!(rows.len(), 2);
+    assert_eq!(rows[1].url, None);
+    assert_eq!(octo_core::json::to_string(&rows).as_bytes(), &original[..]);
+}
+
+/// The store loads the fixture (on a clock inside both TTLs) and writes it back unchanged.
+#[test]
+fn the_store_loads_and_writes_the_fixture_unchanged() {
+    let dir = tempfile::tempdir().expect("a temp dir");
+    let file = dir.path().join("itunes-masters.json");
+    std::fs::copy(fixture_path(), &file).expect("copied");
+    let original = std::fs::read(&file).expect("read");
+
+    let lookup =
+        ITunesCoverArtLookup::with_base_url(Some(file.clone()), "http://unused", Clock::fixed(at(9, 0, 0)));
+    write_rows(&file, &lookup.cached_rows()).expect("written");
+
+    assert_eq!(std::fs::read(&file).expect("read"), original);
+    assert!(!dir.path().join("itunes-masters.json.tmp").exists());
+}
+
+/// On load, a miss older than a day is dropped and a hit is kept for thirty.
+#[test]
+fn loading_drops_what_has_expired() {
+    let dir = tempfile::tempdir().expect("a temp dir");
+    let file = dir.path().join("itunes-masters.json");
+    std::fs::copy(fixture_path(), &file).expect("copied");
+
+    let next_day = Clock::fixed(at(9, 0, 0) + chrono::Duration::days(1));
+    let lookup = ITunesCoverArtLookup::with_base_url(Some(file.clone()), "http://unused", next_day);
+    let rows = lookup.cached_rows();
+    assert_eq!(rows.len(), 1);
+    assert_eq!(rows[0].key.as_deref(), Some("motleycrue|drfeelgood|album"));
+
+    let much_later = Clock::fixed(at(9, 0, 0) + chrono::Duration::days(31));
+    let lookup = ITunesCoverArtLookup::with_base_url(Some(file), "http://unused", much_later);
+    assert!(lookup.cached_rows().is_empty());
+}
+
+#[test]
+fn an_unreadable_file_is_an_empty_cache() {
+    let dir = tempfile::tempdir().expect("a temp dir");
+    let file = dir.path().join("itunes-masters.json");
+    std::fs::write(&file, "not json").expect("written");
+    let lookup = ITunesCoverArtLookup::with_base_url(Some(file), "http://unused", Clock::fixed(at(9, 0, 0)));
+    assert!(lookup.cached_rows().is_empty());
+}
+
+/// The master is the one whose artist and album are this release, the explicit one before
+/// the clean one, fetched at the master size; the match is remembered, written on flush, and
+/// read back by the next process.
+#[tokio::test]
+async fn a_master_is_matched_strictly_remembered_and_kept_on_disk() {
+    set_apple_interval(Duration::ZERO);
+    let server = MockServer::start().await;
+    let art = |name: &str| format!("{}/image/{name}/100x100bb.jpg", server.uri());
+    let results = format!(
+        r#"{{"results":[
+            {{"artistName":"Karaoke Stars","collectionName":"Dr. Feelgood","artworkUrl100":"{}"}},
+            {{"artistName":"Mötley Crüe","collectionName":"Dr. Feelgood","collectionExplicitness":"cleaned","artworkUrl100":"{}"}},
+            {{"artistName":"Mötley Crüe","collectionName":"Dr. Feelgood","collectionExplicitness":"explicit","artworkUrl100":"{}"}}
+        ]}}"#,
+        art("karaoke"),
+        art("clean"),
+        art("explicit")
+    );
+    Mock::given(path("/search"))
+        .and(query_param("entity", "album"))
+        .respond_with(ResponseTemplate::new(200).set_body_string(results))
+        .mount(&server)
+        .await;
+    Mock::given(path("/image/explicit/5000x5000bb.jpg"))
+        .respond_with(ResponseTemplate::new(200).set_body_bytes(b"master".to_vec()))
+        .mount(&server)
+        .await;
+
+    let dir = tempfile::tempdir().expect("a temp dir");
+    let file = dir.path().join("config").join("itunes-masters.json");
+    let clock = Clock::fixed(at(10, 0, 0));
+    let lookup = ITunesCoverArtLookup::with_base_url(Some(file.clone()), &server.uri(), clock.clone());
+
+    let master = lookup
+        .try_fetch_album_master(
+            Some("Mötley Crüe"),
+            Some("Dr. Feelgood"),
+            Some("Kickstart My Heart"),
+        )
+        .await;
+    assert_eq!(master.as_deref(), Some(&b"master"[..]));
+    lookup
+        .try_fetch_album_master(
+            Some("Mötley Crüe"),
+            Some("Dr. Feelgood"),
+            Some("Kickstart My Heart"),
+        )
+        .await;
+    let searches =
+        |requests: &[wiremock::Request]| requests.iter().filter(|r| r.url.path() == "/search").count();
+    assert_eq!(searches(&server.received_requests().await.unwrap_or_default()), 1);
+
+    lookup.flush_cache();
+    let rows: Vec<CachedMaster> =
+        serde_json::from_str(&std::fs::read_to_string(&file).expect("written")).expect("reads");
+    assert_eq!(rows.len(), 1);
+    assert_eq!(
+        rows[0].key.as_deref(),
+        Some(format!("{}|album", SongIdentity::match_key("Mötley Crüe", "Dr. Feelgood")).as_str())
+    );
+    assert_eq!(rows[0].url.as_deref(), Some(art("explicit").as_str()));
+    assert_eq!(rows[0].at, at(10, 0, 0));
+
+    // The next process asks Apple nothing for it.
+    let again = ITunesCoverArtLookup::with_base_url(Some(file), &server.uri(), clock);
+    assert_eq!(
+        again
+            .try_fetch_album_master(Some("Mötley Crüe"), Some("Dr. Feelgood"), None)
+            .await
+            .as_deref(),
+        Some(&b"master"[..])
+    );
+    assert_eq!(searches(&server.received_requests().await.unwrap_or_default()), 1);
+}
+
+/// One barcode lookup matches albums back by name and keeps them for both ways of asking.
+#[tokio::test]
+async fn priming_by_barcode_matches_albums_back_by_name() {
+    set_apple_interval(Duration::ZERO);
+    let server = MockServer::start().await;
+    let results = format!(
+        r#"{{"results":[
+            {{"wrapperType":"collection","artistName":"Air","collectionName":"Moon Safari","artworkUrl100":"{0}/a/100x100bb.jpg"}},
+            {{"wrapperType":"collection","artistName":"Air","collectionName":"Talkie Walkie - EP","artworkUrl100":"{0}/b/100x100bb.jpg"}},
+            {{"wrapperType":"track","artistName":"Air","collectionName":"Moon Safari","artworkUrl100":"{0}/c/100x100bb.jpg"}}
+        ]}}"#,
+        server.uri()
+    );
+    Mock::given(path("/lookup"))
+        .and(query_param(
+            "upc",
+            "0724384497859,724384497859,0724359706221,724359706221",
+        ))
+        .respond_with(ResponseTemplate::new(200).set_body_string(results))
+        .mount(&server)
+        .await;
+    let lookup = ITunesCoverArtLookup::with_base_url(None, &server.uri(), Clock::fixed(at(10, 0, 0)));
+    let albums = vec![
+        (
+            "Air".to_string(),
+            "Moon Safari".to_string(),
+            "0724384497859".to_string(),
+        ),
+        (
+            "Air".to_string(),
+            "Talkie Walkie".to_string(),
+            "0724359706221".to_string(),
+        ),
+        (
+            "Air".to_string(),
+            "Premiers Symptômes".to_string(),
+            " ".to_string(),
+        ),
+    ];
+    let seen = Mutex::new(Vec::new());
+    let report = |done: usize| seen.lock().push(done);
+
+    let matched = lookup.prime_by_barcode(&albums, Some(&report)).await;
+
+    assert_eq!(matched, 2);
+    assert_eq!(*seen.lock(), vec![2]);
+    assert_eq!(lookup.cached_rows().len(), 4);
+}

@@ -120,6 +120,11 @@ fails to resolve instead of reaching the internet, which keeps every run determi
 configured by `SSL_CERT_FILE` (reqwest with `rustls-native-certs` or `rustls-platform-verifier`
 on Linux, or `native-tls`). A client built with compiled-in `webpki-roots` would reject the
 stubs; in that case add the parity CA another way rather than turning features off.
+Checked on 2026-10-04 (task 2-D) with the workspace reqwest 0.13 (`rustls`, platform verifier):
+a request to `https://api.deezer.com` resolved to an `openssl s_server` presenting
+`certs/stub.crt` succeeds with `SSL_CERT_FILE=certs/ca.crt`, and equally with only
+`SSL_CERT_DIR` pointing at a directory holding `ca.crt`; without either it fails with
+`InvalidCertificate(UnknownIssuer)`.
 
 Keep the host list in three places in sync: `certs/make-certs.sh` (SANs), the `stubs` aliases in
 `docker-compose.yml`, and the mappings.

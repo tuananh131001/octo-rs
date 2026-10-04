@@ -2,10 +2,13 @@
 
 pub mod common;
 pub mod config;
+pub mod cover_art;
 pub mod fingerprint;
 pub mod json;
+pub mod metadata;
 pub mod models;
 pub mod settings;
+pub mod soulseek;
 pub mod tagging;
 
 /// The release this build is, as the dashboard and the User-Agent show it (`2026.10.03.2`).
