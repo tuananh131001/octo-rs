@@ -1,5 +1,6 @@
 //! Shared helpers: `Services/Common` in the C#, its pure parts.
 
+pub mod acquisition_tracker;
 pub mod clock;
 pub mod dotnet;
 pub mod error;
