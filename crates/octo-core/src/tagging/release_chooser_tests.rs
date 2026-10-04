@@ -253,10 +253,57 @@ fn a_lone_star_files_under_the_studio_album_the_single_second_and_not_ambiguous(
     assert_eq!(plan.fields["album"].source.as_deref(), Some("Fingerprint"));
 }
 
-// `A_FromAParsedLookup_GivesTheSameAnswer` parses an AcoustID answer with
-// `AcoustIdClient.ParseLookup`, which the `octo` crate's client port (2-D) owns; it is deferred
-// there (test-map.md). `from_fingerprint` over hand-built records is covered in
-// `candidate_sources`.
+/// The same answer when the candidates come from a parsed lookup rather than by hand. (Ported
+/// with 2-D, which brought `AcoustIdClient.ParseLookup`.)
+#[test]
+fn a_from_a_parsed_lookup_gives_the_same_answer() {
+    let doc: serde_json::Value = serde_json::from_str(
+        r#"
+        {"status": "ok", "results": [{"id": "acoustid-1", "score": 0.97, "recordings": [{
+          "id": "rec-teardrop", "title": "Teardrop", "duration": 330.2, "sources": 40, "isrcs": ["GBAAA9800001"],
+          "artists": [{"id": "a-ma", "name": "Massive Attack", "joinphrase": " feat. "}, {"id": "a-ef", "name": "Elizabeth Fraser"}],
+          "releasegroups": [
+            {"id": "g-collected", "title": "Collected", "type": "Album", "secondarytypes": ["Compilation"],
+             "releases": [{"id": "r-col", "date": {"year": 2006, "month": 3, "day": 27}, "country": "GB",
+               "mediums": [{"position": 1, "track_count": 14, "tracks": [{"id": "t-col", "position": 4}]}]}]},
+            {"id": "g-single", "title": "Teardrop", "type": "Single",
+             "releases": [{"id": "r-single", "date": {"year": 1998, "month": 4, "day": 27}, "country": "GB",
+               "mediums": [{"position": 1, "track_count": 4, "tracks": [{"id": "t-s", "position": 1}]}]}]},
+            {"id": "g-mezzanine", "title": "Mezzanine", "type": "Album",
+             "releases": [
+               {"id": "r-mezz-2019", "date": {"year": 2019, "month": 8, "day": 23}, "country": "XE",
+                "mediums": [{"position": 1, "track_count": 11, "tracks": [{"id": "t-m19", "position": 3}]}]},
+               {"id": "r-mezz", "date": {"year": 1998, "month": 4, "day": 20}, "country": "GB",
+                "mediums": [{"position": 1, "track_count": 11, "tracks": [{"id": "t-m", "position": 3}]}]}]}
+          ]}]}]}
+        "#,
+    )
+    .expect("test JSON parses");
+    let lookup = crate::fingerprint::acoust_id_client::parse_lookup(&doc).expect("reads");
+    let candidates = CandidateSources::from_fingerprint(Some(&lookup), 0.85);
+    let request = plain("Massive Attack", "Teardrop", 330);
+    let evidence = evidence(
+        request,
+        peer(330, "Teardrop", "Massive Attack"),
+        &["rec-teardrop"],
+    );
+
+    let plan = ReleaseChooser::choose(&evidence, &candidates, &MatchingSettings::default(), THIS_YEAR);
+
+    assert_eq!(candidates.len(), 4);
+    assert_eq!(plan.confidence, TagConfidence::Strong);
+    let chosen = chosen(&plan);
+    assert_eq!(chosen.release_id.as_deref(), Some("r-mezz"));
+    assert_eq!(chosen.group_first_release_date.as_deref(), Some("1998-04-20"));
+    assert_eq!(chosen.isrcs, ["GBAAA9800001"]);
+    assert_eq!(chosen.sources, 40);
+    assert_eq!(chosen.release_track_id.as_deref(), Some("t-m"));
+    // The 2019 pressing of the same group sits behind the first one, not ahead of it.
+    assert_eq!(
+        plan.ranked[1].candidate.release_id.as_deref(),
+        Some("r-mezz-2019")
+    );
+}
 
 // ---- B: a reissue of the same album loses to the first -------------------------------
 

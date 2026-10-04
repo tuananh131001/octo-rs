@@ -177,6 +177,12 @@ fn parse(segment: &str) -> Option<StringWithQuality> {
     })
 }
 
+/// [`AcceptLanguageHeader::header_value`] as a free function, for the clients that only need the
+/// header's text.
+pub fn header_value(settings: &MetadataSettings) -> Option<String> {
+    AcceptLanguageHeader::header_value(settings)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

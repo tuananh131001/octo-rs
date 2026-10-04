@@ -30,11 +30,19 @@ use tokio_util::sync::CancellationToken;
 
 use crate::services::admin::{BrowseSessionStore, DirectoryBrowser};
 use crate::services::common::{DownloadConcurrency, SoulseekHoldStore};
+use crate::services::cover_art::{
+    CoverArtAggregator, CoverArtArchiveLookup, DeezerCoverArtLookup, ICoverArtSource, ITunesCoverArtLookup,
+    LastFmCoverArtLookup,
+};
+use crate::services::fingerprint::{
+    AcoustIdClient, AcoustIdRateLimitHandler, AcoustIdRateLimiter, MusicBrainzClient,
+};
 use crate::services::http_client_factory;
 use crate::services::library::{NavidromePlaylistApi, NavidromeSongPathResolver};
 use crate::services::local::DownloadHistoryService;
 use crate::services::local::{ILocalLibraryService, LocalLibraryService};
 use crate::services::lyrics::LyricsChoiceStore;
+use crate::services::metadata::{DeezerMetadataService, DeezerRateLimitHandler, DeezerRateLimiter};
 use crate::services::metadata::{GenreBackfillJournal, GenreBackfillStore};
 use crate::services::soulseek::{ExternalIdRegistry, RadioQueueStore, RejectedPeerRegistry};
 use crate::services::subsonic::{
@@ -112,6 +120,28 @@ pub struct AppInner {
     /// (`SubsonicStartupValidator`; `SoulseekStartupValidator` joins with 4-A). Run by
     /// [`crate::host::run`] before the listener binds, as the host started it.
     pub startup_validation: Arc<StartupValidationOrchestrator>,
+
+    /// `DeezerRateLimiter` (singleton): the budget every Deezer call spends.
+    pub deezer_rate_limiter: Arc<DeezerRateLimiter>,
+    /// The named "deezer" HttpClient with `DeezerRateLimitHandler` in its chain. Every Deezer
+    /// caller goes through it.
+    pub deezer_client: Arc<DeezerRateLimitHandler>,
+    /// `DeezerMetadataService` (singleton).
+    pub deezer_metadata: Arc<DeezerMetadataService>,
+    /// `MusicBrainzClient` (singleton) with its named client.
+    pub music_brainz: Arc<MusicBrainzClient>,
+    /// `AcoustIdRateLimiter` (singleton).
+    pub acoust_id_rate_limiter: Arc<AcoustIdRateLimiter>,
+    /// `AcoustIdClient` (singleton), over the named "acoustid" client and its handler.
+    pub acoust_id: Arc<AcoustIdClient>,
+    /// `ITunesCoverArtLookup`, registered as itself too: downloads and the cover upgrade ask it
+    /// for an album's master. Its matches persist to itunes-masters.json beside settings.json.
+    pub itunes_cover_art: Arc<ITunesCoverArtLookup>,
+    /// `CoverArtAggregator` over the `ICoverArtSource`s in registration order: Deezer, iTunes,
+    /// Last.fm.
+    pub cover_art_aggregator: Arc<CoverArtAggregator>,
+    /// `CoverArtArchiveLookup` (singleton) with its named client.
+    pub cover_art_archive: Arc<CoverArtArchiveLookup>,
     /// `DownloadHistoryService`: the fetched-songs log, `downloads-history.json` beside settings.json.
     pub download_history: Arc<DownloadHistoryService>,
     /// `DownloadConcurrency`: how many downloads transfer at once.
@@ -242,6 +272,61 @@ impl Stores {
     }
 }
 
+/// The metadata clients of `Program.cs`, built in dependency order.
+struct MetadataClients {
+    deezer_rate_limiter: Arc<DeezerRateLimiter>,
+    deezer_client: Arc<DeezerRateLimitHandler>,
+    deezer_metadata: Arc<DeezerMetadataService>,
+    music_brainz: Arc<MusicBrainzClient>,
+    acoust_id_rate_limiter: Arc<AcoustIdRateLimiter>,
+    acoust_id: Arc<AcoustIdClient>,
+    itunes_cover_art: Arc<ITunesCoverArtLookup>,
+    cover_art_aggregator: Arc<CoverArtAggregator>,
+    cover_art_archive: Arc<CoverArtArchiveLookup>,
+}
+
+impl MetadataClients {
+    /// `itunes_cache`: where the iTunes matches persist, or None to keep them in memory only.
+    fn build(settings: &Arc<SettingsStore>, itunes_cache: Option<PathBuf>) -> Self {
+        let deezer_rate_limiter = Arc::new(DeezerRateLimiter::new());
+        let deezer_client = Arc::new(DeezerRateLimitHandler::new(Arc::clone(&deezer_rate_limiter)));
+        let deezer_metadata = Arc::new(DeezerMetadataService::new(
+            Arc::clone(&deezer_client),
+            Arc::clone(settings),
+        ));
+        let acoust_id_rate_limiter = Arc::new(AcoustIdRateLimiter::new());
+        let acoust_id = Arc::new(AcoustIdClient::new(Arc::new(AcoustIdRateLimitHandler::new(
+            Arc::clone(&acoust_id_rate_limiter),
+        ))));
+
+        // The cover sources take their settings as IOptions: captured here, at construction.
+        let current = settings.current();
+        let itunes_cover_art = Arc::new(ITunesCoverArtLookup::new(itunes_cache));
+        // Cover-art sources, registered in fallback order. The aggregator queries them
+        // sequentially; adding or removing a source is a one-line change here.
+        let sources: Vec<Arc<dyn ICoverArtSource>> = vec![
+            Arc::new(DeezerCoverArtLookup::new(
+                Arc::clone(&deezer_client),
+                &current.metadata,
+            )),
+            Arc::clone(&itunes_cover_art) as Arc<dyn ICoverArtSource>,
+            Arc::new(LastFmCoverArtLookup::new(&current.last_fm, &current.metadata)),
+        ];
+
+        Self {
+            deezer_rate_limiter,
+            deezer_client,
+            deezer_metadata,
+            music_brainz: Arc::new(MusicBrainzClient::new()),
+            acoust_id_rate_limiter,
+            acoust_id,
+            itunes_cover_art,
+            cover_art_aggregator: Arc::new(CoverArtAggregator::new(sources)),
+            cover_art_archive: Arc::new(CoverArtArchiveLookup::new()),
+        }
+    }
+}
+
 impl AppInner {
     /// `IHostApplicationLifetime.StopApplication()`: begins a graceful shutdown.
     pub fn stop_application(&self) {
@@ -264,6 +349,8 @@ impl AppState {
             .unwrap_or_else(|| PathBuf::from("."));
         let settings = Arc::new(settings);
         let stores = Stores::build(&settings, &config_dir);
+        // Matches survive a restart, so a library is not sent back to Apple album by album.
+        let clients = MetadataClients::build(&settings, Some(config_dir.join("itunes-masters.json")));
         let workers = Arc::new(WorkerSupervisor::new());
         stores.register_workers(&workers);
 
@@ -280,6 +367,12 @@ impl AppState {
         });
 
         let navidrome = NavidromeServices::build(&settings);
+        // The C# lookup's 15-second Timer, and its Dispose's last write.
+        let itunes = Arc::clone(&clients.itunes_cover_art);
+        workers.register("ITunesCoverArtLookup", move |stopping| {
+            let itunes = Arc::clone(&itunes);
+            async move { itunes.run_flush_loop(stopping).await }
+        });
         let inner = AppInner {
             settings_writer: Arc::new(SettingsFileWriter::new(settings_path)),
             restart_tracker: Arc::new(restart_tracker),
@@ -315,6 +408,15 @@ impl AppState {
             navidrome_song_path_resolver: navidrome.navidrome_song_path_resolver,
             navidrome_playlist_api: navidrome.navidrome_playlist_api,
             startup_validation: navidrome.startup_validation,
+            deezer_rate_limiter: clients.deezer_rate_limiter,
+            deezer_client: clients.deezer_client,
+            deezer_metadata: clients.deezer_metadata,
+            music_brainz: clients.music_brainz,
+            acoust_id_rate_limiter: clients.acoust_id_rate_limiter,
+            acoust_id: clients.acoust_id,
+            itunes_cover_art: clients.itunes_cover_art,
+            cover_art_aggregator: clients.cover_art_aggregator,
+            cover_art_archive: clients.cover_art_archive,
         };
         AppState {
             inner: Arc::new(inner),
@@ -331,6 +433,9 @@ impl AppState {
         let settings = Arc::new(store);
         let stores = Stores::build(&settings, &config_dir);
         let navidrome = NavidromeServices::build(&settings);
+        // The clients point at the real hosts but ask nothing until a test calls them, and
+        // the iTunes matches stay in memory.
+        let clients = MetadataClients::build(&settings, None);
         let inner = AppInner {
             restart_tracker,
             settings,
@@ -362,6 +467,15 @@ impl AppState {
             navidrome_song_path_resolver: navidrome.navidrome_song_path_resolver,
             navidrome_playlist_api: navidrome.navidrome_playlist_api,
             startup_validation: navidrome.startup_validation,
+            deezer_rate_limiter: clients.deezer_rate_limiter,
+            deezer_client: clients.deezer_client,
+            deezer_metadata: clients.deezer_metadata,
+            music_brainz: clients.music_brainz,
+            acoust_id_rate_limiter: clients.acoust_id_rate_limiter,
+            acoust_id: clients.acoust_id,
+            itunes_cover_art: clients.itunes_cover_art,
+            cover_art_aggregator: clients.cover_art_aggregator,
+            cover_art_archive: clients.cover_art_archive,
         };
         AppState {
             inner: Arc::new(inner),
@@ -392,6 +506,24 @@ mod tests {
             state.settings_writer.file_path(),
             SettingsStore::default_settings_path()
         );
+    }
+
+    /// The iTunes matches are flushed by a worker, and the Deezer metadata service and cover
+    /// lookup share one client, and so one budget.
+    #[test]
+    fn the_metadata_clients_are_wired_as_program_cs_registered_them() {
+        let state = AppState::build(SettingsStore::from_env(Vec::new(), None));
+        assert!(
+            state
+                .workers
+                .status()
+                .iter()
+                .any(|w| w.name == "ITunesCoverArtLookup")
+        );
+        assert!(Arc::ptr_eq(
+            state.deezer_client.limiter(),
+            &state.deezer_rate_limiter
+        ));
     }
 
     #[test]
