@@ -52,7 +52,7 @@ depends on have been merged into `rust-rewrite`. Status: ☐ not started · ◐ 
 | ☐ | 5-B queues and sweeps | `Library/{UpgradeQueue,QualityUpgradeWorker,NoticeQueue,NoticePlaylistWorker,LibraryReviewSweepWorker,DuplicateScanWorker}` | UpgradeQueue, QualityUpgrade, NoticeQueue, LibraryReviewSweep, Duplicate |
 | ◐ | 5-C Last.fm radio | `LastFm/*Radio*`, `IcyMetadataStream`, `Models/Radio/LastFmRadioState`, `Library/GeneratedPlaylistService` | LastFmRadioCore, LastFmRadioSpacing, LastFmRadioTrackResolverMatch, GeneratedPlaylist |
 | ☐ | 5-D genre backfill and cover upgrade | `Metadata/GenreBackfillWorker`, `CoverArt/CoverUpgrade` | GenreBackfill, GenreBackfillUndo, CoverUpgrade |
-| ◐ | 5-E lyrics library | `Lyrics/{LyricsLibraryJob,LyricsLibrarySteps}` | LyricsLibrarySteps |
+| ☑ | 5-E lyrics library | `Lyrics/{LyricsLibraryJob,LyricsLibrarySteps}` | LyricsLibrarySteps |
 | ☐ | 5-F sync catalog and playlists | `Subsonic/{SyncCatalogService,PlaylistSyncService}` | SyncCatalog, ExternalPlayback |
 
 ## Wave 6: controllers and cutover (needs wave 5)
