@@ -1,0 +1,28 @@
+[package]
+name = "octo-media"
+description = "Audio tags, list covers and the ffmpeg/fpcalc tools: everything that reads or writes media bytes."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+octo-core.workspace = true
+anyhow.workspace = true
+cosmic-text.workspace = true
+image.workspace = true
+lofty.workspace = true
+parking_lot.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tiny-skia.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[lints]
+workspace = true

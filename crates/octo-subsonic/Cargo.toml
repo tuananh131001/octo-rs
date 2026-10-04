@@ -1,0 +1,25 @@
+[package]
+name = "octo-subsonic"
+description = "The Subsonic wire format: response shapes in XML and JSON, request parsing, model mapping."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+octo-core.workspace = true
+anyhow.workspace = true
+chrono.workspace = true
+indexmap.workspace = true
+quick-xml.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+insta.workspace = true
+
+[lints]
+workspace = true

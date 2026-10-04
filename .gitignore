@@ -88,3 +88,6 @@ slskd-state/
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+# Rust build output
+/target/
