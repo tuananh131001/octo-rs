@@ -41,7 +41,10 @@ use crate::services::http_client_factory;
 use crate::services::library::{NavidromePlaylistApi, NavidromeSongPathResolver};
 use crate::services::local::DownloadHistoryService;
 use crate::services::local::{ILocalLibraryService, LocalLibraryService};
-use crate::services::lyrics::LyricsChoiceStore;
+use crate::services::lyrics::{
+    LyricsChoiceService, LyricsChoiceStore, LyricsService, LyricsSidecarWriter, LyricsUndoJournal,
+    lyrics_http,
+};
 use crate::services::metadata::{DeezerMetadataService, DeezerRateLimitHandler, DeezerRateLimiter};
 use crate::services::metadata::{GenreBackfillJournal, GenreBackfillStore};
 use crate::services::soulseek::{ExternalIdRegistry, RadioQueueStore, RejectedPeerRegistry};
@@ -84,6 +87,15 @@ pub struct AppInner {
     pub workers: Arc<WorkerSupervisor>,
     /// `LyricsChoiceStore`: the lyrics pins, `<config>/lyrics-choices.json`.
     pub lyrics_choice_store: Arc<LyricsChoiceStore>,
+    /// `LyricsService`, over the `ILyricsSource`s (KuGou on the `kugou` client; LRCLIB,
+    /// NetEase and lyrics.ovh on the `lyrics` client).
+    pub lyrics_service: Arc<LyricsService>,
+    /// `LyricsChoiceService`: choosing lyrics by hand, over the pins.
+    pub lyrics_choice_service: Arc<LyricsChoiceService>,
+    /// `LyricsSidecarWriter`, singleton and hosted: its queue is the "LyricsSidecarWriter" worker.
+    pub lyrics_sidecar_writer: Arc<LyricsSidecarWriter>,
+    /// `LyricsUndoJournal`: what the lyrics page's Save wrote over, `<config>/lyrics-undo.jsonl`.
+    pub lyrics_undo_journal: Arc<LyricsUndoJournal>,
     /// `GenreBackfillStore`: the genre backfill run, `<config>/genre-backfill.json`. Its
     /// coalescing flush (a timer in C#) is the "GenreBackfillStore" worker.
     pub genre_backfill_store: Arc<GenreBackfillStore>,
@@ -327,6 +339,50 @@ impl MetadataClients {
     }
 }
 
+/// The lyrics services of task 3-C. `config_dir` None keeps the pins and the undo journal in
+/// memory (handler tests).
+struct Lyrics {
+    choice_store: Arc<LyricsChoiceStore>,
+    service: Arc<LyricsService>,
+    choice_service: Arc<LyricsChoiceService>,
+    sidecar_writer: Arc<LyricsSidecarWriter>,
+    undo_journal: Arc<LyricsUndoJournal>,
+}
+
+impl Lyrics {
+    fn build(settings: &Arc<SettingsStore>, config_dir: Option<&Path>) -> Lyrics {
+        let sources = LyricsService::default_sources(
+            lyrics_http::lyrics_http_client(),
+            lyrics_http::kugou_http_client(),
+        );
+        let service = Arc::new(LyricsService::new(sources, settings.clone()));
+        let choice_store = Arc::new(LyricsChoiceStore::new(
+            config_dir.map(|dir| dir.join("lyrics-choices.json")),
+        ));
+        // STUB(4-D): the writer is given the library service (for the scan after writing
+        // inside songs) with `set_library` once LocalLibraryService is ported.
+        let sidecar_writer = Arc::new(LyricsSidecarWriter::new(service.clone(), settings.clone()));
+        Lyrics {
+            choice_service: Arc::new(LyricsChoiceService::new(service.clone(), choice_store.clone())),
+            choice_store,
+            service,
+            sidecar_writer,
+            undo_journal: Arc::new(LyricsUndoJournal::new(
+                config_dir.map(|dir| dir.join("lyrics-undo.jsonl")),
+            )),
+        }
+    }
+
+    /// The writer is singleton AND hosted, the same instance both ways, so downloads enqueue
+    /// into the worker the host is running.
+    fn register_workers(&self, workers: &WorkerSupervisor) {
+        let writer = self.sidecar_writer.clone();
+        workers.register("LyricsSidecarWriter", move |stopping| {
+            writer.clone().run(stopping)
+        });
+    }
+}
+
 impl AppInner {
     /// `IHostApplicationLifetime.StopApplication()`: begins a graceful shutdown.
     pub fn stop_application(&self) {
@@ -351,8 +407,10 @@ impl AppState {
         let stores = Stores::build(&settings, &config_dir);
         // Matches survive a restart, so a library is not sent back to Apple album by album.
         let clients = MetadataClients::build(&settings, Some(config_dir.join("itunes-masters.json")));
+        let lyrics = Lyrics::build(&settings, Some(&config_dir));
         let workers = Arc::new(WorkerSupervisor::new());
         stores.register_workers(&workers);
+        lyrics.register_workers(&workers);
 
         let genre_backfill_store = Arc::new(GenreBackfillStore::new(Some(
             config_dir.join("genre-backfill.json"),
@@ -378,9 +436,11 @@ impl AppState {
             restart_tracker: Arc::new(restart_tracker),
             settings,
             workers,
-            lyrics_choice_store: Arc::new(LyricsChoiceStore::new(Some(
-                config_dir.join("lyrics-choices.json"),
-            ))),
+            lyrics_choice_store: lyrics.choice_store,
+            lyrics_service: lyrics.service,
+            lyrics_choice_service: lyrics.choice_service,
+            lyrics_sidecar_writer: lyrics.sidecar_writer,
+            lyrics_undo_journal: lyrics.undo_journal,
             genre_backfill_store,
             genre_backfill_journal: Arc::new(GenreBackfillJournal::new(Some(
                 config_dir.join("genre-backfill-journal.jsonl"),
@@ -436,12 +496,17 @@ impl AppState {
         // The clients point at the real hosts but ask nothing until a test calls them, and
         // the iTunes matches stay in memory.
         let clients = MetadataClients::build(&settings, None);
+        let lyrics = Lyrics::build(&settings, None);
         let inner = AppInner {
             restart_tracker,
             settings,
             settings_writer: Arc::new(SettingsFileWriter::new(config_dir.join("settings.json"))),
             workers: Arc::new(WorkerSupervisor::new()),
-            lyrics_choice_store: Arc::new(LyricsChoiceStore::new(None)),
+            lyrics_choice_store: lyrics.choice_store,
+            lyrics_service: lyrics.service,
+            lyrics_choice_service: lyrics.choice_service,
+            lyrics_sidecar_writer: lyrics.sidecar_writer,
+            lyrics_undo_journal: lyrics.undo_journal,
             genre_backfill_store: Arc::new(GenreBackfillStore::new(None)),
             genre_backfill_journal: Arc::new(GenreBackfillJournal::new(None)),
             update_host: Arc::new(UpdateHost::new(config_dir.join("update"), Clock::system())),
@@ -530,7 +595,12 @@ mod tests {
     fn the_store_flushers_and_the_release_check_run_as_workers() {
         let state = AppState::build(SettingsStore::from_env(Vec::new(), None));
         let names: Vec<String> = state.workers.status().into_iter().map(|s| s.name).collect();
-        for name in ["ExternalIdRegistry", "RejectedPeerRegistry", "ReleaseCheck"] {
+        for name in [
+            "ExternalIdRegistry",
+            "RejectedPeerRegistry",
+            "ReleaseCheck",
+            "LyricsSidecarWriter",
+        ] {
             assert!(names.iter().any(|n| n == name), "{name} in {names:?}");
         }
         assert!(

@@ -7,6 +7,10 @@ rust-version.workspace = true
 license.workspace = true
 publish.workspace = true
 
+[lib]
+# No doc examples; skipping the doctest pass also keeps it off the shared target dir.
+doctest = false
+
 [dependencies]
 octo-core.workspace = true
 anyhow.workspace = true

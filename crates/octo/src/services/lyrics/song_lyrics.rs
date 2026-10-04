@@ -122,7 +122,7 @@ fn read_quietly(path: &Path) -> Option<String> {
 /// be read as audio.
 // STUB(3-D tags): replaced when the tags port lands. Until then a song's tags are taken to hold
 // no lyrics; a file that cannot be opened at all is still an error.
-fn read_tag_lyrics(audio_path: &Path) -> std::io::Result<Option<String>> {
+pub(crate) fn read_tag_lyrics(audio_path: &Path) -> std::io::Result<Option<String>> {
     std::fs::metadata(audio_path).map(|_| None)
 }
 

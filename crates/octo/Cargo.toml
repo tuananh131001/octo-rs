@@ -8,6 +8,10 @@ license.workspace = true
 publish.workspace = true
 default-run = "octo"
 
+[lib]
+# No doc examples; skipping the doctest pass also keeps it off the shared target dir.
+doctest = false
+
 [dependencies]
 octo-core.workspace = true
 octo-media.workspace = true

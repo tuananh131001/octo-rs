@@ -44,4 +44,8 @@ impl ILocalLibraryService for LocalLibraryService {
     ) -> Option<LocalSongMapping> {
         None
     }
+
+    async fn trigger_library_scan(&self, _force: bool) -> bool {
+        false
+    }
 }
