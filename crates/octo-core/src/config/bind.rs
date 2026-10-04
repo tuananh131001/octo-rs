@@ -304,10 +304,11 @@ impl<'de, 'a> de::Deserializer<'de> for NodeDeserializer<'a> {
     }
 
     fn deserialize_option<V: Visitor<'de>>(self, visitor: V) -> Result<V::Value, BindError> {
-        // An empty string is "not set" for an optional field of any type; a section with
-        // children (an optional nested object) is present.
-        let empty_value = self.text().is_none_or(|t| t.is_empty());
-        if empty_value && self.node.children.is_empty() {
+        // As ConfigurationBinder: an optional string given "" is "", while an optional number,
+        // bool or enum given "" is unset. The inner value rejects an empty number, and the
+        // retry in `bind` then leaves the field at its default (None). A missing value with no
+        // lower layer is unset for every type.
+        if self.text().is_none() && self.node.children.is_empty() && self.node.fallbacks.is_empty() {
             visitor.visit_none()
         } else {
             visitor.visit_some(self)
@@ -593,7 +594,7 @@ mod tests {
     #[test]
     fn empty_strings_mean_unset() {
         let (s, w) = bind_env(&[("S__Url", ""), ("S__SearchWaitSeconds", "")]);
-        assert_eq!(s.url, None);
+        assert_eq!(s.url.as_deref(), Some(""));
         assert_eq!(s.search_wait_seconds, 30);
         assert!(w.is_empty());
     }

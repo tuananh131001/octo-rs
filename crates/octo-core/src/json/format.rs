@@ -354,6 +354,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::approx_constant)]
     fn doubles_match_dotnet_round_trip_format() {
         let cases: &[(f64, &str)] = &[
             (0.0, "0"),
