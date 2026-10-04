@@ -4,6 +4,7 @@ pub mod common;
 pub mod config;
 pub mod fingerprint;
 pub mod json;
+pub mod metadata;
 pub mod models;
 pub mod settings;
 pub mod soulseek;
