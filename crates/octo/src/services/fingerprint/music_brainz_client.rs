@@ -9,7 +9,7 @@ use std::time::Duration;
 use octo_core::common::{SongIdentity, dotnet, octo_user_agent};
 use octo_core::fingerprint::music_brainz_client as pure;
 use octo_core::json::element::ElementError;
-use octo_core::tagging::release_details::ReleaseDetails;
+use octo_core::tagging::{ReleaseDetails, ReleaseLookup};
 use serde_json::Value;
 use tokio::time::Instant;
 use tracing::debug;
@@ -245,6 +245,30 @@ impl MusicBrainzClient {
                 Ok(None)
             }
         }
+    }
+}
+
+/// The music database calls the release identifier makes. A timeout is the error the C#
+/// identifier saw thrown; every other failure is already None.
+#[async_trait::async_trait]
+impl ReleaseLookup for MusicBrainzClient {
+    async fn lookup_release(&self, release_id: &str) -> anyhow::Result<Option<ReleaseDetails>> {
+        Ok(MusicBrainzClient::lookup_release(self, release_id)
+            .await?
+            .map(|details| (*details).clone()))
+    }
+
+    async fn search_recordings(
+        &self,
+        artist: &str,
+        title: &str,
+        duration_seconds: i32,
+    ) -> anyhow::Result<Option<Value>> {
+        Ok(MusicBrainzClient::search_recordings(self, artist, title, duration_seconds).await?)
+    }
+
+    async fn lookup_isrc(&self, isrc: &str) -> anyhow::Result<Option<Value>> {
+        Ok(MusicBrainzClient::lookup_isrc(self, isrc).await?)
     }
 }
 

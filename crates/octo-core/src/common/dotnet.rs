@@ -253,6 +253,26 @@ pub fn eq_ignore_case(a: &str, b: &str) -> bool {
     }
 }
 
+/// A key under which strings that are equal by `StringComparer.OrdinalIgnoreCase` are equal,
+/// for a dictionary built with that comparer.
+pub fn ordinal_ignore_case_key(s: &str) -> String {
+    s.chars().map(ordinal_case_key).collect()
+}
+
+/// `string.Compare(a, b, StringComparison.OrdinalIgnoreCase)`: the case-mapped UTF-16 code
+/// units compared one by one, so a supplementary-plane character sorts by its surrogates.
+pub fn compare_ordinal_ignore_case(a: &str, b: &str) -> std::cmp::Ordering {
+    let units = |s: &str| -> Vec<u16> {
+        let mut out = Vec::with_capacity(s.len());
+        let mut buf = [0u16; 2];
+        for c in s.chars() {
+            out.extend_from_slice(ordinal_case_key(c).encode_utf16(&mut buf));
+        }
+        out
+    };
+    units(a).cmp(&units(b))
+}
+
 /// `s.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)`.
 pub fn starts_with_ignore_case(s: &str, prefix: &str) -> bool {
     let mut chars = s.chars();
@@ -370,6 +390,25 @@ mod tests {
         assert_eq!(
             form_url_encode("recordings releasegroups+x"),
             "recordings+releasegroups%2Bx"
+        );
+    }
+
+    #[test]
+    fn ordinal_ignore_case_keys_and_ordering() {
+        assert_eq!(
+            ordinal_ignore_case_key("Peer1|a\\B.flac"),
+            ordinal_ignore_case_key("PEER1|A\\b.FLAC")
+        );
+        assert_ne!(ordinal_ignore_case_key("ı"), ordinal_ignore_case_key("I"));
+        use std::cmp::Ordering;
+        assert_eq!(compare_ordinal_ignore_case("albums", "Beta"), Ordering::Less);
+        assert_eq!(compare_ordinal_ignore_case("ABC", "abc"), Ordering::Equal);
+        // Upper-cased, '_' (0x5F) sorts after the letters (0x41..0x5A).
+        assert_eq!(compare_ordinal_ignore_case("_x", "z"), Ordering::Greater);
+        // A surrogate (0xD800..) sorts before U+FF21 by UTF-16 units, though after it by code point.
+        assert_eq!(
+            compare_ordinal_ignore_case("\u{1F3B5}", "\u{FF21}"),
+            Ordering::Less
         );
     }
 

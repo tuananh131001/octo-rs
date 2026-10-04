@@ -1045,3 +1045,24 @@ async fn concurrent_artist_searches_share_one_request() {
     assert_eq!(a, b);
     assert_eq!(h.calls("/search/artist"), 1);
 }
+
+/// The release identifier reaches the catalog through 2-A's `CatalogLookup`.
+#[tokio::test]
+async fn the_service_is_the_identifiers_catalog_lookup() {
+    let one = r#"{"data":[{"id":11,"title":"Teardrop","duration":330,"album":{"id":1,"title":"Mezzanine"},"artist":{"name":"Massive Attack"}}]}"#;
+    let h = Harness::new(vec![
+        ("/album/1", r#"{"id":1,"record_type":"album"}"#),
+        ("/track/11", r#"{"id":11}"#),
+        ("/search", one),
+    ])
+    .await;
+    let lookup: &dyn CatalogLookup = &h.service;
+
+    let answer = lookup
+        .enrich_track_candidates("Massive Attack", "Teardrop", 2)
+        .await
+        .expect("never fails");
+
+    assert_eq!(answer.hits.len(), 1);
+    assert_eq!(answer.hits[0].album_title.as_deref(), Some("Mezzanine"));
+}

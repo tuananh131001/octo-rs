@@ -1,5 +1,5 @@
 //! Port of `Services/CoverArt/ITunesCoverArtLookup.cs`. The barcode forms, which tagging reads
-//! too, are in `octo_core::cover_art::itunes_cover_art_lookup`.
+//! too, are `octo_core::tagging::release_distance::barcode_forms`.
 
 use std::path::{Path, PathBuf};
 use std::sync::LazyLock;
@@ -12,9 +12,10 @@ use chrono::{DateTime, Utc};
 use futures::StreamExt;
 use indexmap::IndexMap;
 use octo_core::common::{Clock, SongIdentity, SongMatchOptions, dotnet};
-pub use octo_core::cover_art::itunes_cover_art_lookup::barcode_forms;
+// `BarcodeForms` came over with tagging, which reads it too.
 use octo_core::json::element::{array_length, enumerate_array, get_string, str_prop, try_get_property};
 use octo_core::soulseek::soulseek_metadata_service::{RoutingKind, SoulseekRouting};
+pub use octo_core::tagging::release_distance::barcode_forms;
 use parking_lot::Mutex;
 use regex::Regex;
 use reqwest::StatusCode;

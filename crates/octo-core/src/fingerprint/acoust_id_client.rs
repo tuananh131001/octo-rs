@@ -1,5 +1,7 @@
-//! The data half of `Services/Fingerprint/AcoustIdClient.cs`: what an AcoustID lookup answers,
-//! and how its JSON is read. The HTTP half is `octo::services::fingerprint::acoust_id_client`.
+//! The data half of `Services/Fingerprint/AcoustIdClient.cs`: the records an AcoustID lookup
+//! answers with (`VerificationResult` and the release chooser hold them), and the pure reading
+//! of its answer (`ParseLookup`) and building of its forms. The HTTP client and its rate limiter
+//! are in `octo::services::fingerprint`.
 
 use serde_json::Value;
 
@@ -12,16 +14,26 @@ use crate::json::element::{
 };
 
 /// One credited artist and the text MusicBrainz joins it to the next one with.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct AcoustIdCredit {
     pub name: String,
     pub artist_id: Option<String>,
     pub join_phrase: String,
 }
 
+impl AcoustIdCredit {
+    pub fn new(name: impl Into<String>, artist_id: Option<&str>, join_phrase: impl Into<String>) -> Self {
+        Self {
+            name: name.into(),
+            artist_id: artist_id.map(str::to_string),
+            join_phrase: join_phrase.into(),
+        }
+    }
+}
+
 /// The release a recording was matched on. It supplies what names the album, numbers the
 /// track and finds the cover, and it is chosen per recording by PickRelease.
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct AcoustIdRelease {
     pub release_id: Option<String>,
     pub release_group_id: Option<String>,
@@ -46,39 +58,11 @@ pub struct AcoustIdRelease {
     pub album_artist_ids: Vec<String>,
 }
 
-impl AcoustIdRelease {
-    /// The positional record constructor; the init-only properties start empty.
-    pub fn new(
-        release_id: Option<String>,
-        release_group_id: Option<String>,
-        title: Option<String>,
-        year: Option<i32>,
-        track_number: Option<i32>,
-        track_count: Option<i32>,
-        disc_number: Option<i32>,
-        album_artist: Option<String>,
-        is_compilation: bool,
-    ) -> Self {
-        Self {
-            release_id,
-            release_group_id,
-            title,
-            year,
-            track_number,
-            track_count,
-            disc_number,
-            album_artist,
-            is_compilation,
-            ..Default::default()
-        }
-    }
-}
-
 /// One recording AcoustID matched, with the MusicBrainz fields that come back in the same
 /// lookup. There is no separate MusicBrainz client on purpose: AcoustID's metadata IS
 /// MusicBrainz data, and asking for it via meta= costs nothing extra on a call already
 /// being made and already inside a rate budget.
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct AcoustIdRecording {
     pub recording_id: String,
     pub title: String,
@@ -91,7 +75,7 @@ pub struct AcoustIdRecording {
     pub duration_seconds: Option<i32>,
 
     /// Every release of every group the recording is on, bounded, for the chooser.
-    /// `release` stays the one pick the old fields are read from.
+    /// [`release`](Self::release) stays the one pick the old fields are read from.
     pub releases: Vec<AcoustIdRelease>,
 
     /// The codes the music database lists for the recording, normalised.
@@ -102,19 +86,19 @@ pub struct AcoustIdRecording {
 }
 
 impl AcoustIdRecording {
-    /// The positional record constructor; the init-only properties start empty.
-    pub fn new(
+    /// The positional part of the C# record; everything else starts empty.
+    pub fn new<S: Into<String>>(
         recording_id: impl Into<String>,
         title: impl Into<String>,
-        artists: Vec<String>,
-        album_title: Option<String>,
+        artists: impl IntoIterator<Item = S>,
+        album_title: Option<&str>,
         year: Option<i32>,
     ) -> Self {
         Self {
             recording_id: recording_id.into(),
             title: title.into(),
-            artists,
-            album_title,
+            artists: artists.into_iter().map(Into::into).collect(),
+            album_title: album_title.map(str::to_string),
             year,
             ..Default::default()
         }
@@ -148,25 +132,28 @@ impl AcoustIdRecording {
             }
             // compress drops a join phrase the parent level already carries, so a missing one
             // is read the way MusicBrainz most often prints it.
-            if credit.join_phrase.is_empty() {
-                builder.push_str(if i == credits.len() - 2 { " & " } else { ", " });
+            let join = credit.join_phrase.as_str();
+            builder.push_str(if !join.is_empty() {
+                join
+            } else if i == credits.len() - 2 {
+                " & "
             } else {
-                builder.push_str(&credit.join_phrase);
-            }
+                ", "
+            });
         }
         builder
     }
 
     pub fn join_names(names: &[String]) -> String {
-        match names.len() {
-            0 => String::new(),
-            1 => names[0].clone(),
-            n => format!("{} & {}", names[..n - 1].join(", "), names[n - 1]),
+        match names {
+            [] => String::new(),
+            [one] => one.clone(),
+            [rest @ .., last] => format!("{} & {last}", rest.join(", ")),
         }
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct AcoustIdResult {
     pub score: f64,
     pub recordings: Vec<AcoustIdRecording>,
@@ -184,11 +171,49 @@ impl AcoustIdResult {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct AcoustIdLookup {
     pub is_ok: bool,
     pub error: Option<String>,
     pub results: Vec<AcoustIdResult>,
+}
+
+impl AcoustIdLookup {
+    pub fn new(is_ok: bool, error: Option<&str>, results: Vec<AcoustIdResult>) -> Self {
+        Self {
+            is_ok,
+            error: error.map(str::to_string),
+            results,
+        }
+    }
+}
+
+impl AcoustIdRelease {
+    /// The positional record constructor; the init-only properties start empty.
+    pub fn new(
+        release_id: Option<String>,
+        release_group_id: Option<String>,
+        title: Option<String>,
+        year: Option<i32>,
+        track_number: Option<i32>,
+        track_count: Option<i32>,
+        disc_number: Option<i32>,
+        album_artist: Option<String>,
+        is_compilation: bool,
+    ) -> Self {
+        Self {
+            release_id,
+            release_group_id,
+            title,
+            year,
+            track_number,
+            track_count,
+            disc_number,
+            album_artist,
+            is_compilation,
+            ..Default::default()
+        }
+    }
 }
 
 /// One confirmed fingerprint to send back, with the recording a person vouched for.

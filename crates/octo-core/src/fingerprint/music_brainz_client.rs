@@ -236,7 +236,7 @@ pub fn pick(root: &Value, artist: &str, title: &str, duration_seconds: i32) -> E
                 }
             }
         }
-        if !TrackMatchComparer::artist_matches(artist, &credits.join(" & "), Some(&credits)) {
+        if !TrackMatchComparer::artist_matches(artist, &credits.join(" & "), &credits) {
             continue;
         }
 

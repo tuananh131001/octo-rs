@@ -16,6 +16,7 @@ pub use octo_core::metadata::deezer_metadata_service::{
     FullTrackMeta, TrackMeta, release_rank, release_types,
 };
 use octo_core::settings::SettingsStore;
+use octo_core::tagging::CatalogLookup;
 use serde_json::Value;
 use tracing::{debug, info, warn};
 
@@ -1334,6 +1335,20 @@ impl DeezerMetadataService {
             }
         }
         Ok((false, Vec::new()))
+    }
+}
+
+/// The catalog call the release identifier makes. The service never fails; a throttled catalog
+/// is `did_not_answer`.
+#[async_trait::async_trait]
+impl CatalogLookup for DeezerMetadataService {
+    async fn enrich_track_candidates(
+        &self,
+        artist: &str,
+        title: &str,
+        max: i32,
+    ) -> anyhow::Result<CatalogCandidates> {
+        Ok((*DeezerMetadataService::enrich_track_candidates(self, artist, title, max).await).clone())
     }
 }
 

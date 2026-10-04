@@ -330,7 +330,7 @@ fn artist_credit_without_join_phrases_never_comma_joins_two_artists() {
         (&["Earth, Wind & Fire"], "Earth, Wind & Fire"),
     ];
     for &(names, expected) in cases {
-        let names = names.iter().map(|n| n.to_string()).collect();
+        let names: Vec<String> = names.iter().map(|n| n.to_string()).collect();
         assert_eq!(
             AcoustIdRecording::new("r", "t", names, None, None).artist_credit(),
             expected,
@@ -404,4 +404,31 @@ fn the_submit_form_numbers_every_item() {
         ]
     );
     assert_eq!(form[3].1, format!("octo-{}", octo_user_agent::version()));
+}
+
+/// From 2-A's port of the records.
+#[test]
+fn artist_credit_joins_with_the_phrases_or_the_usual_ones() {
+    let credited = AcoustIdRecording {
+        credits: vec![
+            AcoustIdCredit::new("Massive Attack", Some("a1"), " feat. "),
+            AcoustIdCredit::new("Elizabeth Fraser", Some("a2"), ""),
+        ],
+        ..AcoustIdRecording::new("r", "Teardrop", ["Massive Attack"], None, None)
+    };
+    assert_eq!(credited.artist_credit(), "Massive Attack feat. Elizabeth Fraser");
+    assert_eq!(credited.primary_artist(), Some("Massive Attack"));
+
+    let three = [
+        AcoustIdCredit::new("A", None, ""),
+        AcoustIdCredit::new("B", None, ""),
+        AcoustIdCredit::new("C", None, ""),
+    ];
+    assert_eq!(AcoustIdRecording::join_credits(&three), "A, B & C");
+
+    let named = AcoustIdRecording::new("r", "t", ["A", "B", "C"], None, None);
+    assert_eq!(named.artist_credit(), "A, B & C");
+    assert_eq!(named.primary_artist(), Some("A"));
+    assert_eq!(AcoustIdRecording::default().artist_credit(), "");
+    assert_eq!(AcoustIdRecording::default().primary_artist(), None);
 }
