@@ -1099,6 +1099,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "if-addrs"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c0a05c691e1fae256cf7013d99dad472dc52d5543322761f83ec8d47eab40d2b"
+dependencies = [
+ "libc",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
 name = "image"
 version = "0.25.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1550,6 +1560,7 @@ dependencies = [
  "http",
  "http-body-util",
  "httpdate",
+ "if-addrs",
  "indexmap",
  "insta",
  "md-5",
@@ -1644,12 +1655,17 @@ version = "2026.10.3"
 dependencies = [
  "anyhow",
  "chrono",
+ "hex",
  "indexmap",
  "insta",
+ "md-5",
  "octo-core",
+ "percent-encoding",
  "quick-xml",
+ "rand",
  "serde",
  "serde_json",
+ "sha2",
  "thiserror",
  "tracing",
 ]

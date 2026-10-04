@@ -145,9 +145,73 @@ async fn request_lines_mask_every_secret_at_once_and_keep_the_rest() {
         )),
         "{finished}"
     );
-    // Not routed yet, so the catch-all's 501 (the relay arrives with the Subsonic controller).
-    assert!(finished.contains(" - 501 "), "{finished}");
+    // Not routed yet, so the catch-all relays it; with no Navidrome URL, its 200 error envelope.
+    assert!(finished.contains(" - 200 "), "{finished}");
     for secret in [t, s, p, api_key, token] {
         assert!(!all.contains(&secret));
     }
+}
+
+/// `AnApiKeySignIn_IsNamed_WithoutTheKeyReachingTheLog`: an API key sign-in carries no
+/// username, so Octo asks Navidrome whose key it is. That call carries the key too, and neither
+/// it nor Octo's own lines about it may log it. The C# drove it through scrobble and search3
+/// (6-A); here a relayed call carries the key through the catch-all, and `RequestIdentity`
+/// names it.
+#[tokio::test]
+async fn an_api_key_sign_in_is_named_without_the_key_reaching_the_log() {
+    use wiremock::matchers::{method, path};
+    use wiremock::{Mock, MockServer, ResponseTemplate};
+
+    let log = log();
+    let navidrome = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/rest/tokenInfo"))
+        .respond_with(ResponseTemplate::new(200).set_body_raw(
+            r#"{"subsonic-response":{"status":"ok","version":"1.16.1","tokenInfo":{"username":"bob"}}}"#,
+            "application/json",
+        ))
+        .mount(&navidrome)
+        .await;
+    Mock::given(method("GET"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_raw(r#"{"subsonic-response":{}}"#, "application/json"),
+        )
+        .mount(&navidrome)
+        .await;
+    let mut settings = AppSettings::default();
+    settings.subsonic.url = Some(navidrome.uri());
+    let state = AppState::for_tests(settings);
+    let app = build_with(state.clone(), RouteSet::new());
+    let key = secret();
+
+    let req = Request::get(format!("/rest/getUser.view?apiKey={key}&v=1.16.1&c=Octo&f=json"))
+        .header("Host", "octo.test")
+        .body(Body::empty())
+        .expect("request");
+    let res = app.oneshot(req).await.expect("infallible");
+    assert_eq!(res.status(), StatusCode::OK);
+    res.into_body().collect().await.expect("body");
+
+    let parameters: indexmap::IndexMap<String, String> =
+        [("apiKey", key.as_str()), ("v", "1.16.1"), ("c", "Octo")]
+            .iter()
+            .map(|(k, v)| (k.to_string(), v.to_string()))
+            .collect();
+    let named = state
+        .request_identity
+        .username(&parameters, &state.subsonic_proxy)
+        .await;
+    assert_eq!(named, Ok(Some("bob".to_string())));
+
+    let paths: Vec<String> = navidrome
+        .received_requests()
+        .await
+        .expect("recording")
+        .iter()
+        .map(|r| r.url.path().to_string())
+        .collect();
+    assert!(paths.iter().any(|p| p.ends_with("/rest/tokenInfo")), "{paths:?}");
+    let text = String::from_utf8_lossy(&log.0.lock().expect("capture lock")).into_owned();
+    assert!(text.contains("apiKey=***"), "{text}");
+    assert!(!text.contains(&key));
 }

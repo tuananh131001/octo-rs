@@ -26,6 +26,7 @@ hex.workspace = true
 http.workspace = true
 http-body-util.workspace = true
 httpdate.workspace = true
+if-addrs.workspace = true
 indexmap.workspace = true
 md-5.workspace = true
 mime_guess.workspace = true
