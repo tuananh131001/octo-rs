@@ -42,7 +42,7 @@ depends on have been merged into `rust-rewrite`. Status: ☐ not started · ◐ 
 | ☐ | 4-B download base and verification | `Common/BaseDownloadService`, `Fingerprint/DownloadVerificationService`, `CoverArt/{DownloadCoverResolver,AlbumCoverFinder}`, `Common/AlbumFillIn`, `IDownloadService` | DownloadPlacement, DownloadTagging, DownloadAttribution, AlbumFolder, AlbumFillIn, DownloadVerificationDecision, FailedRelayDetection, RelayedRepeats, CoverChain |
 | ☐ | 4-C Soulseek download service | `Soulseek/SoulseekDownloadService` | ParallelDownload, ParallelLockSplit, SoulseekSlowTransfer, SoulseekIncompleteFolder |
 | ☑ | 4-D acquisition orchestration | `Common/{AcquisitionTracker,AcquisitionWorker,AcquisitionActivity,TrackAcquisitionQueue,HeartAcquisitionCoordinator,StarOnArrival,SoulseekHoldResumer,ExternalSearchService,CacheCleanupService}`, `Library/{HeartOwnership,LibraryOwnership,ReplacementHandoff}`, `Local/LocalLibraryService` | AcquisitionTracker, HeartAcquisitionCoordinator, HeartOwnership, StarOnArrival, LibraryOwnership, LocalLibraryService, ExternalSearchService, HonestOutsideSongs, OutsideSongSignIn |
-| ◐ | 4-E Lidarr | `Lidarr/*` | LidarrClient, LidarrHeartProtection, LidarrTrackFetcher |
+| ☑ | 4-E Lidarr | `Lidarr/*` | LidarrClient, LidarrHeartProtection, LidarrTrackFetcher |
 
 ## Wave 5: library jobs, radio, background workers (needs wave 4)
 
