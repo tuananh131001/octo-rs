@@ -10,7 +10,7 @@ depends on have been merged into `rust-rewrite`. Status: ☐ not started · ◐ 
 |---|---|---|---|---|
 | ☑ | 1-A settings | `Models/Settings/*`, `Admin/SettingsFileWriter`, `Admin/RestartTracker`, plus the config layering in `Program.cs` | SettingsFileWriter, LibraryActionSettings, RestartTracker | core |
 | ◐ | 1-B models + common | `Models/{Domain,Search,Download,Subsonic}/*`, `Common/{Error,Result,SongIdentity,LiveVersion,PlaylistIdHelper,SingleFlight,SupersedableBuildCoordinator,OctoUserAgent,LogRedaction}` | SongIdentity, SongIdentityCases, LiveVersion, PlaylistIdHelper, SingleFlight, SupersedableBuildCoordinator, LogRedaction, QueryVariantLookup | core |
-| ◐ | 1-C list covers | `CoverArt/{CoverBook,CoverPainter,CoverLayout,CoverFonts,CoverColours,CoverBackgrounds,CoverVeil,CoverImage,CoverFiles,CoverArtService}` and the design assets | ListCover, plus the golden harness | media |
+| ☑ | 1-C list covers | `CoverArt/{CoverBook,CoverPainter,CoverLayout,CoverFonts,CoverColours,CoverBackgrounds,CoverVeil,CoverImage,CoverFiles,CoverArtService}` and the design assets | ListCover, plus the golden harness | media |
 | ☑ | 1-D audio tools | `Audio/LoudnessMeter`, `Fingerprint/{AudioFingerprinter,SpectrumAnalyzer}` | LoudnessMeter, AudioFingerprinter, SpectrumAnalyzer | media |
 
 ## Wave 2: pure logic, app skeleton, metadata clients (needs 1-A, 1-B)
@@ -21,7 +21,7 @@ depends on have been merged into `rust-rewrite`. Status: ☐ not started · ◐ 
 | ☐ | 2-B lyrics/metadata/updates/validation, pure parts | `Lyrics/{LyricsText,LyricsModels,LyricsIdentity,SongLyrics,LyricsfileReader}`, `Metadata/{GenreNormalizer,AcceptLanguageHeader,GenreBackfillState,GenreBackfillJournal}`, `Updates/{ReleaseVersion,UpdateHost}`, `Validation/*` (base and result) | LyricsWordTiming, GenreNormalizer, AcceptLanguageHeader, UpdateHost; the pure parts of Lyrics, LyricsChoice and ReleaseCheck | core + octo |
 | ◐ | 2-C app skeleton (Phase 1) | `Program.cs` wiring, `Middleware/*`, static files, CORS, tracing with redaction, graceful shutdown, worker supervisor | LogRedaction (the logging layer), RestartTracker (wiring) | octo |
 | ☐ | 2-D metadata clients | `Metadata/{DeezerMetadataService,DeezerRateLimiter,DeezerRateLimitHandler}`, `Fingerprint/{MusicBrainzClient,AcoustIdClient,AcoustIdRateLimiter,AcoustIdRateLimitHandler}`, `CoverArt/{ICoverArtSource,DeezerCoverArtLookup,ITunesCoverArtLookup,LastFmCoverArtLookup,CoverArtArchiveLookup,CoverArtAggregator}` | DeezerMetadataService, DeezerRateLimitHandler, AcoustIdLookup, MusicBrainzReleaseDetails, MusicBrainzStudioAlbum, IsrcVerification, CoverLookup, CleanCoverClient | octo |
-| ◐ | 2-E parity harness | docker-compose profile, Navidrome fixture library, wiremock stubs, request corpus, differ, C# recording | — | `parity/` |
+| ☑ | 2-E parity harness | docker-compose profile, Navidrome fixture library, wiremock stubs, request corpus, differ, C# recording | — | `parity/` |
 
 ## Wave 3: integrations and stores (needs wave 2)
 
