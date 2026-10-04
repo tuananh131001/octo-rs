@@ -59,6 +59,7 @@ use crate::services::last_fm::{
     LastFmService, RandomRadioTuneInSelector,
 };
 use crate::services::library::GeneratedPlaylistService;
+use crate::services::library::library_review_sweep_worker::SweepVerification;
 use crate::services::library::{
     DuplicateScanWorker, FingerprintSweepVerifier, LibraryReviewSweepParts, LibraryReviewSweepWorker,
     NoticePlaylistWorker, QualityUpgradeStore, QualityUpgradeWorker, ReviewSweepStore, UpgradeWorker,
@@ -362,8 +363,7 @@ pub struct AppInner {
     pub review_sweep_store: Arc<ReviewSweepStore>,
     /// `LibraryReviewSweepWorker`, singleton AND hosted: the "LibraryReviewSweepWorker" worker.
     pub library_review_sweep_worker: Arc<LibraryReviewSweepWorker>,
-    /// `FingerprintSweepVerifier`: the sweep's check. STUB(4-B): nothing sets its verification
-    /// service until 4-B's `DownloadVerificationService` lands, so the sweep holds as not set up.
+    /// `FingerprintSweepVerifier`: the sweep's check, over the download verification service.
     pub fingerprint_sweep_verifier: Arc<FingerprintSweepVerifier>,
 }
 
@@ -1300,7 +1300,6 @@ impl LibraryJobs {
             Some(navidrome.navidrome_song_path_resolver.clone()),
             Some(Arc::new(SpectrumAnalyzer::new())),
         ));
-        // STUB(4-B): `set_service` with the DownloadVerificationService once it lands.
         let fingerprint_sweep_verifier = Arc::new(FingerprintSweepVerifier::new());
         let resolver = navidrome.navidrome_song_path_resolver.clone();
         let library_review_sweep_worker = Arc::new(LibraryReviewSweepWorker::new(
@@ -1442,6 +1441,11 @@ impl AppState {
             settings.clone(),
             Clock::system(),
         ));
+        // `FingerprintSweepVerifier(sp)` resolved the download verification service when the
+        // sweep first asked; here it is handed over once both exist.
+        library_jobs
+            .fingerprint_sweep_verifier
+            .set_service(tagging.download_verification.clone() as Arc<dyn SweepVerification>);
         let inner = AppInner {
             settings_writer,
             restart_tracker: Arc::new(restart_tracker),
@@ -1623,6 +1627,11 @@ impl AppState {
             settings.clone(),
             Clock::system(),
         ));
+        // `FingerprintSweepVerifier(sp)` resolved the download verification service when the
+        // sweep first asked; here it is handed over once both exist.
+        library_jobs
+            .fingerprint_sweep_verifier
+            .set_service(tagging.download_verification.clone() as Arc<dyn SweepVerification>);
         let inner = AppInner {
             restart_tracker,
             settings,
@@ -2043,7 +2052,7 @@ mod tests {
         );
         assert_eq!(state.library_review_sweep_worker.status().state, "Off");
         assert!(state.duplicate_scan_worker.last_result().is_none());
-        // STUB(4-B): no verification service yet, so the sweep is not set up.
+        // The verification service is set, but with no AcoustID key the sweep is not set up.
         use crate::services::library::IReviewSweepVerifier;
         assert!(!state.fingerprint_sweep_verifier.is_ready());
         assert_eq!(state.upgrade_worker.running(), 0);

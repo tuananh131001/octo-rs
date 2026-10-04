@@ -889,3 +889,11 @@ fn extension(path: &str) -> String {
 #[cfg(test)]
 #[path = "notice_queue_tests.rs"]
 mod tests;
+
+/// What a download asks of the notice queue (`BaseDownloadService` resolved `NoticeQueue`): a
+/// file kept although verification doubted it becomes a question for its owner.
+impl crate::services::common::base_download_service::ReviewQueue for NoticeQueue {
+    fn add_review(&self, owner: &str, local_path: &str, song: &Song, verdict: &VerificationResult) -> bool {
+        NoticeQueue::add_review(self, owner, local_path, song, verdict)
+    }
+}

@@ -43,8 +43,8 @@ pub trait IReviewSweepVerifier: Send + Sync {
 /// (`IsFingerprintingEnabled`) and `VerifyAsync(path, artist, title)` with no ISRC and
 /// `refuseLive` off.
 ///
-/// STUB(4-B): 4-B's `DownloadVerificationService` implements this when it lands, and
-/// `AppState::build` hands it to the [`FingerprintSweepVerifier`] with `set_service`.
+/// `DownloadVerificationService` implements it; `AppState::build` hands it to the
+/// [`FingerprintSweepVerifier`] with `set_service`.
 #[async_trait]
 pub trait SweepVerification: Send + Sync {
     fn is_fingerprinting_enabled(&self) -> bool;
@@ -318,12 +318,8 @@ pub enum Outcome {
     LookupFailed,
 }
 
-/// STUB(5-D): `CoverUpgradeWorker.AudioExtensions`, the audio files the sweep walks, until 5-D's
-/// cover upgrade lands with it.
-const AUDIO_EXTENSIONS: [&str; 14] = [
-    ".mp3", ".flac", ".m4a", ".mp4", ".aac", ".ogg", ".oga", ".opus", ".wma", ".aif", ".aiff", ".dsf", ".wv",
-    ".ape",
-];
+/// `CoverUpgradeWorker.AudioExtensions`: the audio files the sweep walks.
+const AUDIO_EXTENSIONS: [&str; 14] = crate::services::cover_art::CoverUpgradeWorker::AUDIO_EXTENSIONS;
 
 /// STUB(4-C): `SoulseekDownloadService.ExcludedFolderNames(null)`, slskd's default incomplete
 /// folder and Octo's own staging, until 4-C lands with it.
