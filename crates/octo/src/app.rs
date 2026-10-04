@@ -55,6 +55,11 @@ use crate::services::last_fm::{
 };
 use crate::services::library::GeneratedPlaylistService;
 use crate::services::library::{
+    DuplicateScanWorker, FingerprintSweepVerifier, LibraryReviewSweepParts, LibraryReviewSweepWorker,
+    NoticePlaylistWorker, QualityUpgradeStore, QualityUpgradeWorker, ReviewSweepStore, UpgradeWorker,
+    UpgradeWorkerParts,
+};
+use crate::services::library::{
     HeartOwnership, LibraryActionExecutor, LibraryActionExecutorParts, LibraryActionJournal,
     LibraryActionPlaylistWorker, LibraryActionQuarantine, LibraryActionRatingWorker, LibraryOwnership,
     NavidromePlaylistApi, NavidromeSongPathResolver, NoticeQueue, OwnershipNavidrome, UpgradeQueue,
@@ -260,7 +265,7 @@ pub struct AppInner {
     /// `StarOnArrival`, built eagerly as `Program.cs` resolved it after `Build()`, so it is
     /// listening when the first download finishes.
     pub star_on_arrival: Arc<StarOnArrival>,
-    /// `UpgradeQueue`. STUB(5-B): an in-memory stand-in until 5-B lands.
+    /// `UpgradeQueue`: songs asked to be found in higher quality, `upgrades.json`.
     pub upgrade_queue: Arc<UpgradeQueue>,
     /// `UpgradeSources`: where Better quality looks, over the Soulseek link.
     pub upgrade_sources: Arc<UpgradeSources>,
@@ -308,8 +313,26 @@ pub struct AppInner {
     /// "LibraryActionRatingWorker" worker. (`LibraryActionPlaylistWorker` is hosted only, and
     /// `LibraryActionPlaylistProvisioner` is scoped: built per request over its proxy.)
     pub library_action_rating_worker: Arc<LibraryActionRatingWorker>,
-    /// `NoticeQueue`. STUB(5-B): in memory, and only what library actions call, until 5-B lands.
+    /// `NoticeQueue`: what Octo asked each person, `notice-queue.json`. Its 5-second flush (a
+    /// timer in C#) is the "NoticeQueue" worker.
     pub notice_queue: Arc<NoticeQueue>,
+    /// `UpgradeWorker`, singleton AND hosted: the "UpgradeWorker" worker.
+    pub upgrade_worker: Arc<UpgradeWorker>,
+    /// `QualityUpgradeStore`: what the weekly upgrade tried, `quality-upgrade.json`.
+    pub quality_upgrade_store: Arc<QualityUpgradeStore>,
+    /// `QualityUpgradeWorker`, singleton AND hosted: the "QualityUpgradeWorker" worker.
+    pub quality_upgrade_worker: Arc<QualityUpgradeWorker>,
+    /// `DuplicateScanWorker`, singleton AND hosted, so "Scan now" reaches the running instance:
+    /// the "DuplicateScanWorker" worker.
+    pub duplicate_scan_worker: Arc<DuplicateScanWorker>,
+    /// `ReviewSweepStore`: the library sweep's cursor, `review-sweep.json`. Its 5-second flush
+    /// (a timer in C#) is the "ReviewSweepStore" worker.
+    pub review_sweep_store: Arc<ReviewSweepStore>,
+    /// `LibraryReviewSweepWorker`, singleton AND hosted: the "LibraryReviewSweepWorker" worker.
+    pub library_review_sweep_worker: Arc<LibraryReviewSweepWorker>,
+    /// `FingerprintSweepVerifier`: the sweep's check. STUB(4-B): nothing sets its verification
+    /// service until 4-B's `DownloadVerificationService` lands, so the sweep holds as not set up.
+    pub fingerprint_sweep_verifier: Arc<FingerprintSweepVerifier>,
 }
 
 /// The acquisition pipeline of task 4-D, over the services it routes to. The C# broke two
@@ -370,7 +393,7 @@ impl Acquisition {
             settings.clone(),
             Clock::system(),
         );
-        let upgrade_queue = Arc::new(UpgradeQueue::new());
+        let upgrade_queue = stores.upgrade_queue.clone();
         let upgrade_sources = Arc::new(UpgradeSources::new(settings.clone(), Some(soulseek_link.clone())));
         let library_ownership = Arc::new(LibraryOwnership::new(
             settings.clone(),
@@ -604,6 +627,10 @@ struct Stores {
     release_check: Arc<ReleaseCheck>,
     subsonic_response_builder: Arc<SubsonicResponseBuilder>,
     library_action_journal: Arc<LibraryActionJournal>,
+    upgrade_queue: Arc<UpgradeQueue>,
+    quality_upgrade_store: Arc<QualityUpgradeStore>,
+    notice_queue: Arc<NoticeQueue>,
+    review_sweep_store: Arc<ReviewSweepStore>,
 }
 
 impl Stores {
@@ -645,6 +672,12 @@ impl Stores {
             library_action_journal: Arc::new(LibraryActionJournal::with_path(Some(
                 config_dir.join("library-actions.json"),
             ))),
+            upgrade_queue: Arc::new(UpgradeQueue::with_path(Some(config_dir.join("upgrades.json")))),
+            quality_upgrade_store: Arc::new(QualityUpgradeStore::with_path(Some(
+                config_dir.join("quality-upgrade.json"),
+            ))),
+            notice_queue: Arc::new(NoticeQueue::with_path(Some(config_dir.join("notice-queue.json")))),
+            review_sweep_store: Arc::new(ReviewSweepStore::new(Some(config_dir.join("review-sweep.json")))),
         }
     }
 
@@ -665,6 +698,10 @@ impl Stores {
         workers.register("LibraryActionJournal", move |token| {
             journal.clone().run_flusher(token)
         });
+        let notices = self.notice_queue.clone();
+        workers.register("NoticeQueue", move |token| notices.clone().run_flusher(token));
+        let sweep = self.review_sweep_store.clone();
+        workers.register("ReviewSweepStore", move |token| sweep.clone().run_flusher(token));
     }
 }
 
@@ -956,8 +993,7 @@ impl LibraryActions {
         acquisition: &Acquisition,
         soulseek_link: Arc<dyn ISoulseekLink>,
     ) -> Self {
-        // STUB(5-B): the real queue, with its file, replaces this when 5-B lands.
-        let notice_queue = Arc::new(NoticeQueue::new());
+        let notice_queue = stores.notice_queue.clone();
         let quarantine = Arc::new(LibraryActionQuarantine::new(settings.clone()));
         let executor = Arc::new(LibraryActionExecutor::new(LibraryActionExecutorParts {
             resolver: navidrome.navidrome_song_path_resolver.clone(),
@@ -1007,6 +1043,120 @@ impl LibraryActions {
         let ratings = self.rating_worker.clone();
         workers.register("LibraryActionRatingWorker", move |stopping| {
             ratings.clone().run(stopping)
+        });
+    }
+}
+
+/// The queues and sweeps of 5-B: the upgrade queue's worker, the weekly quality upgrade, the
+/// notice playlists, the duplicate scan and the library Review sweep, over the stores the
+/// [`Stores`] hold.
+struct LibraryJobs {
+    upgrade_worker: Arc<UpgradeWorker>,
+    quality_upgrade_worker: Arc<QualityUpgradeWorker>,
+    notice_playlist_worker: Arc<NoticePlaylistWorker>,
+    duplicate_scan_worker: Arc<DuplicateScanWorker>,
+    fingerprint_sweep_verifier: Arc<FingerprintSweepVerifier>,
+    library_review_sweep_worker: Arc<LibraryReviewSweepWorker>,
+}
+
+impl LibraryJobs {
+    fn build(
+        settings: &Arc<SettingsStore>,
+        stores: &Stores,
+        navidrome: &NavidromeServices,
+        clients: &MetadataClients,
+        acquisition: &Acquisition,
+        executor: &Arc<LibraryActionExecutor>,
+        soulseek_link: Arc<dyn ISoulseekLink>,
+    ) -> LibraryJobs {
+        let upgrade_worker = Arc::new(UpgradeWorker::new(
+            stores.upgrade_queue.clone(),
+            UpgradeWorkerParts {
+                executor: executor.clone(),
+                resolver: navidrome.navidrome_song_path_resolver.clone(),
+                concurrency: Some(stores.download_concurrency.clone()),
+                soulseek: Some(soulseek_link.clone()),
+                tracker: Some(acquisition.acquisition_tracker.clone()),
+                attempts: Some(stores.quality_upgrade_store.clone()),
+                settings: Some(settings.clone()),
+                sources: Some(acquisition.upgrade_sources.clone()),
+            },
+        ));
+        let quality_upgrade_worker = Arc::new(QualityUpgradeWorker::new(
+            stores.quality_upgrade_store.clone(),
+            executor.clone(),
+            acquisition.acquisition_activity.clone(),
+            navidrome.navidrome_playlist_api.clone(),
+            navidrome.navidrome_identity.clone(),
+            settings.clone(),
+            Some(soulseek_link),
+            Some(stores.upgrade_queue.clone()),
+            Some(acquisition.upgrade_sources.clone()),
+        ));
+        let notice_playlist_worker = Arc::new(NoticePlaylistWorker::new(
+            stores.notice_queue.clone(),
+            navidrome.navidrome_playlist_api.clone(),
+            navidrome.navidrome_song_path_resolver.clone(),
+            navidrome.navidrome_identity.clone(),
+            clients.acoust_id.clone(),
+            clients.music_brainz.clone(),
+            settings.clone(),
+        ));
+        let duplicate_scan_worker = Arc::new(DuplicateScanWorker::new(
+            stores.notice_queue.clone(),
+            navidrome.navidrome_identity.clone(),
+            navidrome.http.clone(),
+            settings.clone(),
+            Some(navidrome.navidrome_song_path_resolver.clone()),
+            Some(Arc::new(SpectrumAnalyzer::new())),
+        ));
+        // STUB(4-B): `set_service` with the DownloadVerificationService once it lands.
+        let fingerprint_sweep_verifier = Arc::new(FingerprintSweepVerifier::new());
+        let resolver = navidrome.navidrome_song_path_resolver.clone();
+        let library_review_sweep_worker = Arc::new(LibraryReviewSweepWorker::new(
+            LibraryReviewSweepParts {
+                store: stores.review_sweep_store.clone(),
+                notices: stores.notice_queue.clone(),
+                verifier: fingerprint_sweep_verifier.clone(),
+                activity: acquisition.acquisition_activity.clone(),
+                library: navidrome.local_library.clone(),
+                settings: settings.clone(),
+                // The resolver's root, the same one review actions resolve inside.
+                music_root: Box::new(move || resolver.music_root()),
+            },
+            Clock::system(),
+        ));
+        LibraryJobs {
+            upgrade_worker,
+            quality_upgrade_worker,
+            notice_playlist_worker,
+            duplicate_scan_worker,
+            fingerprint_sweep_verifier,
+            library_review_sweep_worker,
+        }
+    }
+
+    /// `AddHostedService<NoticePlaylistWorker>()`, and the duplicate scan, the upgrade worker,
+    /// the weekly upgrade and the review sweep, each singleton AND hosted, the same instance
+    /// both ways.
+    fn register_workers(&self, workers: &WorkerSupervisor) {
+        let notices = self.notice_playlist_worker.clone();
+        workers.register("NoticePlaylistWorker", move |stopping| {
+            notices.clone().run(stopping)
+        });
+        let duplicates = self.duplicate_scan_worker.clone();
+        workers.register("DuplicateScanWorker", move |stopping| {
+            duplicates.clone().run(stopping)
+        });
+        let upgrades = self.upgrade_worker.clone();
+        workers.register("UpgradeWorker", move |stopping| upgrades.clone().run(stopping));
+        let weekly = self.quality_upgrade_worker.clone();
+        workers.register("QualityUpgradeWorker", move |stopping| {
+            weekly.clone().run(stopping)
+        });
+        let sweep = self.library_review_sweep_worker.clone();
+        workers.register("LibraryReviewSweepWorker", move |stopping| {
+            sweep.clone().run(stopping)
         });
     }
 }
@@ -1083,6 +1233,16 @@ impl AppState {
             soulseek.link.clone(),
         );
         library_actions.register_workers(&workers);
+        let library_jobs = LibraryJobs::build(
+            &settings,
+            &stores,
+            &navidrome,
+            &clients,
+            &acquisition,
+            &library_actions.executor,
+            soulseek.link.clone(),
+        );
+        library_jobs.register_workers(&workers);
         let radio = Radio::build(
             &settings,
             &config_dir,
@@ -1188,6 +1348,13 @@ impl AppState {
             library_action_executor: library_actions.executor,
             library_action_rating_worker: library_actions.rating_worker,
             notice_queue: library_actions.notice_queue,
+            upgrade_worker: library_jobs.upgrade_worker,
+            quality_upgrade_store: stores.quality_upgrade_store,
+            quality_upgrade_worker: library_jobs.quality_upgrade_worker,
+            duplicate_scan_worker: library_jobs.duplicate_scan_worker,
+            review_sweep_store: stores.review_sweep_store,
+            library_review_sweep_worker: library_jobs.library_review_sweep_worker,
+            fingerprint_sweep_verifier: library_jobs.fingerprint_sweep_verifier,
         };
         AppState {
             inner: Arc::new(inner),
@@ -1231,6 +1398,16 @@ impl AppState {
             &stores,
             &navidrome,
             &acquisition,
+            soulseek.link.clone(),
+        );
+        // The 5-B queues keep their files in the test's config directory; no worker is run.
+        let library_jobs = LibraryJobs::build(
+            &settings,
+            &stores,
+            &navidrome,
+            &clients,
+            &acquisition,
+            &library_actions.executor,
             soulseek.link.clone(),
         );
         // The radio's state files sit in the test's config directory; its workers are not run.
@@ -1336,6 +1513,13 @@ impl AppState {
             library_action_executor: library_actions.executor,
             library_action_rating_worker: library_actions.rating_worker,
             notice_queue: library_actions.notice_queue,
+            upgrade_worker: library_jobs.upgrade_worker,
+            quality_upgrade_store: stores.quality_upgrade_store,
+            quality_upgrade_worker: library_jobs.quality_upgrade_worker,
+            duplicate_scan_worker: library_jobs.duplicate_scan_worker,
+            review_sweep_store: stores.review_sweep_store,
+            library_review_sweep_worker: library_jobs.library_review_sweep_worker,
+            fingerprint_sweep_verifier: library_jobs.fingerprint_sweep_verifier,
         };
         AppState {
             inner: Arc::new(inner),
@@ -1579,6 +1763,56 @@ mod tests {
         assert_eq!(off.detail.as_deref(), Some("Library actions are off."));
         assert_eq!(state.library_action_rating_worker.pending(), 0);
         assert!(!state.upgrade_sources.ready());
+    }
+
+    /// 5-B: the stores sit beside settings.json, their flushers and the five hosted services run
+    /// as workers, and the queues are the ones library actions and hearts already use.
+    #[tokio::test]
+    async fn the_queues_and_sweeps_are_wired_as_program_cs_registered_them() {
+        let state = AppState::build(SettingsStore::from_env(Vec::new(), None));
+        let names: Vec<String> = state.workers.status().into_iter().map(|s| s.name).collect();
+        for name in [
+            "NoticeQueue",
+            "ReviewSweepStore",
+            "NoticePlaylistWorker",
+            "DuplicateScanWorker",
+            "UpgradeWorker",
+            "QualityUpgradeWorker",
+            "LibraryReviewSweepWorker",
+        ] {
+            assert!(names.iter().any(|n| n == name), "{name} in {names:?}");
+        }
+
+        let state = AppState::for_tests(AppSettings::default());
+        assert!(
+            state
+                .notice_queue
+                .path()
+                .is_some_and(|p| p.ends_with("notice-queue.json"))
+        );
+        assert!(
+            state
+                .upgrade_queue
+                .path()
+                .is_some_and(|p| p.ends_with("upgrades.json"))
+        );
+        assert!(
+            state
+                .review_sweep_store
+                .path()
+                .is_some_and(|p| p.ends_with("review-sweep.json"))
+        );
+        assert!(state.upgrade_queue.snapshot().is_empty());
+        assert_eq!(
+            state.quality_upgrade_worker.tick().await,
+            crate::services::library::quality_upgrade_worker::Tick::Off
+        );
+        assert_eq!(state.library_review_sweep_worker.status().state, "Off");
+        assert!(state.duplicate_scan_worker.last_result().is_none());
+        // STUB(4-B): no verification service yet, so the sweep is not set up.
+        use crate::services::library::IReviewSweepVerifier;
+        assert!(!state.fingerprint_sweep_verifier.is_ready());
+        assert_eq!(state.upgrade_worker.running(), 0);
     }
 
     #[test]
