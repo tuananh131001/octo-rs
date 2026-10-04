@@ -9,6 +9,7 @@ pub mod fingerprint;
 pub mod framework;
 pub mod http_client_factory;
 pub mod i_download_service;
+pub mod i_music_metadata_service;
 pub mod last_fm;
 pub mod library;
 pub mod listen_brainz;

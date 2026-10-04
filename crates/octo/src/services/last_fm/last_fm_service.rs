@@ -806,3 +806,23 @@ fn duration_seconds(element: &Value) -> ElementResult<Option<i32>> {
 #[cfg(test)]
 #[path = "last_fm_service_tests.rs"]
 mod tests;
+
+/// The song-length chain's Last.fm step (`SoulseekMetadataService.CompleteLengthAsync`).
+///
+/// An answer the radio readers refuse (`Err`) counts as no length. In the C# that exception
+/// escaped the length lookup and skipped its last step, the yt-dlp probe; here the probe is still
+/// tried. Recorded in known-diffs.md.
+#[async_trait::async_trait]
+impl crate::services::soulseek::soulseek_metadata_service::LastFmTrackLengths for LastFmService {
+    fn has_api_key(&self) -> bool {
+        LastFmService::has_api_key(self)
+    }
+
+    async fn track_duration(&self, artist: &str, title: &str) -> Option<i32> {
+        self.get_track_info(artist, title)
+            .await
+            .ok()
+            .flatten()
+            .and_then(|info| info.duration)
+    }
+}
