@@ -56,6 +56,14 @@ better that way (`SongIdentity::key(..)`). Pick one per type and stay with it.
   `File.WriteAllText`. Long file work in async code goes in `spawn_blocking`.
 - Logging: the `tracing` macros, with the C# message text kept (`LogInformation("Fetched {Title}",
   t)` → `info!(title = %t, "Fetched {t}")` or just `info!("Fetched {t}")`). Keep the levels.
+- **.NET string and number semantics:** use `octo_core::common::dotnet` (char classes, invariant
+  casing, `IsNullOrWhiteSpace`, UTF-16 length, `Math.Round`, number formats) instead of Rust's own
+  `is_alphabetic`/`to_lowercase`/`round`, which differ from .NET in edge cases. .NET regexes:
+  `\b`, `\d`, `\w` and `\p{L}` only see the 16-bit range in .NET; see how
+  `common::song_identity` handles that before porting a regex.
+- **Checking against the real C#:** the .NET 9 SDK image (`mcr.microsoft.com/dotnet/sdk:9.0`) is
+  available in Docker, and there is a local SDK at `~/.cache/octo-verify-dotnet`. When behaviour is
+  subtle, run the original C# beside your Rust on generated inputs instead of guessing.
 - Time: services that the C# gave a `Func<DateTime>` clock or a `TimeProvider` take
   `octo_core::common::clock::Clock` (an `Arc<dyn Fn() -> DateTime<Utc> + Send + Sync>` wrapper with
   a `system()` constructor). Async timers in tests use `tokio::time::pause()`.

@@ -10,11 +10,8 @@
 //! Redaction happens on the formatted line, so it covers the message, every field and every
 //! span field, whatever level an operator turns them up to.
 
-use std::borrow::Cow;
 use std::io::{self, Write};
-use std::sync::LazyLock;
 
-use regex::Regex;
 use tracing_subscriber::EnvFilter;
 use tracing_subscriber::fmt::MakeWriter;
 use tracing_subscriber::layer::SubscriberExt;
@@ -31,29 +28,9 @@ pub const HOSTING_LIFETIME: &str = "Microsoft.Hosting.Lifetime";
 /// What replaces a secret value.
 pub const MASK: &str = "***";
 
-// STUB(wave 1-B): use octo_core::common::log_redaction::redact
-// t and s are the token login, p the password (plain or enc:), apiKey the OpenSubsonic key,
-// token what several clients call theirs, api_key Last.fm's key and client AcoustID's.
-// Subsonic reads names case-insensitively, so this does. sk is a Last.fm session key,
-// which scrobbles as that listener, and api_sig is signed with the Last.fm shared secret.
-// user is the AcoustID user's own API key, sent with every submission. Subsonic's u is
-// not it, and stays readable.
-//
-// .NET used a lookbehind, `(?<=[?&;](?:t|s|...)=)[^&#\s"'<>]+`; the regex crate has none, so the
-// prefix is captured and written back.
-static SECRET_PARAMETER: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r#"(?i)([?&;](?:t|s|p|apikey|token|api_key|client|user|sk|api_sig)=)[^&#\s"'<>]+"#)
-        .expect("the redaction pattern is valid")
-});
-
-/// The text with every secret query parameter's value replaced by [`MASK`]. Borrows the input
-/// when there is nothing to mask, as `LogRedaction.Redact` returned the same instance.
-pub fn redact(text: &str) -> Cow<'_, str> {
-    if !text.contains('=') {
-        return Cow::Borrowed(text);
-    }
-    SECRET_PARAMETER.replace_all(text, |c: &regex::Captures<'_>| format!("{}{MASK}", &c[1]))
-}
+/// The text with every secret query parameter's value replaced by [`MASK`]; see
+/// [`octo_core::common::log_redaction`].
+pub use octo_core::common::log_redaction::redact;
 
 /// A writer that redacts each formatted event before passing it on. The fmt layer formats a
 /// whole event into one buffer and writes it in one call, so the pattern always sees a complete

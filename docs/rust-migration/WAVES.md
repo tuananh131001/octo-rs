@@ -9,7 +9,7 @@ depends on have been merged into `rust-rewrite`. Status: ☐ not started · ◐ 
 | ☐ | Task | C# sources | Tests | Crate |
 |---|---|---|---|---|
 | ☑ | 1-A settings | `Models/Settings/*`, `Admin/SettingsFileWriter`, `Admin/RestartTracker`, plus the config layering in `Program.cs` | SettingsFileWriter, LibraryActionSettings, RestartTracker | core |
-| ◐ | 1-B models + common | `Models/{Domain,Search,Download,Subsonic}/*`, `Common/{Error,Result,SongIdentity,LiveVersion,PlaylistIdHelper,SingleFlight,SupersedableBuildCoordinator,OctoUserAgent,LogRedaction}` | SongIdentity, SongIdentityCases, LiveVersion, PlaylistIdHelper, SingleFlight, SupersedableBuildCoordinator, LogRedaction, QueryVariantLookup | core |
+| ☑ | 1-B models + common | `Models/{Domain,Search,Download,Subsonic}/*`, `Common/{Error,Result,SongIdentity,LiveVersion,PlaylistIdHelper,SingleFlight,SupersedableBuildCoordinator,OctoUserAgent,LogRedaction}` | SongIdentity, SongIdentityCases, LiveVersion, PlaylistIdHelper, SingleFlight, SupersedableBuildCoordinator, LogRedaction, QueryVariantLookup | core |
 | ☑ | 1-C list covers | `CoverArt/{CoverBook,CoverPainter,CoverLayout,CoverFonts,CoverColours,CoverBackgrounds,CoverVeil,CoverImage,CoverFiles,CoverArtService}` and the design assets | ListCover, plus the golden harness | media |
 | ☑ | 1-D audio tools | `Audio/LoudnessMeter`, `Fingerprint/{AudioFingerprinter,SpectrumAnalyzer}` | LoudnessMeter, AudioFingerprinter, SpectrumAnalyzer | media |
 

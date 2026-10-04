@@ -2,6 +2,7 @@
 //! tests live with the pipeline (`http/pipeline_tests.rs`), where requests flow.
 
 use super::*;
+use std::borrow::Cow;
 use std::sync::{Arc, Mutex};
 use tracing_subscriber::fmt::MakeWriter;
 
