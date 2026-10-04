@@ -21,8 +21,7 @@ pub async fn forwarded_proto(mut req: Request, next: Next) -> Response {
         .filter_map(|v| v.to_str().ok())
         .flat_map(|v| v.split(','))
         .map(str::trim)
-        .filter(|v| !v.is_empty())
-        .next_back()
+        .rfind(|v| !v.is_empty())
         .map(str::to_string)
         .unwrap_or_else(|| "http".to_string());
     req.extensions_mut().insert(RequestScheme(scheme));
