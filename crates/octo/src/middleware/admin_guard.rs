@@ -19,7 +19,7 @@ use axum::middleware::Next;
 use axum::response::{IntoResponse, Response};
 use serde_json::json;
 
-use crate::http::error::json_status;
+use crate::http::error::json_relaxed_response;
 
 pub const HEADER_NAME: &str = "X-Octo-Admin";
 
@@ -46,13 +46,15 @@ pub async fn admin_request_guard(req: Request, next: Next) -> Response {
         *r.status_mut() = StatusCode::NO_CONTENT;
         r
     } else if !req.headers().contains_key(HEADER_NAME) {
-        json_status(
+        // WriteAsJsonAsync: the relaxed encoder, so the apostrophe goes out as is.
+        json_relaxed_response(
             StatusCode::FORBIDDEN,
             &json!({
                 "error": format!(
                     "Admin changes must come from Octo's dashboard. A script can send the {HEADER_NAME} header to opt in."
                 ),
             }),
+            "application/json; charset=utf-8",
         )
         .into_response()
     } else {

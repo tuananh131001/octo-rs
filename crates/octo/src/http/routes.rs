@@ -20,8 +20,14 @@ use std::sync::Arc;
 use crate::app::AppState;
 
 /// A set of routes being built, with the templates kept for path canonicalisation.
+///
+/// HEAD: axum answers HEAD with a route's GET handler, while an ASP.NET `[HttpGet]` action did
+/// not match HEAD at all, so `HEAD /api/admin/settings` reached the catch-all. [`RouteSet::route`]
+/// therefore sends HEAD to the catch-all; the few endpoints that did answer HEAD (static files,
+/// `radio/stream/{token}`) register with [`RouteSet::route_with_head`]. Don't put a `.head(..)`
+/// on a router given to `route`: the catch-all's HEAD would overlap it (a panic at startup).
 pub struct RouteSet {
-    routes: Vec<(String, MethodRouter<AppState>)>,
+    routes: Vec<(String, MethodRouter<AppState>, bool)>,
 }
 
 impl Default for RouteSet {
@@ -35,16 +41,25 @@ impl RouteSet {
         RouteSet { routes: Vec::new() }
     }
 
-    /// One template (axum syntax: `/api/admin/genre/{id}`) and the methods it answers.
+    /// One template (axum syntax: `/api/admin/genre/{id}`) and the methods it answers. HEAD
+    /// goes to the catch-all even when a GET handler is given, as with `[HttpGet]`.
     pub fn route(mut self, template: &str, methods: MethodRouter<AppState>) -> Self {
-        self.routes.push((template.to_string(), methods));
+        self.routes.push((template.to_string(), methods, false));
+        self
+    }
+
+    /// A template whose GET handler also answers HEAD (axum strips the body), or which
+    /// registers its own `.head(..)`: static files and `radio/stream/{token}`.
+    pub fn route_with_head(mut self, template: &str, methods: MethodRouter<AppState>) -> Self {
+        self.routes.push((template.to_string(), methods, true));
         self
     }
 
     /// A Subsonic endpoint, at both `rest/{name}` and `rest/{name}.view`, as every
     /// SubsonicController action was declared.
     pub fn subsonic(self, name: &str, methods: MethodRouter<AppState>) -> Self {
-        self.route(&format!("/rest/{name}"), methods.clone()).route(&format!("/rest/{name}.view"), methods)
+        self.route(&format!("/rest/{name}"), methods.clone())
+            .route(&format!("/rest/{name}.view"), methods)
     }
 
     pub fn merge(mut self, other: RouteSet) -> Self {
@@ -61,11 +76,21 @@ impl RouteSet {
     {
         let mut router = Router::new();
         let mut templates = Vec::with_capacity(self.routes.len());
-        for (template, methods) in self.routes {
+        for (template, methods, answers_head) in self.routes {
+            let methods = if answers_head {
+                methods
+            } else {
+                methods.head(catch_all.clone())
+            };
             router = router.route(&template, methods.fallback(catch_all.clone()));
             templates.push(Template::parse(&template));
         }
-        (router.fallback(catch_all), PathCanon { templates: Arc::new(templates) })
+        (
+            router.fallback(catch_all),
+            PathCanon {
+                templates: Arc::new(templates),
+            },
+        )
     }
 }
 
@@ -139,7 +164,11 @@ impl PathCanon {
             .templates
             .iter()
             .filter(|t| t.segments.iter().all(|s| matches!(s, Segment::Literal(_))))
-            .chain(self.templates.iter().filter(|t| t.segments.iter().any(|s| !matches!(s, Segment::Literal(_)))));
+            .chain(
+                self.templates
+                    .iter()
+                    .filter(|t| t.segments.iter().any(|s| !matches!(s, Segment::Literal(_)))),
+            );
         for t in literal_first {
             if let Some(c) = t.canonical(&segments) {
                 return Some(c);
@@ -151,7 +180,9 @@ impl PathCanon {
     /// Applies [`PathCanon::canonical`] to a request in place, keeping the query string.
     pub fn rewrite(&self, req: &mut Request) {
         let path = req.uri().path();
-        let Some(canonical) = self.canonical(path) else { return };
+        let Some(canonical) = self.canonical(path) else {
+            return;
+        };
         if canonical == path {
             return;
         }
@@ -174,7 +205,9 @@ mod tests {
     use super::*;
 
     fn canon(templates: &[&str]) -> PathCanon {
-        PathCanon { templates: Arc::new(templates.iter().map(|t| Template::parse(t)).collect()) }
+        PathCanon {
+            templates: Arc::new(templates.iter().map(|t| Template::parse(t)).collect()),
+        }
     }
 
     #[test]
@@ -182,13 +215,19 @@ mod tests {
         let c = canon(&["/rest/ping", "/rest/ping.view", "/radio/stream/{token}"]);
         assert_eq!(c.canonical("/REST/Ping.VIEW").as_deref(), Some("/rest/ping.view"));
         assert_eq!(c.canonical("/rest/ping/").as_deref(), Some("/rest/ping"));
-        assert_eq!(c.canonical("/Radio/Stream/AbC").as_deref(), Some("/radio/stream/AbC"));
+        assert_eq!(
+            c.canonical("/Radio/Stream/AbC").as_deref(),
+            Some("/radio/stream/AbC")
+        );
         assert_eq!(c.canonical("/rest/getArtists"), None);
     }
 
     #[test]
     fn literal_templates_win_over_parameter_templates() {
         let c = canon(&["/api/admin/{id}", "/api/admin/Settings"]);
-        assert_eq!(c.canonical("/api/admin/settings").as_deref(), Some("/api/admin/Settings"));
+        assert_eq!(
+            c.canonical("/api/admin/settings").as_deref(),
+            Some("/api/admin/Settings")
+        );
     }
 }
