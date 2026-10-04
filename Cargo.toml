@@ -39,6 +39,7 @@ regex = "1"
 reqwest = { version = "0.13", default-features = false, features = ["json", "stream", "gzip", "deflate", "rustls", "multipart", "form", "query", "charset", "http2"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+serde_repr = "0.1"
 sha2 = "0.11"
 thiserror = "2"
 tokio = { version = "1", features = ["full"] }
@@ -47,6 +48,7 @@ tower = { version = "0.5", features = ["util"] }
 tower-http = { version = "0.7", features = ["cors", "fs", "trace", "set-header"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+unicode-general-category = "1"
 unicode-normalization = "0.1"
 url = "2"
 uuid = { version = "1", features = ["v4", "serde"] }
