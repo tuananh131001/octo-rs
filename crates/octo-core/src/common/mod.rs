@@ -6,6 +6,7 @@ pub mod error;
 pub mod live_version;
 pub mod log_redaction;
 pub mod octo_user_agent;
+pub mod path_helper;
 pub mod playlist_id_helper;
 pub mod single_flight;
 pub mod song_identity;
