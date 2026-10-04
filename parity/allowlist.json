@@ -1,1 +1,22 @@
-[]
+[
+  {"id": "server-header",
+   "requests": ["*"],
+   "aspects": ["header:server"],
+   "knownDiff": "Every response carries `Server: Kestrel`.",
+   "reason": "axum sends no Server header; Kestrel sent `Server: Kestrel`."},
+  {"id": "body-framing",
+   "requests": ["*"],
+   "aspects": ["header:content-length", "header:transfer-encoding"],
+   "knownDiff": "Full bodies carry `Content-Length`.",
+   "reason": "Kestrel sent bodies written with WriteAsJsonAsync/JsonResult chunked; hyper sends a known-length body with Content-Length. A length change that matters also shows as a body diff."},
+  {"id": "static-accept-ranges-once",
+   "requests": ["10-static-cors/*"],
+   "aspects": ["header:accept-ranges"],
+   "knownDiff": "`Accept-Ranges: bytes` is sent twice",
+   "reason": "MapStaticAssets and the range processing each added Accept-Ranges; Rust sends it once."},
+  {"id": "static-compressed-variants",
+   "requests": ["10-static-cors/*-br", "10-static-cors/*-gzip"],
+   "aspects": ["body", "header:etag", "header:content-length", "header:last-modified"],
+   "knownDiff": "Brotli/gzip variants come from the build's compressor",
+   "reason": "Different compressors cannot produce the same bytes; the W/ ETag of the original is identical."}
+]

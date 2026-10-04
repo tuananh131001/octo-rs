@@ -55,6 +55,10 @@ LISTENER_USER, LISTENER_PASS = "listener", "listener-pass"
 TOKEN_SALT = "c0ffee42"
 API_KEY = "parity-not-a-real-key"
 EXPECTED_TRACKS = 10
+# The fixture library's mtime (make-library.sh's stamp as the baseline recorded it). Git does not
+# keep mtimes, and Navidrome relays them as Last-Modified, so `up` puts them back on a fresh checkout.
+FIXTURE_MUSIC = os.path.join(HERE, "fixtures", "music")
+FIXTURE_MTIME = 1577909045  # 2020-01-01T20:04:05Z
 
 # Bodies longer than this are stored as a hash only.
 MAX_STORED_TEXT = 64 * 1024
@@ -139,6 +143,10 @@ def cmd_up(args) -> None:
         "PARITY_ND_PORT": str(args.nd_port),
     }
     compose(args.project, "down", "-v", "--remove-orphans", env=env, check=False)
+    for root, dirs, files in os.walk(FIXTURE_MUSIC, topdown=False):
+        for name in files + dirs:
+            os.utime(os.path.join(root, name), (FIXTURE_MTIME, FIXTURE_MTIME))
+    os.utime(FIXTURE_MUSIC, (FIXTURE_MTIME, FIXTURE_MTIME))
     compose(args.project, "up", "-d", env=env)
     nd = f"http://127.0.0.1:{args.nd_port}"
 

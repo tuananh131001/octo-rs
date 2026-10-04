@@ -90,7 +90,9 @@ python3 parity/parity.py diff --mode bytes parity/recordings/csharp /tmp/parity/
   bit-exact flags and fixed mtimes, and writes `fixtures/music.sha256`. The output is
   byte-identical between runs of one ffmpeg build, but encoder output differs between builds,
   and Navidrome reports sizes and bit rates, so the files are checked in. Regenerating means
-  re-recording the baseline.
+  re-recording the baseline. Git does not keep mtimes, and Navidrome relays them as
+  `Last-Modified` (`download`, `HEAD stream`), so `parity.py up` sets every file and folder
+  back to the baseline's instant (`2020-01-01T20:04:05Z`) before it starts the stack.
 - **Navidrome users:** `admin` / `parity-admin` (created by `ND_DEVAUTOCREATEADMINPASSWORD`)
   and the non-admin `listener` / `listener-pass` (created by `parity.py up` through the
   native API).

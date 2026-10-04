@@ -2,3 +2,8 @@
 slskd-state
 octo-config
 downloads
+# Rust build output and agent worktrees: neither image reads them, and they run to gigabytes.
+target
+.claude
+# Parity recordings are for the harness on the host, not the image.
+parity/recordings
