@@ -1,0 +1,530 @@
+{
+ "group": "subsonic-octo-extensions",
+ "entries": [
+  {
+   "name": "acquisitions-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getAcquisitions?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 104,
+    "sha256": "7f37a1ef9e18eb7989adf0eb0649a8527cf8b7f21799c4672cf8e493cc8e3ad1",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"octo\",\"acquisitions\":{\"acquisition\":[]}}}"
+   }
+  },
+  {
+   "name": "acquisitions-xml-still-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getAcquisitions.view?u=admin&p=parity-admin&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 104,
+    "sha256": "7f37a1ef9e18eb7989adf0eb0649a8527cf8b7f21799c4672cf8e493cc8e3ad1",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"octo\",\"acquisitions\":{\"acquisition\":[]}}}"
+   }
+  },
+  {
+   "name": "acquisitions-badpass",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getAcquisitions?u=admin&p=wrong-password&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 119,
+    "sha256": "4273be2480b5cbcd6424e5cc7bebd9c4c13ee0ec5c46a94c7942b9c7570a5c4b",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "acquisitions-noauth",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getAcquisitions",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 119,
+    "sha256": "4273be2480b5cbcd6424e5cc7bebd9c4c13ee0ec5c46a94c7942b9c7570a5c4b",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "acquisitions-apikey",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getAcquisitions?apiKey=parity-not-a-real-key&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 119,
+    "sha256": "4273be2480b5cbcd6424e5cc7bebd9c4c13ee0ec5c46a94c7942b9c7570a5c4b",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "library-actions-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLibraryActions?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 222,
+    "sha256": "b1d28540df1096bddb1b3a8a8a79ec335f61e640d61e9fe5ddffe79f3f37fdf6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"octo\",\"openSubsonic\":true,\"libraryActions\":{\"enabled\":false,\"allowed\":false,\"dryRun\":true,\"actions\":[],\"keepDays\":30,\"parallel\":1,\"upgradeSource\":\"Soulseek\"}}}"
+   }
+  },
+  {
+   "name": "library-actions-badpass",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLibraryActions.view?u=admin&p=wrong-password&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 119,
+    "sha256": "4273be2480b5cbcd6424e5cc7bebd9c4c13ee0ec5c46a94c7942b9c7570a5c4b",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "upgrades-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getUpgrades?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 104,
+    "sha256": "e403703c50efa13fd3f925486efd5b49a12cf36aa724596c93143a208ea140e7",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"octo\",\"openSubsonic\":true,\"upgrades\":[]}}"
+   }
+  },
+  {
+   "name": "upgrades-listener",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getUpgrades.view?u=listener&p=listener-pass&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 104,
+    "sha256": "e403703c50efa13fd3f925486efd5b49a12cf36aa724596c93143a208ea140e7",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"octo\",\"openSubsonic\":true,\"upgrades\":[]}}"
+   }
+  },
+  {
+   "name": "library-action-missing",
+   "request": {
+    "method": "GET",
+    "target": "/rest/libraryAction?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 137,
+    "sha256": "21c0c6416c53c212f7a50853962897b1f0714b8299d393e0afd6d13b5466692b",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":10,\"message\":\"Required parameter is missing: id and action\"}}}"
+   }
+  },
+  {
+   "name": "library-action-unknown",
+   "request": {
+    "method": "GET",
+    "target": "/rest/libraryAction?u=admin&p=parity-admin&v=1.16.1&c=parity&id=2A1r2OKTiTVuvPfmtePIIe&action=explode",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 164,
+    "sha256": "85f34cce5f51e61d7e11b35c6a735ed4f8b1b31e6b2d4df7aaf1f3c6c10580ad",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":0,\"message\":\"Unknown action \\u0022explode\\u0022; this server knows remove and upgrade\"}}}"
+   }
+  },
+  {
+   "name": "library-action-remove-off",
+   "request": {
+    "method": "GET",
+    "target": "/rest/libraryAction.view?u=admin&p=parity-admin&v=1.16.1&c=parity&id=2A1r2OKTiTVuvPfmtePIIe&action=remove",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 210,
+    "sha256": "6c1608f3c17c0dee42c741e3a9c9d8902a66d79d34a071833085b1b5210e299f",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"octo\",\"openSubsonic\":true,\"libraryAction\":{\"id\":\"2A1r2OKTiTVuvPfmtePIIe\",\"action\":\"remove\",\"state\":\"skipped\",\"detail\":\"Library actions are off.\"}}}"
+   }
+  },
+  {
+   "name": "library-action-upgrade-off",
+   "request": {
+    "method": "GET",
+    "target": "/rest/libraryAction?u=admin&p=parity-admin&v=1.16.1&c=parity&id=79UbMHtfpdvxM9dnNYPHLu&action=UPGRADE",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 211,
+    "sha256": "d00b60127c360643eb58b8883f7cbfca1258bbe43d08acb2b0eec550f468f371",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"octo\",\"openSubsonic\":true,\"libraryAction\":{\"id\":\"79UbMHtfpdvxM9dnNYPHLu\",\"action\":\"upgrade\",\"state\":\"skipped\",\"detail\":\"Library actions are off.\"}}}"
+   }
+  },
+  {
+   "name": "library-action-remove-no-user",
+   "request": {
+    "method": "GET",
+    "target": "/rest/libraryAction?apiKey=parity-not-a-real-key&v=1.16.1&c=parity&id=2A1r2OKTiTVuvPfmtePIIe&action=remove",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 119,
+    "sha256": "4273be2480b5cbcd6424e5cc7bebd9c4c13ee0ec5c46a94c7942b9c7570a5c4b",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "library-action-badpass",
+   "request": {
+    "method": "GET",
+    "target": "/rest/libraryAction?u=admin&p=wrong-password&v=1.16.1&c=parity&id=2A1r2OKTiTVuvPfmtePIIe&action=remove",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 119,
+    "sha256": "4273be2480b5cbcd6424e5cc7bebd9c4c13ee0ec5c46a94c7942b9c7570a5c4b",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  }
+ ]
+}

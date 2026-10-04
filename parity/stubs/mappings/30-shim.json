@@ -1,0 +1,10 @@
+[
+  {"service": "shim", "method": "GET", "path": "/health", "body": {"ok": true}},
+  {"service": "shim", "method": "GET", "path": "/search",
+   "body": {"video_id": "parityVid01", "title": "Parity Tone", "duration": 3}},
+  {"service": "shim", "method": "GET", "path": "/meta",
+   "body": {"video_id": "parityVid01", "title": "Parity Tone", "duration": 3}},
+  {"service": "shim", "path": "/stream", "query": {"id": "^parityVid01$"},
+   "headers": {"Content-Type": "audio/mpeg"}, "bodyFile": "bodies/tone.mp3"},
+  {"service": "shim", "path": "/stream", "status": 404, "body": {"error": "unknown video"}}
+]

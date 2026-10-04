@@ -1,0 +1,36 @@
+{
+  "group": "static-files-and-cors",
+  "description": "endpoints.md section 5 and 7: MapStaticAssets files with and without Accept-Encoding (precompressed Brotli/gzip), If-None-Match revalidation, Range, HEAD, /Assets, plus CORS on ordinary requests and preflights (2.1 step 8). Large bodies are compared by hash.",
+  "defaults": {"auth": "none"},
+  "requests": [
+    {"name": "index-html", "path": "/admin/index.html", "capture": {"etag_index": {"from": "header:ETag", "normalize": false}}},
+    {"name": "index-html-head", "method": "HEAD", "path": "/admin/index.html"},
+    {"name": "index-html-if-none-match", "path": "/admin/index.html", "headers": {"If-None-Match": "{{etag_index}}"}},
+    {"name": "index-html-if-none-match-stale", "path": "/admin/index.html", "headers": {"If-None-Match": "\"stale\""}},
+    {"name": "index-html-range", "path": "/admin/index.html", "headers": {"Range": "bytes=0-9"}},
+    {"name": "index-html-range-unsatisfiable", "path": "/admin/index.html", "headers": {"Range": "bytes=99999999-"}},
+    {"name": "index-html-br", "path": "/admin/index.html", "headers": {"Accept-Encoding": "gzip, br"}},
+    {"name": "index-html-gzip", "path": "/admin/index.html", "headers": {"Accept-Encoding": "gzip"}},
+    {"name": "admin-css", "path": "/admin/admin.css"},
+    {"name": "admin-js", "path": "/admin/admin.js", "capture": {"etag_js": {"from": "header:ETag", "normalize": false}}},
+    {"name": "admin-js-br", "path": "/admin/admin.js", "headers": {"Accept-Encoding": "br"}},
+    {"name": "admin-js-if-none-match", "path": "/admin/admin.js", "headers": {"If-None-Match": "{{etag_js}}"}},
+    {"name": "icons-svg", "path": "/admin/icons.svg"},
+    {"name": "admin-uppercase-path", "path": "/ADMIN/INDEX.HTML"},
+    {"name": "assets-logo", "path": "/Assets/octo_logo.png"},
+    {"name": "assets-social", "path": "/Assets/octo_social.png", "headers": {"Range": "bytes=0-15"}},
+    {"name": "admin-octo-logo", "path": "/admin/octo_logo.png"},
+    {"name": "static-with-origin", "path": "/admin/admin.css", "headers": {"Origin": "http://app.example", "If-None-Match": "\"stale\""}},
+
+    {"name": "cors-simple-get-with-origin", "path": "/rest/ping.view", "auth": "p", "f": "json", "headers": {"Origin": "http://app.example"}},
+    {"name": "cors-preflight-rest", "method": "OPTIONS", "path": "/rest/ping.view",
+     "headers": {"Origin": "http://app.example", "Access-Control-Request-Method": "GET", "Access-Control-Request-Headers": "X-Foo,content-type"}},
+    {"name": "cors-preflight-native-api", "method": "OPTIONS", "path": "/api/song",
+     "headers": {"Origin": "http://app.example", "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "x-nd-authorization"}},
+    {"name": "cors-preflight-static", "method": "OPTIONS", "path": "/admin/index.html",
+     "headers": {"Origin": "http://app.example", "Access-Control-Request-Method": "GET"}},
+    {"name": "cors-error-response-with-origin", "path": "/favicon.ico", "headers": {"Origin": "http://app.example"}},
+    {"name": "cors-admin-403-with-origin", "method": "POST", "path": "/api/admin/clear-metadata-cache", "headers": {"Origin": "http://app.example"}},
+    {"name": "forwarded-proto-https-ping-message", "path": "/rest/getInternetRadioStations", "auth": "p", "f": "json", "headers": {"X-Forwarded-Proto": "https"}}
+  ]
+}
