@@ -27,10 +27,10 @@ depends on have been merged into `rust-rewrite`. Status: ☐ not started · ◐ 
 
 | | Task | C# sources | Tests |
 |---|---|---|---|
-| ☐ | 3-A Subsonic wire | `Subsonic/{SubsonicRequestParser,SubsonicCredential,SubsonicModelMapper,SubsonicResponseBuilder*,SyncCatalogResponse}` | SubsonicRequestParser, SubsonicModelMapper, SubsonicResponseBuilder |
-| ☐ | 3-B Last.fm, ListenBrainz, notifications | `LastFm/{LastFmService,LastFmScrobbleService,LastFmSearchCleanup}`, `ListenBrainz/*`, `Notifications/*`, `Subsonic/RecentScrobbles` | LastFmService, LastFmScrobble, ScrobbleRetry, LastFmSearchCleanup, DiscordSink, NtfySink, NotificationService |
-| ☐ | 3-C lyrics sources and service | `Lyrics/{LrclibLyricsSource,KugouLyricsSource,NeteaseLyricsSource,LyricsOvhLyricsSource,LyricsService,LyricsChoices,LyricsSidecarWriter}` | Lyrics, LyricsSongSource, LyricsChoice |
-| ☐ | 3-D tags | `Common/TagWriterExtras`, the tag-writing parts of `Common/BaseDownloadService`, `Library/KeptIdentity` | TagWriterExtras, MergedFormat, KeptIdentity |
+| ◐ | 3-A Subsonic wire | `Subsonic/{SubsonicRequestParser,SubsonicCredential,SubsonicModelMapper,SubsonicResponseBuilder*,SyncCatalogResponse}` | SubsonicRequestParser, SubsonicModelMapper, SubsonicResponseBuilder |
+| ◐ | 3-B Last.fm, ListenBrainz, notifications | `LastFm/{LastFmService,LastFmScrobbleService,LastFmSearchCleanup}`, `ListenBrainz/*`, `Notifications/*`, `Subsonic/RecentScrobbles` | LastFmService, LastFmScrobble, ScrobbleRetry, LastFmSearchCleanup, DiscordSink, NtfySink, NotificationService |
+| ◐ | 3-C lyrics sources and service | `Lyrics/{LrclibLyricsSource,KugouLyricsSource,NeteaseLyricsSource,LyricsOvhLyricsSource,LyricsService,LyricsChoices,LyricsSidecarWriter}` | Lyrics, LyricsSongSource, LyricsChoice |
+| ◐ | 3-D tags | `Common/TagWriterExtras`, the tag-writing parts of `Common/BaseDownloadService`, `Library/KeptIdentity` | TagWriterExtras, MergedFormat, KeptIdentity |
 | ◐ | 3-E Navidrome plumbing | `Subsonic/{SubsonicProxyService,NavidromeIdentityService,SubsonicDiscoveryService,CredentialCheck,RequestIdentity,SearchBudget,SearchSongOrder,SearchSongPagePlanner}`, `Library/{NavidromeSongPathResolver,NavidromePlaylistApi}`, `Validation/{SubsonicStartupValidator,StartupValidationOrchestrator}` | SubsonicProxyService, CredentialCheck, RequestIdentity, SearchBudget, SearchPaging, SearchSongPagePlanner, NavidromeSongPathResolver |
 | ☑ | 3-F stores and YouTube | `Soulseek/{ExternalIdRegistry,RejectedPeerRegistry,RadioQueueStore,SongLength,SearchProfile}`, `Common/{SoulseekHoldStore,DownloadConcurrency}`, `Local/DownloadHistoryService`, `Admin/{BrowseSessionStore,DirectoryBrowser}`, `YouTube/YouTubeResolver`, `Updates/ReleaseCheck` | ExternalIdRegistry, RejectedPeerRegistry, SongLength, SoulseekSearchProfile, BrowseSessionStore, DirectoryBrowser, YouTubeResolverBaseUrl, ReleaseCheck, plus state-file round trips |
 
