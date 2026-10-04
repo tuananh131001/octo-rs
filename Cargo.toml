@@ -82,6 +82,10 @@ large_enum_variant = "allow"
 [profile.dev]
 # Line tables only: enough for panics to name a line, and a fraction of the disk.
 debug = "line-tables-only"
+# Several porters build from their own worktrees into one shared target dir, and each worktree's
+# incremental cache is gigabytes: twice it filled the disk. Full rebuilds of a crate are slower,
+# but bounded.
+incremental = false
 
 [profile.dev.package."*"]
 # Cover rendering and image decoding are unbearably slow unoptimised, even in tests.
