@@ -1,15 +1,24 @@
-//! Port of `LyricsChoiceStore` from `Services/Lyrics/LyricsChoices.cs`: the pins on disk
-//! (`lyrics-choices.json`). The pin itself is `octo_core::lyrics::LyricsPin`.
+//! Port of `LyricsChoiceStore` and `LyricsChoiceService` from `Services/Lyrics/LyricsChoices.cs`:
+//! the pins on disk (`lyrics-choices.json`), and choosing lyrics by hand. The pin and the entry
+//! offered are `octo_core::lyrics::{LyricsPin, LyricsChoiceCandidate}`.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use std::time::Duration;
 
+use chrono::Utc;
 use octo_core::common::SongIdentity;
-use octo_core::common::dotnet::is_blank;
-use octo_core::lyrics::LyricsPin;
+use octo_core::common::dotnet::{is_blank, is_null_or_white_space};
+use octo_core::lyrics::{
+    ILyricsSource, LyricsCandidate, LyricsChoiceCandidate, LyricsPin, LyricsQuery, LyricsResult,
+};
 use parking_lot::Mutex;
-use tracing::warn;
+use tokio_util::sync::CancellationToken;
+use tracing::{info, warn};
 
+use super::lyrics_service::LyricsService;
+use super::memory_cache::MemoryCache;
 use crate::services::state_file;
 
 /// The pins by song id, enumerated as .NET's `Dictionary<string, LyricsPin>` enumerated them:
@@ -200,6 +209,250 @@ fn load(path: &Path) -> Pins {
     }
     pins
 }
+
+/// Choosing lyrics by hand, for the Octo app's "Choose other lyrics" (getLyricsCandidates and
+/// setLyricsChoice) and the dashboard's picker, which are two doors to the same pins.
+pub struct LyricsChoiceService {
+    lyrics: Arc<LyricsService>,
+    store: Arc<LyricsChoiceStore>,
+    fetched: MemoryCache<LyricsResult>,
+}
+
+impl LyricsChoiceService {
+    /// How many entries per source are fetched for a preview. Each is a request, and KuGou and
+    /// NetEase need one per entry.
+    const PER_SOURCE: usize = 4;
+
+    const REMEMBERED: Duration = Duration::from_secs(30 * 60);
+
+    pub fn new(lyrics: Arc<LyricsService>, store: Arc<LyricsChoiceStore>) -> Self {
+        Self {
+            lyrics,
+            store,
+            fetched: MemoryCache::new(1024),
+        }
+    }
+
+    /// `PinFor(songId)`.
+    pub fn pin_for(&self, song_id: &str) -> Option<LyricsPin> {
+        self.store.get(song_id)
+    }
+
+    /// `PinFor(artist, title)`.
+    pub fn pin_for_name(&self, artist: &str, title: &str) -> Option<LyricsPin> {
+        self.store.find_by_name(artist, title)
+    }
+
+    /// `PinFor(songId, artist, title)`: the song's pin, by its id, or else by its artist and
+    /// title. Navidrome gives a song a new id when its file is replaced (a better copy, a
+    /// move), and the pin follows the song.
+    pub fn pin_for_song(
+        &self,
+        song_id: &str,
+        artist: Option<&str>,
+        title: Option<&str>,
+    ) -> Option<LyricsPin> {
+        self.store.get(song_id).or_else(|| match (artist, title) {
+            (Some(artist), Some(title))
+                if !is_null_or_white_space(Some(artist)) && !is_null_or_white_space(Some(title)) =>
+            {
+                self.store.find_by_name(artist, title)
+            }
+            _ => None,
+        })
+    }
+
+    /// Whether any song has a pin.
+    pub fn any_pins(&self) -> bool {
+        self.store.any()
+    }
+
+    /// `ChoiceFor(songId)`: "auto" when nothing is chosen, "none" when hidden, else the
+    /// candidate id.
+    pub fn choice_for(&self, song_id: &str) -> String {
+        self.store
+            .get(song_id)
+            .map_or_else(|| LyricsPin::AUTO.to_string(), |pin| pin.choice)
+    }
+
+    /// `ChoiceFor(songId, artist, title)`: the song's choice, found by its id or else by its
+    /// artist and title.
+    pub fn choice_for_song(&self, song_id: &str, artist: Option<&str>, title: Option<&str>) -> String {
+        self.pin_for_song(song_id, artist, title)
+            .map_or_else(|| LyricsPin::AUTO.to_string(), |pin| pin.choice)
+    }
+
+    pub fn all(&self) -> Vec<LyricsPin> {
+        self.store.all()
+    }
+
+    /// Every entry the sources that are on hold for the song, the same song first, each with
+    /// its lyrics fetched for a preview. Sources are asked side by side; entries not fetched
+    /// when `ct` runs out are left out, since without their lyrics there is nothing to choose by.
+    pub async fn candidates(
+        &self,
+        query: &LyricsQuery,
+        ct: &CancellationToken,
+    ) -> Vec<LyricsChoiceCandidate> {
+        let sources = self.lyrics.enabled();
+        let per_source = futures::future::join_all(
+            sources
+                .iter()
+                .map(|source| self.candidates_from(source.as_ref(), query, ct)),
+        )
+        .await;
+        per_source.into_iter().flatten().collect()
+    }
+
+    async fn candidates_from(
+        &self,
+        source: &dyn ILyricsSource,
+        query: &LyricsQuery,
+        ct: &CancellationToken,
+    ) -> Vec<LyricsChoiceCandidate> {
+        let mut offered = Vec::new();
+        // A source never throws here: a failed or cancelled search is simply no entries, as the
+        // C# catch made of it.
+        let search = source.search(query, ct).await;
+        let mut ranked: Vec<(&LyricsCandidate, bool, i32)> = search
+            .candidates
+            .iter()
+            .map(|candidate| {
+                let distance = match (
+                    query.duration_seconds.filter(|d| *d > 0),
+                    candidate.duration_seconds.filter(|d| *d > 0),
+                ) {
+                    (Some(want), Some(got)) => (got - want).abs(),
+                    _ => 0,
+                };
+                (
+                    candidate,
+                    LyricsChoiceCandidate::is_this_song(candidate, query),
+                    distance,
+                )
+            })
+            .collect();
+        // OrderByDescending(same).ThenBy(distance): stable.
+        ranked.sort_by_key(|(_, same, distance)| (std::cmp::Reverse(*same), *distance));
+
+        for (candidate, same, _) in ranked.into_iter().take(Self::PER_SOURCE) {
+            if ct.is_cancelled() {
+                break;
+            }
+            let lyrics = match &candidate.lyrics {
+                Some(lyrics) => Some(lyrics.clone()),
+                None => source.fetch(&candidate.id, ct).await.result,
+            };
+            let Some(lyrics) = lyrics else {
+                continue;
+            };
+            let candidate_id = candidate.candidate_id();
+            self.fetched.set(
+                &candidate_id,
+                lyrics.clone().with_candidate_id(candidate_id.clone()),
+                Self::REMEMBERED,
+            );
+            offered.push(LyricsChoiceCandidate::offered(
+                candidate,
+                source.key(),
+                &lyrics,
+                same,
+            ));
+        }
+        offered
+    }
+
+    /// `KindOf`: "word", "line", "plain" or "instrumental".
+    pub fn kind_of(lyrics: &LyricsResult) -> &'static str {
+        LyricsChoiceCandidate::kind_of(lyrics)
+    }
+
+    /// The lyrics of one candidate: from the list just shown when it is still remembered,
+    /// otherwise asked of its source again. (When `ct` runs out the C# threw; this is None.)
+    pub async fn lyrics_of(&self, candidate_id: &str, ct: &CancellationToken) -> Option<LyricsResult> {
+        if let Some(known) = self.fetched.get(candidate_id) {
+            return Some(known);
+        }
+        let colon = candidate_id.find(':').filter(|colon| *colon > 0)?;
+        let source = self.lyrics.source(&candidate_id[..colon])?;
+        let lookup = source.fetch(&candidate_id[colon + 1..], ct).await;
+        lookup.result.map(|result| result.with_candidate_id(candidate_id))
+    }
+
+    /// Pin a song to a candidate. False when the candidate's lyrics cannot be had.
+    pub async fn pin(
+        &self,
+        song_id: &str,
+        candidate_id: &str,
+        artist: Option<&str>,
+        title: Option<&str>,
+        who: Option<&str>,
+        ct: &CancellationToken,
+    ) -> bool {
+        let Some(lyrics) = self.lyrics_of(candidate_id, ct).await else {
+            return false;
+        };
+        if !lyrics.has_synced() && !lyrics.has_plain() {
+            return false;
+        }
+        self.store.set(LyricsPin::new(
+            song_id,
+            candidate_id,
+            Some(lyrics.source.clone()),
+            lyrics.synced.clone(),
+            lyrics.plain.clone(),
+            artist.map(str::to_string),
+            title.map(str::to_string),
+            who.map(str::to_string),
+            Utc::now(),
+        ));
+        info!(
+            "Lyrics for '{} - {}' pinned to {candidate_id} by {}",
+            artist.unwrap_or(""),
+            title.unwrap_or(""),
+            who.unwrap_or("the dashboard")
+        );
+        true
+    }
+
+    pub fn hide(&self, song_id: &str, artist: Option<&str>, title: Option<&str>, who: Option<&str>) {
+        self.store.set(LyricsPin::new(
+            song_id,
+            LyricsPin::HIDDEN,
+            None,
+            None,
+            None,
+            artist.map(str::to_string),
+            title.map(str::to_string),
+            who.map(str::to_string),
+            Utc::now(),
+        ));
+        info!(
+            "Lyrics for '{} - {}' hidden by {}",
+            artist.unwrap_or(""),
+            title.unwrap_or(""),
+            who.unwrap_or("the dashboard")
+        );
+    }
+
+    /// `Clear(songId)`.
+    pub fn clear(&self, song_id: &str) -> bool {
+        self.store.remove(song_id)
+    }
+
+    /// `Clear(songId, artist, title)`: back to automatic, the song's pin by id, and any it has
+    /// by its artist and title, so a pin made under an older id does not come back.
+    pub fn clear_song(&self, song_id: &str, artist: Option<&str>, title: Option<&str>) -> bool {
+        // Both run, as C#'s non-short-circuiting `|` did.
+        let by_id = self.store.remove(song_id);
+        let by_name = self.store.remove_by_name(artist, title);
+        by_id | by_name
+    }
+}
+
+#[cfg(test)]
+#[path = "lyrics_choice_service_tests.rs"]
+mod service_tests;
 
 #[cfg(test)]
 mod tests {
