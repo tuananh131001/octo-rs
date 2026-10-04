@@ -26,6 +26,7 @@ use std::sync::Arc;
 
 use octo_core::common::Clock;
 use octo_core::settings::{AppSettings, RestartTracker, SettingsFileWriter, SettingsStore};
+use octo_subsonic::SubsonicResponseBuilder;
 use tokio_util::sync::CancellationToken;
 
 use crate::services::admin::{BrowseSessionStore, DirectoryBrowser};
@@ -51,6 +52,7 @@ use crate::services::metadata::{DeezerMetadataService, DeezerRateLimitHandler, D
 use crate::services::metadata::{GenreBackfillJournal, GenreBackfillStore};
 use crate::services::notifications::{DiscordSink, INotificationSink, NotificationService, NtfySink};
 use crate::services::soulseek::{ExternalIdRegistry, RadioQueueStore, RejectedPeerRegistry};
+use crate::services::subsonic::new_subsonic_response_builder;
 use crate::services::subsonic::{
     CredentialCheck, NavidromeIdentityService, RecentScrobbles, RequestIdentity, SearchSongOrderCache,
     SubsonicDiscoveryService, SubsonicProxyService,
@@ -191,6 +193,10 @@ pub struct AppInner {
     pub notifications: Arc<NotificationService>,
     /// `RecentScrobbles`: completed plays reported lately, so one sent twice is learned from once.
     pub recent_scrobbles: Arc<RecentScrobbles>,
+    /// `SubsonicResponseBuilder`: every Subsonic answer Octo writes itself, over the external id
+    /// registry, with `Subsonic:WaitForLosslessOnPlay` captured at startup (`IOptions`).
+    /// The app-type answers come with `services::subsonic::SubsonicResponseBuilderExt`.
+    pub subsonic_response_builder: Arc<SubsonicResponseBuilder>,
 }
 
 /// The Last.fm, ListenBrainz and notification services (3-B). None runs in the background
@@ -287,11 +293,15 @@ struct Stores {
     browse_sessions: Arc<BrowseSessionStore>,
     rejected_peers: Arc<RejectedPeerRegistry>,
     release_check: Arc<ReleaseCheck>,
+    subsonic_response_builder: Arc<SubsonicResponseBuilder>,
 }
 
 impl Stores {
     fn build(settings: &Arc<SettingsStore>, config_dir: &Path) -> Stores {
         let ttl_settings = settings.clone();
+        let external_id_registry = Arc::new(ExternalIdRegistry::new(Some(
+            config_dir.join("external-ids.json"),
+        )));
         Stores {
             download_history: Arc::new(DownloadHistoryService::new(
                 config_dir.join("downloads-history.json"),
@@ -301,9 +311,11 @@ impl Stores {
                 config_dir.join("soulseek-holds.json"),
             ))),
             you_tube_resolver: Arc::new(YouTubeResolver::new(settings)),
-            external_id_registry: Arc::new(ExternalIdRegistry::new(Some(
-                config_dir.join("external-ids.json"),
-            ))),
+            subsonic_response_builder: Arc::new(new_subsonic_response_builder(
+                external_id_registry.clone(),
+                &settings.current().subsonic,
+            )),
+            external_id_registry,
             radio_queues: Arc::new(RadioQueueStore::new()),
             directory_browser: Arc::new(DirectoryBrowser::new()),
             browse_sessions: Arc::new(BrowseSessionStore::new(Some(
@@ -539,6 +551,7 @@ impl AppState {
             listen_brainz: integrations.listen_brainz,
             notifications: integrations.notifications,
             recent_scrobbles: integrations.recent_scrobbles,
+            subsonic_response_builder: stores.subsonic_response_builder,
         };
         AppState {
             inner: Arc::new(inner),
@@ -612,6 +625,7 @@ impl AppState {
             listen_brainz: integrations.listen_brainz,
             notifications: integrations.notifications,
             recent_scrobbles: integrations.recent_scrobbles,
+            subsonic_response_builder: stores.subsonic_response_builder,
         };
         AppState {
             inner: Arc::new(inner),

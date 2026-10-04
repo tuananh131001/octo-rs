@@ -23,11 +23,11 @@ use axum::http::{HeaderName, HeaderValue, StatusCode, header};
 use axum::response::{IntoResponse, Response};
 use bytes::Bytes;
 use octo_subsonic::subsonic_request_parser::unescape_data_string;
-use octo_subsonic::xml::XElement;
 
-use super::error::{SUBSONIC_VERSION, json_ok, problem, validation_problem};
+use super::error::{problem, validation_problem};
 use crate::app::AppState;
 use crate::services::subsonic::{IncomingRequest, RawRelayResult};
+use octo_subsonic::SubsonicResponseBuilder;
 
 /// Kestrel's `MaxRequestBodySize` default.
 const MAX_REQUEST_BODY: usize = 30_000_000;
@@ -64,13 +64,16 @@ pub async fn catch_all(State(state): State<AppState>, req: Request) -> Response 
             if raw.status == 200 && endpoint.eq_ignore_ascii_case("auth/login") {
                 state.navidrome_identity.capture_login(&raw.body);
             }
-            write_raw_relay(raw, &format)
+            write_raw_relay(raw, &format, &state.subsonic_response_builder)
         }
-        Err(error) => create_error(
-            &format,
-            0,
-            &format!("Error connecting to Subsonic server: {error}"),
-        ),
+        Err(error) => state
+            .subsonic_response_builder
+            .create_error(
+                &format,
+                0,
+                &format!("Error connecting to Subsonic server: {error}"),
+            )
+            .into_response(),
     }
 }
 
@@ -107,7 +110,7 @@ pub fn is_octo_owned(endpoint: &str) -> bool {
 /// `Response.Headers[name] = value`, so the last value of a name wins), the upstream content
 /// type or `application/{f}`, and the body written to the response stream, which Kestrel sent
 /// chunked.
-fn write_raw_relay(raw: RawRelayResult, format: &str) -> Response {
+fn write_raw_relay(raw: RawRelayResult, format: &str, builder: &SubsonicResponseBuilder) -> Response {
     let status = StatusCode::from_u16(raw.status).unwrap_or(StatusCode::BAD_GATEWAY);
     let content_type = raw
         .content_type
@@ -125,11 +128,13 @@ fn write_raw_relay(raw: RawRelayResult, format: &str) -> Response {
     let Ok(content_type) = HeaderValue::from_str(&content_type) else {
         // Kestrel refused the header when the response started, inside the C#'s try: the
         // error envelope went out with the status and headers already set.
-        let mut response = create_error(
-            format,
-            0,
-            "Error connecting to Subsonic server: Invalid non-ASCII or control character in header.",
-        );
+        let mut response = builder
+            .create_error(
+                format,
+                0,
+                "Error connecting to Subsonic server: Invalid non-ASCII or control character in header.",
+            )
+            .into_response();
         *response.status_mut() = status;
         response.headers_mut().extend(headers);
         return response;
@@ -147,36 +152,6 @@ fn write_raw_relay(raw: RawRelayResult, format: &str) -> Response {
     let mut response = Response::new(body);
     *response.status_mut() = status;
     *response.headers_mut() = headers;
-    response
-}
-
-/// `SubsonicResponseBuilder.CreateError(format, code, message)`: a failed envelope, JSON only
-/// when `f` is exactly `json`, otherwise `XDocument.ToString()` XML. Always HTTP 200.
-///
-/// STUB(3-A): replaced by the response builder's own `create_error` when 3-A lands.
-pub fn create_error(format: &str, code: i32, message: &str) -> Response {
-    if format == "json" {
-        return json_ok(&serde_json::json!({
-            "subsonic-response": {
-                "status": "failed",
-                "version": SUBSONIC_VERSION,
-                "error": { "code": code, "message": message },
-            }
-        }));
-    }
-    let document = XElement::ns("http://subsonic.org/restapi", "subsonic-response")
-        .attr("status", "failed")
-        .attr("version", SUBSONIC_VERSION)
-        .child(
-            XElement::ns("http://subsonic.org/restapi", "error")
-                .attr("code", code)
-                .attr("message", message),
-        );
-    // ContentResult: the content type as given, no charset.
-    let mut response = (StatusCode::OK, document.to_xml_string()).into_response();
-    response
-        .headers_mut()
-        .insert(header::CONTENT_TYPE, HeaderValue::from_static("application/xml"));
     response
 }
 

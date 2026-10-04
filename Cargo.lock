@@ -1657,6 +1657,7 @@ name = "octo-subsonic"
 version = "2026.10.3"
 dependencies = [
  "anyhow",
+ "axum",
  "chrono",
  "hex",
  "indexmap",
