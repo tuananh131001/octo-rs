@@ -50,7 +50,10 @@ use crate::services::library::{
     HeartOwnership, LibraryOwnership, NavidromePlaylistApi, NavidromeSongPathResolver, OwnershipNavidrome,
     UpgradeQueue, UpgradeSources,
 };
-use crate::services::lidarr::ILidarrHeartAcquisitionService;
+use crate::services::lidarr::{
+    ILidarrHeartAcquisitionService, ILidarrTrackFetcher, LidarrAlbumClaims, LidarrClient,
+    LidarrHeartAcquisitionService, LidarrHeartExtras, LidarrImportHandoff, LidarrTrackFetcher,
+};
 use crate::services::listen_brainz::ListenBrainzService;
 use crate::services::local::DownloadHistoryService;
 use crate::services::local::{ILocalLibraryService, LocalLibraryService};
@@ -60,7 +63,7 @@ use crate::services::lyrics::{
 };
 use crate::services::metadata::{DeezerMetadataService, DeezerRateLimitHandler, DeezerRateLimiter};
 use crate::services::metadata::{GenreBackfillJournal, GenreBackfillStore};
-use crate::services::not_ported::{NotPortedDownloadService, NotPortedLidarr};
+use crate::services::not_ported::NotPortedDownloadService;
 use crate::services::notifications::{DiscordSink, INotificationSink, NotificationService, NtfySink};
 use crate::services::soulseek::soulseek_metadata_service::LastFmTrackLengths;
 use crate::services::soulseek::{
@@ -223,7 +226,15 @@ pub struct AppInner {
     /// `IDownloadService` (`SoulseekDownloadService`).
     /// STUB(4-C): `NotPortedDownloadService` until 4-C lands.
     pub download_service: Arc<dyn IDownloadService>,
-    /// `ILidarrHeartAcquisitionService`. STUB(4-E): `NotPortedLidarr` until 4-E lands.
+    /// `AddSingleton<LidarrClient>()`: the Lidarr v1 client, its address and key read live.
+    pub lidarr_client: Arc<LidarrClient>,
+    /// `LidarrAlbumClaims`: which Lidarr albums a heart or an upgrade is working on.
+    pub lidarr_album_claims: Arc<LidarrAlbumClaims>,
+    /// `LidarrImportHandoff`: the files a Lidarr heart brought in, waiting for the pipeline.
+    pub lidarr_import_handoff: Arc<LidarrImportHandoff>,
+    /// `ILidarrTrackFetcher` (`LidarrTrackFetcher`): one song through Lidarr, for a replacement.
+    pub lidarr_track_fetcher: Arc<dyn ILidarrTrackFetcher>,
+    /// `ILidarrHeartAcquisitionService` (`LidarrHeartAcquisitionService`).
     pub lidarr_hearts: Arc<dyn ILidarrHeartAcquisitionService>,
     /// `TrackAcquisitionQueue`: permanent-copy fetches, drained by the "AcquisitionWorker" worker.
     pub track_acquisition_queue: Arc<TrackAcquisitionQueue>,
@@ -255,6 +266,10 @@ pub struct AppInner {
 /// service) depend on nothing of this, so they are handed over at construction.
 struct Acquisition {
     download_service: Arc<dyn IDownloadService>,
+    lidarr_client: Arc<LidarrClient>,
+    lidarr_album_claims: Arc<LidarrAlbumClaims>,
+    lidarr_import_handoff: Arc<LidarrImportHandoff>,
+    lidarr_track_fetcher: Arc<dyn ILidarrTrackFetcher>,
     lidarr_hearts: Arc<dyn ILidarrHeartAcquisitionService>,
     track_acquisition_queue: Arc<TrackAcquisitionQueue>,
     acquisition_activity: Arc<AcquisitionActivity>,
@@ -274,12 +289,12 @@ impl Acquisition {
         stores: &Stores,
         navidrome: &NavidromeServices,
         integrations: &Integrations,
+        clients: &MetadataClients,
         music_metadata: Arc<dyn IMusicMetadataService>,
         soulseek_link: Arc<dyn ISoulseekLink>,
     ) -> Acquisition {
-        // STUB(4-C), STUB(4-E): the real services replace these when they land.
+        // STUB(4-C): the real service replaces this when it lands.
         let download_service: Arc<dyn IDownloadService> = Arc::new(NotPortedDownloadService);
-        let lidarr_hearts: Arc<dyn ILidarrHeartAcquisitionService> = Arc::new(NotPortedLidarr);
 
         let track_acquisition_queue = Arc::new(TrackAcquisitionQueue::new());
         let acquisition_activity = Arc::new(AcquisitionActivity::new(track_acquisition_queue.clone()));
@@ -313,6 +328,41 @@ impl Acquisition {
             }),
             navidrome.local_library.clone(),
         ));
+
+        // Lidarr (4-E). The heart service's lazy IServiceProvider lookups (the download
+        // pipeline, the journal, the ownership check, the upgrade queue) are all built by now.
+        let lidarr_client = Arc::new(LidarrClient::new(settings.clone()));
+        let lidarr_album_claims = Arc::new(LidarrAlbumClaims::new());
+        let lidarr_import_handoff = Arc::new(LidarrImportHandoff::new());
+        let lidarr_track_fetcher: Arc<dyn ILidarrTrackFetcher> = Arc::new(LidarrTrackFetcher::new(
+            lidarr_client.clone(),
+            settings.clone(),
+            navidrome.navidrome_identity.clone(),
+            lidarr_album_claims.clone(),
+            Some(clients.music_brainz.clone()),
+        ));
+        let lidarr_hearts: Arc<dyn ILidarrHeartAcquisitionService> =
+            Arc::new(LidarrHeartAcquisitionService::new(
+                lidarr_client.clone(),
+                music_metadata.clone(),
+                clients.deezer_metadata.clone(),
+                settings.clone(),
+                navidrome.navidrome_identity.clone(),
+                integrations.notifications.clone(),
+                LidarrHeartExtras {
+                    tracker: Some(acquisition_tracker.clone()),
+                    music_brainz: Some(clients.music_brainz.clone()),
+                    claims: Some(lidarr_album_claims.clone()),
+                    imports: Some(lidarr_import_handoff.clone()),
+                    ids: Some(stores.external_id_registry.clone()),
+                    downloads: Some(download_service.clone()),
+                    // STUB(5-A): the library action journal is not in the app state until 5-A
+                    // lands, so no import is dropped as removed yet.
+                    journal: None,
+                    ownership: Some(library_ownership.clone()),
+                    upgrades: Some(upgrade_queue.clone()),
+                },
+            ));
         let heart_ownership = Arc::new(HeartOwnership::new(
             library_ownership.clone(),
             music_metadata.clone(),
@@ -341,6 +391,10 @@ impl Acquisition {
         ));
         Acquisition {
             download_service,
+            lidarr_client,
+            lidarr_album_claims,
+            lidarr_import_handoff,
+            lidarr_track_fetcher,
             lidarr_hearts,
             track_acquisition_queue,
             acquisition_activity,
@@ -744,6 +798,7 @@ impl AppState {
             &stores,
             &navidrome,
             &integrations,
+            &clients,
             soulseek.metadata.clone(),
             soulseek.link.clone(),
         );
@@ -804,6 +859,10 @@ impl AppState {
             soulseek_link: soulseek.link,
             music_metadata: soulseek.metadata,
             download_service: acquisition.download_service,
+            lidarr_client: acquisition.lidarr_client,
+            lidarr_album_claims: acquisition.lidarr_album_claims,
+            lidarr_import_handoff: acquisition.lidarr_import_handoff,
+            lidarr_track_fetcher: acquisition.lidarr_track_fetcher,
             lidarr_hearts: acquisition.lidarr_hearts,
             track_acquisition_queue: acquisition.track_acquisition_queue,
             acquisition_activity: acquisition.acquisition_activity,
@@ -847,6 +906,7 @@ impl AppState {
             &stores,
             &navidrome,
             &integrations,
+            &clients,
             soulseek.metadata.clone(),
             soulseek.link.clone(),
         );
@@ -904,6 +964,10 @@ impl AppState {
             soulseek_link: soulseek.link,
             music_metadata: soulseek.metadata,
             download_service: acquisition.download_service,
+            lidarr_client: acquisition.lidarr_client,
+            lidarr_album_claims: acquisition.lidarr_album_claims,
+            lidarr_import_handoff: acquisition.lidarr_import_handoff,
+            lidarr_track_fetcher: acquisition.lidarr_track_fetcher,
             lidarr_hearts: acquisition.lidarr_hearts,
             track_acquisition_queue: acquisition.track_acquisition_queue,
             acquisition_activity: acquisition.acquisition_activity,
@@ -1046,6 +1110,34 @@ mod tests {
             .search_songs_by_artist_title("Justice", "Genesis", 1, None)
             .await;
         assert!(state.external_id_registry.lookup(&songs[0].id).is_some());
+    }
+
+    /// Lidarr (4-E): the client reads the live settings, so with none saved nothing is asked and
+    /// the track fetcher refuses before any lookup.
+    #[tokio::test]
+    async fn the_lidarr_services_refuse_until_lidarr_is_set_up() {
+        use crate::services::lidarr::{LidarrError, LidarrTrackRequest};
+
+        let state = AppState::for_tests(AppSettings::default());
+        assert!(!state.lidarr_client.is_reachable().await);
+        let request = LidarrTrackRequest {
+            artist: "Massive Attack".into(),
+            title: "Teardrop".into(),
+            album: None,
+            duration_seconds: None,
+            lossless_only: true,
+            original_path: None,
+        };
+        let refused = state
+            .lidarr_track_fetcher
+            .fetch(&request, "/nonexistent", &CancellationToken::new())
+            .await;
+        assert!(
+            matches!(refused, Err(LidarrError::InvalidOperation(_))),
+            "{refused:?}"
+        );
+        assert!(!state.lidarr_album_claims.upgrade_busy("anything"));
+        assert!(state.lidarr_import_handoff.take("anything").is_none());
     }
 
     #[test]
