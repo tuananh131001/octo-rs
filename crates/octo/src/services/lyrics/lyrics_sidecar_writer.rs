@@ -119,9 +119,7 @@ pub struct LyricsSongTags {
     pub duration_seconds: Option<i32>,
 }
 
-/// The song's tags, through the tags port.
-// STUB(3-D tags): replaced when the tags port lands. Until then a song's tags hold no lyrics
-// (see `song_lyrics::read_tag_lyrics`), writing them fails, and no length is read.
+/// The song's tags, through the tags port (`octo_media::tags`, TagLib's stand-in).
 pub struct TagLibLyricsTags;
 
 impl LyricsTagAccess for TagLibLyricsTags {
@@ -129,18 +127,34 @@ impl LyricsTagAccess for TagLibLyricsTags {
         song_lyrics::read_tag_lyrics(path)
     }
 
-    fn write_lyrics(&self, path: &Path, _lyrics: Option<&str>) -> anyhow::Result<()> {
-        anyhow::bail!("writing tags is not ported yet ({})", path.display())
+    fn write_lyrics(&self, path: &Path, lyrics: Option<&str>) -> anyhow::Result<()> {
+        octo_media::tags::write_lyrics(path, lyrics)?;
+        Ok(())
     }
 
-    fn duration_seconds(&self, _path: &Path) -> Option<i32> {
-        None
+    fn duration_seconds(&self, path: &Path) -> Option<i32> {
+        let seconds = octo_media::tags::TagFile::open(path).ok()?.duration_seconds();
+        (seconds > 0).then_some(seconds)
     }
 
-    // STUB(3-D tags): no tags are read yet, so every song reads as one without an artist and a
-    // title (the library job skips it); a file that cannot be opened is still an I/O error.
     fn read_song(&self, path: &Path) -> io::Result<Option<LyricsSongTags>> {
-        std::fs::metadata(path).map(|_| None)
+        match octo_media::tags::TagFile::open(path) {
+            Ok(file) => {
+                let seconds = file.duration_seconds();
+                Ok(Some(LyricsSongTags {
+                    first_performer: file.first_performer(),
+                    first_album_artist: file.first_album_artist(),
+                    title: file.title(),
+                    album: file.album(),
+                    lyrics: file.lyrics(),
+                    duration_seconds: (seconds > 0).then_some(seconds),
+                }))
+            }
+            // An I/O failure is counted as a failed song; anything TagLib would have thrown
+            // its own exception for (not audio, a format it cannot read) is skipped.
+            Err(octo_media::tags::TagError::Io(e)) => Err(e),
+            Err(_) => Ok(None),
+        }
     }
 }
 
