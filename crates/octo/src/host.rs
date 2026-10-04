@@ -6,7 +6,8 @@
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
 use anyhow::Context as _;
-use octo_core::settings::SettingsStore;
+use octo_core::json::dom::Node;
+use octo_core::settings::{JsonObject, SettingsStore};
 use tokio::time::Instant;
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info, warn};
@@ -121,6 +122,13 @@ pub async fn run() -> anyhow::Result<()> {
     }
     let app = pipeline::build(state.clone(), &assets);
 
+    // First-run automation, in the background while the host starts, as Program.cs ran it.
+    tokio::spawn(first_run(state.clone()));
+
+    // StartupValidationOrchestrator: a hosted service, whose StartAsync the host awaited before
+    // the server started listening.
+    state.startup_validation.start().await;
+
     let addr = bind_address(std::env::var("ASPNETCORE_URLS").ok().as_deref());
     let listener = tokio::net::TcpListener::bind(addr)
         .await
@@ -163,6 +171,56 @@ pub async fn run() -> anyhow::Result<()> {
         );
     }
     Ok(())
+}
+
+/// First-run automation (best-effort, background). Octo is an accessory to an existing
+/// Navidrome, so it self-configures what it can: if no upstream URL is set, scan the LAN and
+/// adopt the server when exactly one is found; then detect the music folder from it. Anything
+/// ambiguous (several servers, none found) is left for the dashboard so we never silently point
+/// at the wrong server.
+pub async fn first_run(state: AppState) {
+    let url_missing = state
+        .settings
+        .current()
+        .subsonic
+        .url
+        .as_deref()
+        .is_none_or(|u| u.trim().is_empty());
+    if url_missing {
+        let servers = state.subsonic_discovery.scan().await;
+        if servers.len() == 1 {
+            let server = &servers[0];
+            let mut section = JsonObject::new();
+            section.insert("Url".to_string(), Node::String(server.url.clone()));
+            let mut patch = JsonObject::new();
+            patch.insert("Subsonic".to_string(), Node::Object(section));
+            match state.settings_writer.merge(&patch, &[]) {
+                Ok(_) => {
+                    // The URL is a restart-required setting (services bind it at startup), so
+                    // restart cleanly to apply it. A supervised deploy (compose restart policy /
+                    // systemd) brings Octo straight back, now with the URL loaded; on next boot
+                    // the URL is set so this is skipped.
+                    info!(
+                        target: "Program",
+                        "First-run: auto-configured Navidrome URL -> {} ({} {}). Restarting to apply.",
+                        server.url,
+                        server.kind.as_deref().unwrap_or(""),
+                        server.server_version.as_deref().unwrap_or("")
+                    );
+                    state.stop_application();
+                    return;
+                }
+                Err(e) => warn!(target: "Program", "First-run server auto-detect failed: {e}"),
+            }
+        } else if servers.len() > 1 {
+            info!(target: "Program", "First-run: {} servers found; pick one in the dashboard.", servers.len());
+        } else {
+            info!(target: "Program", "First-run: no Navidrome auto-detected; set the URL in the dashboard.");
+        }
+    }
+
+    // Detect the music folder from whatever URL we now have (configured or adopted).
+    state.navidrome_identity.detect_music_folder(true).await;
 }
 
 #[cfg(test)]

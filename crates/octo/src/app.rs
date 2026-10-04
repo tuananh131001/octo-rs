@@ -30,12 +30,22 @@ use tokio_util::sync::CancellationToken;
 
 use crate::services::admin::{BrowseSessionStore, DirectoryBrowser};
 use crate::services::common::{DownloadConcurrency, SoulseekHoldStore};
+use crate::services::http_client_factory;
+use crate::services::library::{NavidromePlaylistApi, NavidromeSongPathResolver};
 use crate::services::local::DownloadHistoryService;
+use crate::services::local::{ILocalLibraryService, LocalLibraryService};
 use crate::services::lyrics::LyricsChoiceStore;
 use crate::services::metadata::{GenreBackfillJournal, GenreBackfillStore};
 use crate::services::soulseek::{ExternalIdRegistry, RadioQueueStore, RejectedPeerRegistry};
+use crate::services::subsonic::{
+    CredentialCheck, NavidromeIdentityService, RequestIdentity, SearchSongOrderCache,
+    SubsonicDiscoveryService, SubsonicProxyService,
+};
 use crate::services::updates::ReleaseCheck;
 use crate::services::updates::UpdateHost;
+use crate::services::validation::{
+    IStartupValidator, StartupValidationOrchestrator, SubsonicStartupValidator,
+};
 use crate::services::you_tube::YouTubeResolver;
 use crate::workers::WorkerSupervisor;
 
@@ -76,6 +86,32 @@ pub struct AppInner {
     /// `IHostApplicationLifetime`: cancel it (see [`AppInner::stop_application`]) to shut the
     /// process down gracefully, as `StopApplication()` did.
     pub lifetime: CancellationToken,
+    /// `AddHttpClient()`: the default client `IHttpClientFactory.CreateClient()` handed out.
+    pub http: reqwest::Client,
+    /// `AddScoped<SubsonicProxyService>()`. This one has no request (a background scope);
+    /// handlers make their request's own with `with_request`.
+    pub subsonic_proxy: SubsonicProxyService,
+    /// `AddSingleton<NavidromeIdentityService>()` (a cheap handle).
+    pub navidrome_identity: NavidromeIdentityService,
+    /// `AddSingleton<SubsonicDiscoveryService>()`.
+    pub subsonic_discovery: Arc<SubsonicDiscoveryService>,
+    /// `AddSingleton<CredentialCheck>()`.
+    pub credential_check: Arc<CredentialCheck>,
+    /// `AddSingleton<RequestIdentity>()`.
+    pub request_identity: Arc<RequestIdentity>,
+    /// `AddSingleton<SearchSongOrderCache>()`.
+    pub search_song_order_cache: Arc<SearchSongOrderCache>,
+    /// `AddSingleton<ILocalLibraryService, LocalLibraryService>()`.
+    /// STUB(4-D): the stub service until 4-D lands.
+    pub local_library: Arc<dyn ILocalLibraryService>,
+    /// `AddSingleton<NavidromeSongPathResolver>()`.
+    pub navidrome_song_path_resolver: Arc<NavidromeSongPathResolver>,
+    /// `AddSingleton<NavidromePlaylistApi>()`.
+    pub navidrome_playlist_api: Arc<NavidromePlaylistApi>,
+    /// `AddHostedService<StartupValidationOrchestrator>()` over the `IStartupValidator`s
+    /// (`SubsonicStartupValidator`; `SoulseekStartupValidator` joins with 4-A). Run by
+    /// [`crate::host::run`] before the listener binds, as the host started it.
+    pub startup_validation: Arc<StartupValidationOrchestrator>,
     /// `DownloadHistoryService`: the fetched-songs log, `downloads-history.json` beside settings.json.
     pub download_history: Arc<DownloadHistoryService>,
     /// `DownloadConcurrency`: how many downloads transfer at once.
@@ -97,6 +133,48 @@ pub struct AppInner {
     pub rejected_peers: Arc<RejectedPeerRegistry>,
     /// `ReleaseCheck`: whether a newer release is out, `update/release.json`; also a worker.
     pub release_check: Arc<ReleaseCheck>,
+}
+
+/// The Navidrome-facing services, built in dependency order (3-E).
+struct NavidromeServices {
+    http: reqwest::Client,
+    subsonic_proxy: SubsonicProxyService,
+    navidrome_identity: NavidromeIdentityService,
+    local_library: Arc<dyn ILocalLibraryService>,
+    navidrome_song_path_resolver: Arc<NavidromeSongPathResolver>,
+    navidrome_playlist_api: Arc<NavidromePlaylistApi>,
+    startup_validation: Arc<StartupValidationOrchestrator>,
+}
+
+impl NavidromeServices {
+    fn build(settings: &Arc<SettingsStore>) -> Self {
+        let http = http_client_factory::default_client();
+        let navidrome_identity = NavidromeIdentityService::new(Arc::clone(settings), http.clone());
+        let local_library: Arc<dyn ILocalLibraryService> = Arc::new(LocalLibraryService::new());
+        let validators: Vec<Arc<dyn IStartupValidator>> = vec![Arc::new(SubsonicStartupValidator::new(
+            // IOptions<SubsonicSettings>: deliberately the URL Octo started with.
+            settings.current().subsonic.url.clone(),
+            http.clone(),
+        ))];
+        NavidromeServices {
+            subsonic_proxy: SubsonicProxyService::new(Arc::clone(settings)),
+            navidrome_song_path_resolver: Arc::new(NavidromeSongPathResolver::new(
+                navidrome_identity.clone(),
+                Arc::clone(&local_library),
+                http.clone(),
+                Arc::clone(settings),
+            )),
+            navidrome_playlist_api: Arc::new(NavidromePlaylistApi::new(
+                http.clone(),
+                navidrome_identity.clone(),
+                Arc::clone(settings),
+            )),
+            startup_validation: Arc::new(StartupValidationOrchestrator::new(validators)),
+            navidrome_identity,
+            local_library,
+            http,
+        }
+    }
 }
 
 /// The stores and clients of task 3-F, over the config directory every state file sits in
@@ -201,6 +279,7 @@ impl AppState {
             }
         });
 
+        let navidrome = NavidromeServices::build(&settings);
         let inner = AppInner {
             settings_writer: Arc::new(SettingsFileWriter::new(settings_path)),
             restart_tracker: Arc::new(restart_tracker),
@@ -225,6 +304,17 @@ impl AppState {
             browse_sessions: stores.browse_sessions,
             rejected_peers: stores.rejected_peers,
             release_check: stores.release_check,
+            http: navidrome.http,
+            subsonic_proxy: navidrome.subsonic_proxy,
+            navidrome_identity: navidrome.navidrome_identity,
+            subsonic_discovery: Arc::new(SubsonicDiscoveryService::new()),
+            credential_check: Arc::new(CredentialCheck::new()),
+            request_identity: Arc::new(RequestIdentity::new()),
+            search_song_order_cache: Arc::new(SearchSongOrderCache::new()),
+            local_library: navidrome.local_library,
+            navidrome_song_path_resolver: navidrome.navidrome_song_path_resolver,
+            navidrome_playlist_api: navidrome.navidrome_playlist_api,
+            startup_validation: navidrome.startup_validation,
         };
         AppState {
             inner: Arc::new(inner),
@@ -240,6 +330,7 @@ impl AppState {
         let restart_tracker = Arc::new(RestartTracker::new(&store));
         let settings = Arc::new(store);
         let stores = Stores::build(&settings, &config_dir);
+        let navidrome = NavidromeServices::build(&settings);
         let inner = AppInner {
             restart_tracker,
             settings,
@@ -260,6 +351,17 @@ impl AppState {
             browse_sessions: stores.browse_sessions,
             rejected_peers: stores.rejected_peers,
             release_check: stores.release_check,
+            http: navidrome.http,
+            subsonic_proxy: navidrome.subsonic_proxy,
+            navidrome_identity: navidrome.navidrome_identity,
+            subsonic_discovery: Arc::new(SubsonicDiscoveryService::new()),
+            credential_check: Arc::new(CredentialCheck::new()),
+            request_identity: Arc::new(RequestIdentity::new()),
+            search_song_order_cache: Arc::new(SearchSongOrderCache::new()),
+            local_library: navidrome.local_library,
+            navidrome_song_path_resolver: navidrome.navidrome_song_path_resolver,
+            navidrome_playlist_api: navidrome.navidrome_playlist_api,
+            startup_validation: navidrome.startup_validation,
         };
         AppState {
             inner: Arc::new(inner),

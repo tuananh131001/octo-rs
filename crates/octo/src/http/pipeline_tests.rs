@@ -663,10 +663,26 @@ async fn octo_owned_paths_are_problem_404s() {
     }
 }
 
+/// endpoints.md §7: with no Navidrome URL configured, a relayed call answers 200 with the
+/// Subsonic error envelope naming the missing setting, in XML unless `f=json`.
 #[tokio::test]
-async fn everything_else_awaits_the_relay() {
+async fn everything_else_is_relayed_and_without_a_url_says_so() {
     let r = get_("/rest/getArtists.view?u=a", &[]).await;
-    assert_eq!(r.status, StatusCode::NOT_IMPLEMENTED);
+    assert_eq!(r.status, StatusCode::OK);
+    assert_eq!(r.header("content-type"), Some("application/xml"));
+    assert_eq!(
+        r.text(),
+        "<subsonic-response status=\"failed\" version=\"1.16.1\" xmlns=\"http://subsonic.org/restapi\">\n  \
+         <error code=\"0\" message=\"Error connecting to Subsonic server: Octo has no valid Navidrome URL. \
+         Set SUBSONIC_URL (Subsonic__Url) to your Navidrome server, e.g. http://192.168.1.10:4533 — an absolute \
+         URL reachable from the Octo container, not localhost.\" />\n</subsonic-response>"
+    );
+    let r = get_("/rest/getArtists.view?u=a&f=json", &[]).await;
+    assert_eq!(r.header("content-type"), Some("application/json; charset=utf-8"));
+    assert_eq!(
+        r.text(),
+        r#"{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":0,"message":"Error connecting to Subsonic server: Octo has no valid Navidrome URL. Set SUBSONIC_URL (Subsonic__Url) to your Navidrome server, e.g. http://192.168.1.10:4533 \u2014 an absolute URL reachable from the Octo container, not localhost."}}}"#
+    );
 }
 
 #[tokio::test]
@@ -676,9 +692,16 @@ async fn paths_are_canonicalised_before_routing() {
         assert_eq!((r.status, r.text().as_str()), (StatusCode::OK, "pong"), "{uri}");
     }
     // A method the route does not take reaches the catch-all, never a 405; so does HEAD.
+    // (No Navidrome URL here, so the relay answers its 200 error envelope.)
     for method in [Method::PUT, Method::DELETE, Method::HEAD] {
         let r = send(method.clone(), "/rest/ping", &[]).await;
-        assert_eq!(r.status, StatusCode::NOT_IMPLEMENTED, "{method}");
+        assert_eq!(r.status, StatusCode::OK, "{method}");
+        if method != Method::HEAD {
+            assert!(
+                r.text().contains("Error connecting to Subsonic server"),
+                "{method}"
+            );
+        }
     }
 }
 
