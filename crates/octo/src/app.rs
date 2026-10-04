@@ -39,6 +39,8 @@ use crate::services::cover_art::{
     CoverArtAggregator, CoverArtArchiveLookup, DeezerCoverArtLookup, ICoverArtSource, ITunesCoverArtLookup,
     LastFmCoverArtLookup,
 };
+use octo_media::audio::SpectrumAnalyzer;
+
 use crate::services::fingerprint::{
     AcoustIdClient, AcoustIdRateLimitHandler, AcoustIdRateLimiter, MusicBrainzClient,
 };
@@ -53,8 +55,10 @@ use crate::services::last_fm::{
 };
 use crate::services::library::GeneratedPlaylistService;
 use crate::services::library::{
-    HeartOwnership, LibraryOwnership, NavidromePlaylistApi, NavidromeSongPathResolver, OwnershipNavidrome,
-    UpgradeQueue, UpgradeSources,
+    HeartOwnership, LibraryActionExecutor, LibraryActionExecutorParts, LibraryActionJournal,
+    LibraryActionPlaylistWorker, LibraryActionQuarantine, LibraryActionRatingWorker, LibraryOwnership,
+    NavidromePlaylistApi, NavidromeSongPathResolver, NoticeQueue, OwnershipNavidrome, UpgradeQueue,
+    UpgradeSources,
 };
 use crate::services::lidarr::{
     ILidarrHeartAcquisitionService, ILidarrTrackFetcher, LidarrAlbumClaims, LidarrClient,
@@ -258,7 +262,7 @@ pub struct AppInner {
     pub star_on_arrival: Arc<StarOnArrival>,
     /// `UpgradeQueue`. STUB(5-B): an in-memory stand-in until 5-B lands.
     pub upgrade_queue: Arc<UpgradeQueue>,
-    /// `UpgradeSources`. STUB(5-A): `Ready` only until 5-A lands.
+    /// `UpgradeSources`: where Better quality looks, over the Soulseek link.
     pub upgrade_sources: Arc<UpgradeSources>,
     /// `LibraryOwnership`: whether a song is already in the library.
     pub library_ownership: Arc<LibraryOwnership>,
@@ -293,6 +297,19 @@ pub struct AppInner {
     /// `AddSingleton<SyncCatalogService>()`: the discovery catalog appended to a syncing
     /// client's library walk, built over the background proxy (the C# made a scope per build).
     pub sync_catalog: Arc<SyncCatalogService>,
+    /// `LibraryActionJournal`: the write-ahead journal, `<config>/library-actions.json`. Its
+    /// 10-second flush (a timer in C#) is the "LibraryActionJournal" worker.
+    pub library_action_journal: Arc<LibraryActionJournal>,
+    /// `LibraryActionQuarantine` (singleton).
+    pub library_action_quarantine: Arc<LibraryActionQuarantine>,
+    /// `LibraryActionExecutor` (singleton): the only code in library actions that touches a file.
+    pub library_action_executor: Arc<LibraryActionExecutor>,
+    /// `LibraryActionRatingWorker`, singleton AND hosted: the controller enqueues into the
+    /// "LibraryActionRatingWorker" worker. (`LibraryActionPlaylistWorker` is hosted only, and
+    /// `LibraryActionPlaylistProvisioner` is scoped: built per request over its proxy.)
+    pub library_action_rating_worker: Arc<LibraryActionRatingWorker>,
+    /// `NoticeQueue`. STUB(5-B): in memory, and only what library actions call, until 5-B lands.
+    pub notice_queue: Arc<NoticeQueue>,
 }
 
 /// The acquisition pipeline of task 4-D, over the services it routes to. The C# broke two
@@ -354,7 +371,7 @@ impl Acquisition {
             Clock::system(),
         );
         let upgrade_queue = Arc::new(UpgradeQueue::new());
-        let upgrade_sources = Arc::new(UpgradeSources::new(settings.clone()));
+        let upgrade_sources = Arc::new(UpgradeSources::new(settings.clone(), Some(soulseek_link.clone())));
         let library_ownership = Arc::new(LibraryOwnership::new(
             settings.clone(),
             Some(OwnershipNavidrome {
@@ -392,9 +409,7 @@ impl Acquisition {
                     imports: Some(lidarr_import_handoff.clone()),
                     ids: Some(stores.external_id_registry.clone()),
                     downloads: Some(download_service.clone()),
-                    // STUB(5-A): the library action journal is not in the app state until 5-A
-                    // lands, so no import is dropped as removed yet.
-                    journal: None,
+                    journal: Some(stores.library_action_journal.clone()),
                     ownership: Some(library_ownership.clone()),
                     upgrades: Some(upgrade_queue.clone()),
                 },
@@ -588,6 +603,7 @@ struct Stores {
     rejected_peers: Arc<RejectedPeerRegistry>,
     release_check: Arc<ReleaseCheck>,
     subsonic_response_builder: Arc<SubsonicResponseBuilder>,
+    library_action_journal: Arc<LibraryActionJournal>,
 }
 
 impl Stores {
@@ -626,6 +642,9 @@ impl Stores {
                 config_dir.join("update").join("release.json"),
                 settings.clone(),
             )),
+            library_action_journal: Arc::new(LibraryActionJournal::with_path(Some(
+                config_dir.join("library-actions.json"),
+            ))),
         }
     }
 
@@ -642,6 +661,10 @@ impl Stores {
         });
         let release_check = self.release_check.clone();
         workers.register("ReleaseCheck", move |token| release_check.clone().run(token));
+        let journal = self.library_action_journal.clone();
+        workers.register("LibraryActionJournal", move |token| {
+            journal.clone().run_flusher(token)
+        });
     }
 }
 
@@ -915,6 +938,79 @@ impl Radio {
     }
 }
 
+/// Library actions (5-A): the quarantine, the executor and its two workers, over the journal
+/// the stores hold.
+struct LibraryActions {
+    notice_queue: Arc<NoticeQueue>,
+    quarantine: Arc<LibraryActionQuarantine>,
+    executor: Arc<LibraryActionExecutor>,
+    rating_worker: Arc<LibraryActionRatingWorker>,
+    playlist_worker: Arc<LibraryActionPlaylistWorker>,
+}
+
+impl LibraryActions {
+    fn build(
+        settings: &Arc<SettingsStore>,
+        stores: &Stores,
+        navidrome: &NavidromeServices,
+        acquisition: &Acquisition,
+        soulseek_link: Arc<dyn ISoulseekLink>,
+    ) -> Self {
+        // STUB(5-B): the real queue, with its file, replaces this when 5-B lands.
+        let notice_queue = Arc::new(NoticeQueue::new());
+        let quarantine = Arc::new(LibraryActionQuarantine::new(settings.clone()));
+        let executor = Arc::new(LibraryActionExecutor::new(LibraryActionExecutorParts {
+            resolver: navidrome.navidrome_song_path_resolver.clone(),
+            quarantine: quarantine.clone(),
+            journal: stores.library_action_journal.clone(),
+            library: navidrome.local_library.clone(),
+            ids: stores.external_id_registry.clone(),
+            rejected_peers: stores.rejected_peers.clone(),
+            acquisitions: acquisition.track_acquisition_queue.clone(),
+            settings: settings.clone(),
+            notices: Some(notice_queue.clone()),
+            spectrum: Some(Arc::new(SpectrumAnalyzer::new())),
+            stars: Some(acquisition.star_on_arrival.clone()),
+            soulseek_link: Some(soulseek_link),
+            sources: Some(acquisition.upgrade_sources.clone()),
+        }));
+        let rating_worker = Arc::new(LibraryActionRatingWorker::new(
+            executor.clone(),
+            navidrome.subsonic_proxy.clone(),
+            settings.clone(),
+        ));
+        let playlist_worker = Arc::new(LibraryActionPlaylistWorker::new(
+            executor.clone(),
+            stores.library_action_journal.clone(),
+            quarantine.clone(),
+            navidrome.navidrome_song_path_resolver.clone(),
+            navidrome.navidrome_identity.clone(),
+            navidrome.navidrome_playlist_api.clone(),
+            settings.clone(),
+        ));
+        LibraryActions {
+            notice_queue,
+            quarantine,
+            executor,
+            rating_worker,
+            playlist_worker,
+        }
+    }
+
+    /// `AddHostedService<LibraryActionPlaylistWorker>()` and the rating worker, singleton AND
+    /// hosted, the same instance both ways.
+    fn register_workers(&self, workers: &WorkerSupervisor) {
+        let playlists = self.playlist_worker.clone();
+        workers.register("LibraryActionPlaylistWorker", move |stopping| {
+            playlists.clone().run(stopping)
+        });
+        let ratings = self.rating_worker.clone();
+        workers.register("LibraryActionRatingWorker", move |stopping| {
+            ratings.clone().run(stopping)
+        });
+    }
+}
+
 impl AppInner {
     /// `IHostApplicationLifetime.StopApplication()`: begins a graceful shutdown.
     pub fn stop_application(&self) {
@@ -979,6 +1075,14 @@ impl AppState {
             soulseek.link.clone(),
         );
         acquisition.register_workers(&workers, &settings, &stores, &integrations.notifications);
+        let library_actions = LibraryActions::build(
+            &settings,
+            &stores,
+            &navidrome,
+            &acquisition,
+            soulseek.link.clone(),
+        );
+        library_actions.register_workers(&workers);
         let radio = Radio::build(
             &settings,
             &config_dir,
@@ -1079,6 +1183,11 @@ impl AppState {
             last_fm_radio_refresh_worker: radio.refresh_worker,
             generated_playlists: radio.generated_playlists,
             sync_catalog,
+            library_action_journal: stores.library_action_journal,
+            library_action_quarantine: library_actions.quarantine,
+            library_action_executor: library_actions.executor,
+            library_action_rating_worker: library_actions.rating_worker,
+            notice_queue: library_actions.notice_queue,
         };
         AppState {
             inner: Arc::new(inner),
@@ -1114,6 +1223,14 @@ impl AppState {
             &integrations,
             &clients,
             soulseek.metadata.clone(),
+            soulseek.link.clone(),
+        );
+        // Library actions keep their journal in the test's config directory; no worker is run.
+        let library_actions = LibraryActions::build(
+            &settings,
+            &stores,
+            &navidrome,
+            &acquisition,
             soulseek.link.clone(),
         );
         // The radio's state files sit in the test's config directory; its workers are not run.
@@ -1214,6 +1331,11 @@ impl AppState {
             last_fm_radio_refresh_worker: radio.refresh_worker,
             generated_playlists: radio.generated_playlists,
             sync_catalog,
+            library_action_journal: stores.library_action_journal,
+            library_action_quarantine: library_actions.quarantine,
+            library_action_executor: library_actions.executor,
+            library_action_rating_worker: library_actions.rating_worker,
+            notice_queue: library_actions.notice_queue,
         };
         AppState {
             inner: Arc::new(inner),
@@ -1418,6 +1540,45 @@ mod tests {
                 .pinned_catalog("alice", SyncCatalogKind::Song)
                 .is_none()
         );
+    }
+
+    /// Library actions (5-A): the journal's flusher and both workers run, the journal sits beside
+    /// settings.json, and the Lidarr heart shares it.
+    #[tokio::test]
+    async fn library_actions_are_wired_as_program_cs_registered_them() {
+        let state = AppState::build(SettingsStore::from_env(Vec::new(), None));
+        let names: Vec<String> = state.workers.status().into_iter().map(|s| s.name).collect();
+        for name in [
+            "LibraryActionJournal",
+            "LibraryActionPlaylistWorker",
+            "LibraryActionRatingWorker",
+        ] {
+            assert!(names.iter().any(|n| n == name), "{name} in {names:?}");
+        }
+
+        let state = AppState::for_tests(AppSettings::default());
+        assert!(
+            state
+                .library_action_journal
+                .path()
+                .is_some_and(|p| p.ends_with("library-actions.json"))
+        );
+        assert!(Arc::ptr_eq(
+            state.library_action_executor.journal(),
+            &state.library_action_journal
+        ));
+        let off = state
+            .library_action_executor
+            .apply(crate::services::library::LibraryActionRequest::new(
+                octo_core::settings::LibraryAction::Delete,
+                "nd-1",
+                "alice",
+            ))
+            .await
+            .expect("an outcome");
+        assert_eq!(off.detail.as_deref(), Some("Library actions are off."));
+        assert_eq!(state.library_action_rating_worker.pending(), 0);
+        assert!(!state.upgrade_sources.ready());
     }
 
     #[test]
