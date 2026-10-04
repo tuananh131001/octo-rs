@@ -6,7 +6,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use octo_core::models::domain::Song;
-use octo_subsonic::subsonic_model_mapper::{self, SearchRow};
+use octo_subsonic::subsonic_model_mapper::{Row, SubsonicModelMapper};
 use parking_lot::Mutex;
 
 use super::expiring_cache::ExpiringCache;
@@ -58,7 +58,7 @@ impl SearchSongOrder {
         requested_songs: i32,
         local_target: i32,
         external_target: i32,
-        local_songs: &[SearchRow],
+        local_songs: &[Row],
     ) -> SearchSongOrder {
         let shown = Self::page_one_external_count(
             built.len() as i32,
@@ -66,11 +66,11 @@ impl SearchSongOrder {
             external_target,
             local_songs.len() as i32,
         );
-        let owned = subsonic_model_mapper::local_song_keys(local_songs);
+        let owned = SubsonicModelMapper::local_song_keys(local_songs);
         let later = built
             .iter()
             .skip(shown.max(0) as usize)
-            .filter(|song| !subsonic_model_mapper::is_listed(song, &owned))
+            .filter(|song| !SubsonicModelMapper::is_listed(song, &owned))
             .cloned()
             .collect();
         SearchSongOrder {
@@ -263,14 +263,20 @@ mod tests {
 
         // 20 asked for, 12 local / 8 external targets, one library row back: page one shows
         // min(3, 8 + 11) = 3 outside rows, so nothing is left for later.
-        let order = SearchSongOrder::from(Arc::clone(&built), 20, 12, 8, &[SearchRow::Json(row.clone())]);
+        let order = SearchSongOrder::from(
+            Arc::clone(&built),
+            20,
+            12,
+            8,
+            &[Row::Json(serde_json::Value::Object(row.clone()))],
+        );
         assert_eq!((order.page_one_externals, order.prefix_count), (3, 1));
         assert!(order.later_externals.is_empty());
         assert!(!order.library_continues());
 
         // With no room for outside rows on page one, the rest is every built song but the one
         // the library already listed.
-        let order = SearchSongOrder::from(built, 20, 1, 0, &[SearchRow::Json(row)]);
+        let order = SearchSongOrder::from(built, 20, 1, 0, &[Row::Json(serde_json::Value::Object(row))]);
         let later: Vec<&str> = order.later_externals.iter().map(|s| s.id.as_str()).collect();
         assert_eq!(later, ["e0", "e2"]);
         assert!(order.library_continues());

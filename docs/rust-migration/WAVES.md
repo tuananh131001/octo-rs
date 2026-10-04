@@ -27,7 +27,7 @@ depends on have been merged into `rust-rewrite`. Status: ☐ not started · ◐ 
 
 | | Task | C# sources | Tests |
 |---|---|---|---|
-| ◐ | 3-A Subsonic wire | `Subsonic/{SubsonicRequestParser,SubsonicCredential,SubsonicModelMapper,SubsonicResponseBuilder*,SyncCatalogResponse}` | SubsonicRequestParser, SubsonicModelMapper, SubsonicResponseBuilder |
+| ☑ | 3-A Subsonic wire | `Subsonic/{SubsonicRequestParser,SubsonicCredential,SubsonicModelMapper,SubsonicResponseBuilder*,SyncCatalogResponse}` | SubsonicRequestParser, SubsonicModelMapper, SubsonicResponseBuilder |
 | ☑ | 3-B Last.fm, ListenBrainz, notifications | `LastFm/{LastFmService,LastFmScrobbleService,LastFmSearchCleanup}`, `ListenBrainz/*`, `Notifications/*`, `Subsonic/RecentScrobbles` | LastFmService, LastFmScrobble, ScrobbleRetry, LastFmSearchCleanup, DiscordSink, NtfySink, NotificationService |
 | ☑ | 3-C lyrics sources and service | `Lyrics/{LrclibLyricsSource,KugouLyricsSource,NeteaseLyricsSource,LyricsOvhLyricsSource,LyricsService,LyricsChoices,LyricsSidecarWriter}` | Lyrics, LyricsSongSource, LyricsChoice |
 | ◐ | 3-D tags | `Common/TagWriterExtras`, the tag-writing parts of `Common/BaseDownloadService`, `Library/KeptIdentity` | TagWriterExtras, MergedFormat, KeptIdentity |
@@ -38,7 +38,7 @@ depends on have been merged into `rust-rewrite`. Status: ☐ not started · ◐ 
 
 | | Task | C# sources | Tests |
 |---|---|---|---|
-| ◐ | 4-A Soulseek client and metadata | `Soulseek/{SoulseekClient,SoulseekLink,SoulseekMetadataService,AlbumFolderPicker,SoulseekStartupValidator}`, `IMusicMetadataService` | SoulseekMetadataService, SoulseekCandidateMatching, SoulseekDenyList, SoulseekOutage, SoulseekResolveRetry, SoulseekTransferPoll |
+| ☑ | 4-A Soulseek client and metadata | `Soulseek/{SoulseekClient,SoulseekLink,SoulseekMetadataService,AlbumFolderPicker,SoulseekStartupValidator}`, `IMusicMetadataService` | SoulseekMetadataService, SoulseekCandidateMatching, SoulseekDenyList, SoulseekOutage, SoulseekResolveRetry, SoulseekTransferPoll |
 | ☐ | 4-B download base and verification | `Common/BaseDownloadService`, `Fingerprint/DownloadVerificationService`, `CoverArt/{DownloadCoverResolver,AlbumCoverFinder}`, `Common/AlbumFillIn`, `IDownloadService` | DownloadPlacement, DownloadTagging, DownloadAttribution, AlbumFolder, AlbumFillIn, DownloadVerificationDecision, FailedRelayDetection, RelayedRepeats, CoverChain |
 | ☐ | 4-C Soulseek download service | `Soulseek/SoulseekDownloadService` | ParallelDownload, ParallelLockSplit, SoulseekSlowTransfer, SoulseekIncompleteFolder |
 | ◐ | 4-D acquisition orchestration | `Common/{AcquisitionTracker,AcquisitionWorker,AcquisitionActivity,TrackAcquisitionQueue,HeartAcquisitionCoordinator,StarOnArrival,SoulseekHoldResumer,ExternalSearchService,CacheCleanupService}`, `Library/{HeartOwnership,LibraryOwnership,ReplacementHandoff}`, `Local/LocalLibraryService` | AcquisitionTracker, HeartAcquisitionCoordinator, HeartOwnership, StarOnArrival, LibraryOwnership, LocalLibraryService, ExternalSearchService, HonestOutsideSongs, OutsideSongSignIn |

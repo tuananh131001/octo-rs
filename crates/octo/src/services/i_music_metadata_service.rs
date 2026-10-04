@@ -1,8 +1,5 @@
 //! Port of `Services/IMusicMetadataService.cs`.
 //!
-//! STUB(4-A): replaced when 4-A lands; a copy of 4-A's trait, so 4-D's callers compile against
-//! the same members.
-//!
 //! The C# methods that took a `CancellationToken` drop it here: a caller that gives up drops the
 //! future, which stops the work at its next await as the token did.
 

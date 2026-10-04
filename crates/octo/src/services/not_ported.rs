@@ -2,7 +2,6 @@
 //! into the app state now. Not a C# file. Each is replaced in `app.rs` by the real service when
 //! its task lands, and this file goes with the last of them:
 //!
-//! - STUB(4-A): [`NotPortedMetadataService`] for `SoulseekMetadataService`.
 //! - STUB(4-C): [`NotPortedDownloadService`] for `SoulseekDownloadService`.
 //! - STUB(4-E): [`NotPortedLidarr`] for `LidarrHeartAcquisitionService`.
 //!
@@ -12,86 +11,16 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use octo_core::models::domain::{Album, Artist, Song};
 use octo_core::models::download::DownloadInfo;
-use octo_core::models::search::SearchResult;
-use octo_core::models::subsonic::ExternalPlaylist;
 use octo_core::settings::DownloadSource;
 use tokio_util::sync::CancellationToken;
 
 use crate::services::i_download_service::{AudioStream, DirectStreamInfo, IDownloadService};
-use crate::services::i_music_metadata_service::IMusicMetadataService;
 use crate::services::library::ReplacementHandoff;
 use crate::services::lidarr::ILidarrHeartAcquisitionService;
 
 fn not_ported(what: &str) -> anyhow::Error {
     anyhow::anyhow!("{what} is not available in this build yet")
-}
-
-/// STUB(4-A): replaced by `SoulseekMetadataService`.
-pub struct NotPortedMetadataService;
-
-#[async_trait]
-impl IMusicMetadataService for NotPortedMetadataService {
-    async fn search_songs(&self, _query: &str, _limit: i32) -> Vec<Song> {
-        Vec::new()
-    }
-
-    async fn search_songs_by_artist_title(
-        &self,
-        _artist: &str,
-        _title: &str,
-        _limit: i32,
-        _duration_seconds: Option<i32>,
-    ) -> Vec<Song> {
-        Vec::new()
-    }
-
-    async fn search_albums(&self, _query: &str, _limit: i32) -> Vec<Album> {
-        Vec::new()
-    }
-
-    async fn search_artists(&self, _query: &str, _limit: i32) -> Vec<Artist> {
-        Vec::new()
-    }
-
-    async fn search_all(
-        &self,
-        _query: &str,
-        _song_limit: i32,
-        _album_limit: i32,
-        _artist_limit: i32,
-    ) -> SearchResult {
-        SearchResult::default()
-    }
-
-    async fn get_song(&self, _external_provider: &str, _external_id: &str) -> Option<Song> {
-        None
-    }
-
-    async fn get_album(&self, _external_provider: &str, _external_id: &str) -> Option<Album> {
-        None
-    }
-
-    async fn get_artist(&self, _external_provider: &str, _external_id: &str) -> Option<Artist> {
-        None
-    }
-
-    async fn get_artist_albums(&self, _external_provider: &str, _external_id: &str) -> Vec<Album> {
-        Vec::new()
-    }
-
-    async fn search_playlists(&self, _query: &str, _limit: i32) -> Vec<ExternalPlaylist> {
-        Vec::new()
-    }
-
-    async fn get_playlist(&self, _external_provider: &str, _external_id: &str) -> Option<ExternalPlaylist> {
-        None
-    }
-
-    async fn get_playlist_tracks(&self, _external_provider: &str, _external_id: &str) -> Vec<Song> {
-        Vec::new()
-    }
 }
 
 /// STUB(4-C): replaced by `SoulseekDownloadService`.

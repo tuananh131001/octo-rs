@@ -25,9 +25,10 @@ use crate::services::local::ILocalLibraryService;
 use crate::services::subsonic::NavidromeIdentityService;
 
 /// Where one acquisition has got to. Sent to clients in lower case.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum AcquisitionState {
     /// Accepted, waiting for the worker.
+    #[default]
     Queued,
     /// Looking for a source or a peer.
     Searching,
@@ -42,6 +43,19 @@ pub enum AcquisitionState {
 }
 
 impl AcquisitionState {
+    /// The C# member name.
+    pub fn name(self) -> &'static str {
+        match self {
+            AcquisitionState::Queued => "Queued",
+            AcquisitionState::Searching => "Searching",
+            AcquisitionState::Downloading => "Downloading",
+            AcquisitionState::Verifying => "Verifying",
+            AcquisitionState::Importing => "Importing",
+            AcquisitionState::Done => "Done",
+            AcquisitionState::Failed => "Failed",
+        }
+    }
+
     /// The member's name in lower case, as clients are sent it.
     pub fn wire_name(self) -> &'static str {
         match self {
@@ -57,7 +71,7 @@ impl AcquisitionState {
 }
 
 /// One acquisition as a reader sees it. A copy, so it never changes under them.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct AcquisitionSnapshot {
     pub id: String,
     pub provider: String,
