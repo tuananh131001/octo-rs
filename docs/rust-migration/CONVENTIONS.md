@@ -150,6 +150,9 @@ The machine has 4 cores and 7 GB of RAM, and several porters share it.
 
 - Point every build at the shared target directory, so dependencies compile once:
   `export CARGO_TARGET_DIR=/home/anhnt/Projects/octo/target CARGO_BUILD_JOBS=2`.
+- If a build says a module you can see in the source does not exist ("cannot find `x` in
+  `octo_core`"), the shared target directory served a stale build from another worktree. Run
+  `touch crates/*/src/lib.rs` and build again.
 - Never run `docker system prune`, `docker image prune` or `docker rmi`, and never delete
   images or volumes you did not create. The C# baseline image (`octo-csharp:csharp-final`) and
   the .NET SDK image are shared by everyone.
