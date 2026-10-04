@@ -10,15 +10,18 @@ publish.workspace = true
 [dependencies]
 octo-core.workspace = true
 anyhow.workspace = true
+async-trait.workspace = true
 cosmic-text.workspace = true
 image.workspace = true
 lofty.workspace = true
 parking_lot.workspace = true
+regex.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
 tiny-skia.workspace = true
 tokio.workspace = true
+tokio-util.workspace = true
 tracing.workspace = true
 
 [dev-dependencies]
