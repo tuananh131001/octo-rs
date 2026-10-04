@@ -1,12 +1,14 @@
 //! Fingerprint lookups (`Services/Fingerprint`): the AcoustID client with its named client and
-//! rate limiter, and the MusicBrainz client.
+//! rate limiter, the MusicBrainz client, and the verification service a download is checked by.
 
 pub mod acoust_id_client;
 pub mod acoust_id_rate_limit_handler;
 pub mod acoust_id_rate_limiter;
+pub mod download_verification_service;
 pub mod music_brainz_client;
 
 pub use acoust_id_client::AcoustIdClient;
 pub use acoust_id_rate_limit_handler::AcoustIdRateLimitHandler;
 pub use acoust_id_rate_limiter::AcoustIdRateLimiter;
+pub use download_verification_service::{DownloadVerificationService, RecordingIsrcs};
 pub use music_brainz_client::{MusicBrainzClient, MusicBrainzError};

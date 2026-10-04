@@ -1561,6 +1561,7 @@ dependencies = [
  "http-body-util",
  "httpdate",
  "if-addrs",
+ "image",
  "indexmap",
  "insta",
  "lofty",

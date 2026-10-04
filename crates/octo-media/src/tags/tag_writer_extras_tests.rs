@@ -277,12 +277,85 @@ fn the_facts_reader_is_read_facts() {
     let dir = tempfile::tempdir().expect("a temp dir");
     let path = new_flac(dir.path());
     let facts = extras::TagWriterExtras.read_facts(path.to_str().expect("a UTF-8 path"), false);
+    // The fixture has no audio after its STREAMINFO, so it has no length, as TagLib# read it.
     assert_eq!(
         (
             facts.duration_seconds,
             facts.sample_rate,
             facts.extension.as_str()
         ),
-        (2, 44100, ".flac")
+        (0, 44100, ".flac")
     );
+}
+
+/// Rust-only: a FLAC has its STREAMINFO length only when audio follows the metadata. TagLib#'s
+/// `StreamHeader.Duration` is zero for an empty stream, which the download tagging tests'
+/// fixture is, and lofty would otherwise read the two seconds STREAMINFO claims.
+#[test]
+fn a_flac_has_a_length_only_when_it_has_audio() {
+    crate::audio::test_support::require_ffmpeg!();
+    let dir = tempfile::tempdir().expect("a temp dir");
+    crate::audio::test_support::run_ffmpeg(
+        dir.path(),
+        "-f lavfi -i sine=frequency=440:duration=2 -c:a flac tone.flac",
+    );
+    assert_eq!(open(&dir.path().join("tone.flac")).duration_seconds(), 2);
+    assert_eq!(open(&new_flac(dir.path())).duration_seconds(), 0);
+}
+
+// ---- From `DownloadPlacementTests` (task 4-B): the recording id and the artists ---------------
+
+/// TagLib# after 2.3.0 writes Tag.MusicBrainzTrackId as the release TRACK id on ID3. Writing the
+/// UFID frame directly keeps the recording id where Navidrome reads it whatever the package.
+#[test]
+fn set_recording_id_mp3_writes_the_music_brainz_org_ufid() {
+    let dir = tempfile::tempdir().expect("a temp dir");
+    let path = new_mp3(dir.path());
+    let mut file = open(&path);
+    extras::set_recording_id(&mut file, "rec-1");
+    file.save().expect("saved");
+
+    let mut read = open(&path);
+    let id3 = read.id3v2.as_ref().expect("an ID3v2 tag");
+    assert_eq!(id3.ufid("http://musicbrainz.org"), Some(&b"rec-1"[..]));
+    assert_eq!(extras::read_recording_id(&mut read).as_deref(), Some("rec-1"));
+}
+
+#[test]
+fn set_recording_id_flac_writes_musicbrainz_trackid() {
+    let dir = tempfile::tempdir().expect("a temp dir");
+    let path = new_flac(dir.path());
+    let mut file = open(&path);
+    extras::set_recording_id(&mut file, "rec-1");
+    file.save().expect("saved");
+
+    let read = open(&path);
+    let xiph = read.xiph.as_ref().expect("a Vorbis comment");
+    assert_eq!(xiph.first_field("MUSICBRAINZ_TRACKID").as_deref(), Some("rec-1"));
+}
+
+#[test]
+fn set_multi_value_writes_one_value_per_artist() {
+    for name in ["t.mp3", "t.flac"] {
+        let dir = tempfile::tempdir().expect("a temp dir");
+        let path = if name.ends_with(".mp3") {
+            write(dir.path(), name, &mp3())
+        } else {
+            write(dir.path(), name, &flac())
+        };
+        let mut file = open(&path);
+        extras::set_multi_value(&mut file, "ARTISTS", &strings(&["Bizarrap", "Rauw Alejandro"]));
+        file.save().expect("saved");
+
+        let read = open(&path);
+        let values = if name.ends_with(".mp3") {
+            read.id3v2
+                .as_ref()
+                .and_then(|id3| id3.user_text("ARTISTS", false))
+                .expect("a user text frame")
+        } else {
+            read.xiph.as_ref().expect("a Vorbis comment").field("ARTISTS")
+        };
+        assert_eq!(values, strings(&["Bizarrap", "Rauw Alejandro"]), "{name}");
+    }
 }
