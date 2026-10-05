@@ -18,5 +18,10 @@
    "requests": ["10-static-cors/*-br", "10-static-cors/*-gzip"],
    "aspects": ["body", "header:etag", "header:content-length", "header:last-modified"],
    "knownDiff": "Brotli/gzip variants come from the build's compressor",
-   "reason": "Different compressors cannot produce the same bytes; the W/ ETag of the original is identical."}
+   "reason": "Different compressors cannot produce the same bytes; the W/ ETag of the original is identical."},
+  {"id": "cover-jpeg-bytes",
+   "requests": ["04-media/cover-octo-radio", "04-media/cover-external-*", "04-media/cover-legacy-ext-album", "04-media/cover-legacy-ext-typed"],
+   "aspects": ["body", "header:content-length"],
+   "knownDiff": "Bytes were never stable across encoders",
+   "reason": "The placeholder and the badged outside covers are JPEGs from the image crate's encoder, not ImageSharp's; status and Content-Type match (6-A2)."}
 ]
