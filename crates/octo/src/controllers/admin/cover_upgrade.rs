@@ -164,11 +164,7 @@ async fn get_run(State(state): State<AppState>, request: Request) -> Response {
 
 async fn start(State(state): State<AppState>, request: Request) -> Response {
     let (parts, body) = split(request).await;
-    let request: StartRequest = match bind_body(
-        &parts,
-        &body,
-        "Octo.Controllers.CoverUpgradeController+StartRequest",
-    ) {
+    let request: StartRequest = match bind_body(&parts, &body) {
         Ok(r) => r,
         Err(answer) => return *answer,
     };

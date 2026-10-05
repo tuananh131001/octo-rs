@@ -1,19 +1,14 @@
 //! The catch-all `/{**endpoint}` (`SubsonicController.GenericEndpoint`, L3682; endpoints.md
 //! §3.9): every method, every path no route claims.
 //!
-//! Ported so far (3-E): the answers that need no catalog, and the plain faithful relay.
-//!
 //! - `/` has no `endpoint`, which the implicit `[Required]` on a non-nullable `string` turns
 //!   into the automatic validation 400 before the action runs;
 //! - Octo-owned paths (lower-cased path starting with `admin` (which also matches
 //!   `administrator`...) or `api/admin`, starting with `assets/`, or equal to `favicon.ico`)
 //!   get `NotFound()`, the ProblemDetails 404, and are never relayed;
+//! - steps 2-10 (native radio, the external-id safety net, the native catalog answers and the
+//!   native search injections) are `controllers::subsonic::native`;
 //! - everything else is relayed faithfully to Navidrome (step 11).
-//!
-//! TODO(6-A): steps 2-10 of §3.9 run before the relay and are not ported yet: native radio
-//! (`TryServeNativeRadioAsync`), the external-id safety net (`HasExternalId` → the synthetic
-//! empty ok of `ElementFor(endpoint)`), and the native catalog answers for external songs,
-//! albums and artists and the native song and album search injections.
 
 use std::sync::Arc;
 
@@ -26,6 +21,7 @@ use octo_subsonic::subsonic_request_parser::unescape_data_string;
 
 use super::error::{problem, validation_problem};
 use crate::app::AppState;
+use crate::controllers::subsonic::native::{self, NativeRequest};
 use crate::services::subsonic::{IncomingRequest, RawRelayResult};
 use octo_subsonic::SubsonicResponseBuilder;
 
@@ -49,13 +45,25 @@ pub async fn catch_all(State(state): State<AppState>, req: Request) -> Response 
     let parameters = incoming.parameters();
     let format = parameters.get("f").map_or("xml", String::as_str).to_string();
 
-    // TODO(6-A): TryServeNativeRadioAsync, the HasExternalId safety net and the native
-    // external song/album/artist answers and search injections (§3.9 steps 2-10) go here.
+    // Steps 2-10: native radio, the external-id safety net, and the native answers.
+    let relay = state.subsonic_proxy.with_request(Arc::clone(&incoming));
+    let native_request = NativeRequest {
+        endpoint: &endpoint,
+        method: &parts.method,
+        headers: &parts.headers,
+        parameters: &parameters,
+        format: &format,
+        proxy: &relay,
+    };
+    match native::answer(&state, &native_request).await {
+        Ok(Some(response)) => return response,
+        Ok(None) => {}
+        Err(error) => return error.into_response(),
+    }
 
     // Faithful relay: forward the caller's method + body + status so native Navidrome
     // endpoints (e.g. the POST /auth/login some clients use) work, not just GET-shaped
     // Subsonic calls.
-    let relay = state.subsonic_proxy.with_request(Arc::clone(&incoming));
     match relay.relay_raw(&endpoint, &parameters).await {
         Ok(raw) => {
             // Learn Octo's own Navidrome identity from a client's native sign-in as it passes

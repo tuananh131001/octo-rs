@@ -15,7 +15,7 @@ use octo_core::json::datetime::min_value;
 use serde::Deserialize;
 use serde_json::{Value, json};
 
-use super::helpers_6b2::{BROWSE_COOKIE_NAME, bind_body, cookie, error, ok, split, status, utc_opt};
+use super::helpers_6b2::{BROWSE_COOKIE_NAME, bind_body, error, ok, request_cookie, split, status, utc_opt};
 use crate::app::AppState;
 use crate::http::error::AppError;
 use crate::http::routes::RouteSet;
@@ -50,11 +50,10 @@ async fn check(State(state): State<AppState>) -> Response {
 /// Update to the newest release, through the host helper.
 async fn update(State(state): State<AppState>, request: Request) -> Response {
     let (parts, body) = split(request).await;
-    let request: UpdateRequest =
-        match bind_body(&parts, &body, "Octo.Controllers.UpdateController+UpdateRequest") {
-            Ok(r) => r,
-            Err(answer) => return *answer,
-        };
+    let request: UpdateRequest = match bind_body(&parts, &body) {
+        Ok(r) => r,
+        Err(answer) => return *answer,
+    };
     let view = state.release_check.view();
     if !view.enabled {
         return error(
@@ -85,7 +84,7 @@ async fn update(State(state): State<AppState>, request: Request) -> Response {
 
     let user = state
         .browse_sessions
-        .user_of(cookie(&parts.headers, BROWSE_COOKIE_NAME).as_deref())
+        .user_of(request_cookie(&parts.headers, BROWSE_COOKIE_NAME).as_deref())
         .unwrap_or_else(|| "dashboard".to_string());
     match host.request(&latest, &user) {
         Ok(id) => status(

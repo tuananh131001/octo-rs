@@ -1,4 +1,5 @@
-//! The ported controllers (wave 6): each exposes `routes()`, merged into
-//! `http::pipeline::app_routes`.
+//! The controllers: `octo/Controllers/*.cs`, one module per controller. Each registers its
+//! actions with `pub fn routes() -> RouteSet`, merged into [`crate::http::pipeline::app_routes`].
 
 pub mod admin;
+pub mod subsonic;

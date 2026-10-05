@@ -520,7 +520,7 @@ fn if_range_allows(asset: &StaticAsset, etag: &str, headers: &HeaderMap) -> bool
     }
 }
 
-enum RangeOutcome {
+pub(crate) enum RangeOutcome {
     /// No usable range: serve the whole body.
     Whole,
     Partial(u64, u64),
@@ -529,7 +529,7 @@ enum RangeOutcome {
 
 /// `RangeHelper.ParseRange` + `NormalizeRange`: exactly one range is honoured (several, or a
 /// malformed header, mean the whole body), and the unit name is not checked.
-fn parse_range(value: &str, length: u64) -> RangeOutcome {
+pub(crate) fn parse_range(value: &str, length: u64) -> RangeOutcome {
     let Some((unit, spec)) = value.split_once('=') else {
         return RangeOutcome::Whole;
     };

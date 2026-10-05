@@ -40,6 +40,7 @@ pub fn app_routes(assets: &StaticAssets) -> RouteSet {
     RouteSet::new()
         .merge(assets.routes())
         .merge(admin_root::routes())
+        .merge(crate::controllers::subsonic::routes())
         .merge(crate::controllers::admin::routes())
 }
 
@@ -58,8 +59,19 @@ pub fn build_with(state: AppState, routes: RouteSet) -> App {
         .layer(from_fn(cors::cors))
         .layer(from_fn(exception::catch_panic))
         .map_request(move |mut req: Request| {
+            // `Request.Path` as the client spelled it, which a few actions read (the relay
+            // target of getSimilarSongs and the playlist mutations keeps the client's casing).
+            // axum's router keeps an `OriginalUri` it finds rather than adding its own.
+            let original = axum::extract::OriginalUri(req.uri().clone());
+            req.extensions_mut().insert(original);
             canon.rewrite(&mut req);
             req
+        })
+        // axum adds `Allow` to whatever a route's method fallback answers; that fallback is
+        // the catch-all, which Kestrel reached with no such header (no Octo answer has one).
+        .map_response(|mut res: Response| {
+            res.headers_mut().remove(axum::http::header::ALLOW);
+            res
         })
         .service(router);
     BoxCloneSyncService::new(service)

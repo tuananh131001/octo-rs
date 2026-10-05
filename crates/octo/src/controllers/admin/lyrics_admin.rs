@@ -201,11 +201,7 @@ struct LibraryStartRequest {
 
 async fn start_library_run(State(state): State<AppState>, request: Request) -> Response {
     let (parts, body) = split(request).await;
-    let request: LibraryStartRequest = match bind_body(
-        &parts,
-        &body,
-        "Octo.Controllers.LyricsAdminController+LibraryStartRequest",
-    ) {
+    let request: LibraryStartRequest = match bind_body(&parts, &body) {
         Ok(r) => r,
         Err(answer) => return *answer,
     };
@@ -298,11 +294,7 @@ struct ReviewDismissRequest {
 
 async fn dismiss_review(State(state): State<AppState>, request: Request) -> Response {
     let (parts, body) = split(request).await;
-    let request: ReviewDismissRequest = match bind_body(
-        &parts,
-        &body,
-        "Octo.Controllers.LyricsAdminController+ReviewDismissRequest",
-    ) {
+    let request: ReviewDismissRequest = match bind_body(&parts, &body) {
         Ok(r) => r,
         Err(answer) => return *answer,
     };
@@ -596,11 +588,7 @@ async fn may_write_beside(state: &AppState, path: &str) -> bool {
 /// write (its own, beside a song it is allowed to write beside).
 async fn choose(State(state): State<AppState>, request: Request) -> Response {
     let (parts, body) = split(request).await;
-    let request: ChoiceRequest = match bind_body(
-        &parts,
-        &body,
-        "Octo.Controllers.LyricsAdminController+ChoiceRequest",
-    ) {
+    let request: ChoiceRequest = match bind_body(&parts, &body) {
         Ok(r) => r,
         Err(answer) => return *answer,
     };

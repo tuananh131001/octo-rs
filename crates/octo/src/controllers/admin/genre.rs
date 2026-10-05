@@ -14,7 +14,9 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 use tracing::info;
 
-use super::helpers_6b2::{BrowseUser, bind_body, enum_try_parse, error, ok, sign_in, split, status, utc_opt};
+use super::helpers_6b2::{
+    bind_body, browse_user, enum_try_parse, error, ok, sign_in, split, status, utc_opt,
+};
 use crate::app::AppState;
 use crate::http::routes::RouteSet;
 use crate::services::metadata::genre_backfill_state::{GenreBackfillScope, GenreBackfillStatus};
@@ -85,15 +87,11 @@ struct GenreBackfillStartRequest {
 /// must not be able to start it.
 async fn start_genre_backfill(State(state): State<AppState>, request: Request) -> Response {
     let (parts, body) = split(request).await;
-    let request: GenreBackfillStartRequest = match bind_body(
-        &parts,
-        &body,
-        "Octo.Controllers.AdminController+GenreBackfillStartRequest",
-    ) {
+    let request: GenreBackfillStartRequest = match bind_body(&parts, &body) {
         Ok(r) => r,
         Err(answer) => return *answer,
     };
-    let browse = BrowseUser::check(&state, &parts);
+    let browse = browse_user(&state, &parts);
     if !browse.signed_in() {
         return browse.finish(sign_in());
     }
@@ -136,7 +134,7 @@ async fn start_genre_backfill(State(state): State<AppState>, request: Request) -
 
 async fn get_genre_backfill(State(state): State<AppState>, request: Request) -> Response {
     let (parts, _) = request.into_parts();
-    let browse = BrowseUser::check(&state, &parts);
+    let browse = browse_user(&state, &parts);
     if !browse.signed_in() {
         return browse.finish(sign_in());
     }
@@ -180,7 +178,7 @@ async fn get_genre_backfill(State(state): State<AppState>, request: Request) -> 
 
 async fn cancel_genre_backfill(State(state): State<AppState>, request: Request) -> Response {
     let (parts, _) = request.into_parts();
-    let browse = BrowseUser::check(&state, &parts);
+    let browse = browse_user(&state, &parts);
     if !browse.signed_in() {
         return browse.finish(sign_in());
     }
@@ -190,7 +188,7 @@ async fn cancel_genre_backfill(State(state): State<AppState>, request: Request) 
 
 async fn resume_genre_backfill(State(state): State<AppState>, request: Request) -> Response {
     let (parts, _) = request.into_parts();
-    let browse = BrowseUser::check(&state, &parts);
+    let browse = browse_user(&state, &parts);
     if !browse.signed_in() {
         return browse.finish(sign_in());
     }
@@ -223,7 +221,7 @@ async fn resume_genre_backfill(State(state): State<AppState>, request: Request) 
 /// is no undo at all. The dashboard says all three next to the button.
 async fn undo_genre_backfill(State(state): State<AppState>, request: Request) -> Response {
     let (parts, _) = request.into_parts();
-    let browse = BrowseUser::check(&state, &parts);
+    let browse = browse_user(&state, &parts);
     if !browse.signed_in() {
         return browse.finish(sign_in());
     }

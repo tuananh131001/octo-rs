@@ -15,7 +15,7 @@ use axum::response::Response;
 use axum::routing::{get, post};
 use serde_json::{Value, json};
 
-use super::helpers_6b2::{BrowseUser, error, ok, query, sign_in, status, utc, utc_opt};
+use super::helpers_6b2::{browse_user, error, ok, query, sign_in, status, utc, utc_opt};
 use crate::app::AppState;
 use crate::http::routes::RouteSet;
 use crate::services::library::library_action_journal::action_name;
@@ -61,7 +61,7 @@ fn path_combine(root: &str, relative: &str) -> String {
 /// The library actions history, the 200 most recent.
 async fn get_library_actions(State(state): State<AppState>, request: Request) -> Response {
     let (parts, _) = request.into_parts();
-    let browse = BrowseUser::check(&state, &parts);
+    let browse = browse_user(&state, &parts);
     if !browse.signed_in() {
         return browse.finish(sign_in());
     }
@@ -105,7 +105,7 @@ async fn get_library_actions(State(state): State<AppState>, request: Request) ->
 /// the action history: it names files and people.
 async fn get_notices(State(state): State<AppState>, request: Request) -> Response {
     let (parts, _) = request.into_parts();
-    let browse = BrowseUser::check(&state, &parts);
+    let browse = browse_user(&state, &parts);
     if !browse.signed_in() {
         return browse.finish(sign_in());
     }
@@ -232,7 +232,7 @@ async fn get_quality_upgrade(State(state): State<AppState>) -> Response {
 /// Session-gated because the answer is a filesystem path.
 async fn resolve_library_song(State(state): State<AppState>, request: Request) -> Response {
     let (parts, _) = request.into_parts();
-    let browse = BrowseUser::check(&state, &parts);
+    let browse = browse_user(&state, &parts);
     if !browse.signed_in() {
         return browse.finish(sign_in());
     }

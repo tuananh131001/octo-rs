@@ -203,8 +203,7 @@ pub fn problem(status: StatusCode) -> Response {
         }),
         None => json!({ "status": status.as_u16(), "traceId": trace_id() }),
     };
-    // A ProblemDetails is an ObjectResult, written by SystemTextJsonOutputFormatter, which
-    // swaps the default encoder for UnsafeRelaxedJsonEscaping when none is configured.
+    // Problem documents go out through MVC's output formatter, whose encoder is relaxed.
     json_relaxed_response(status, &body, "application/problem+json; charset=utf-8")
 }
 
@@ -273,6 +272,8 @@ pub fn validation_problem(errors: &[(&str, &[&str])]) -> Response {
         "errors": map,
         "traceId": trace_id(),
     });
+    // Through MVC's output formatter, whose encoder is relaxed (a message quoting the input
+    // keeps its `'` as written).
     json_relaxed_response(
         StatusCode::BAD_REQUEST,
         &body,

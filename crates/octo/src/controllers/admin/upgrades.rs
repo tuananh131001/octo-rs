@@ -18,7 +18,7 @@ use serde_json::{Value, json};
 use tracing::info;
 
 use super::helpers_6b2::{
-    BrowseUser, bind_body, error, ok, query, required, sign_in, split, status, utc, utc_opt,
+    bind_body, browse_user, error, ok, query, required, sign_in, split, status, utc, utc_opt,
 };
 use crate::app::AppState;
 use crate::http::error::validation_problem;
@@ -60,7 +60,7 @@ fn file_name(path: &str) -> &str {
 /// Session-gated, because it lists paths.
 async fn get_lossy(State(state): State<AppState>, request: Request) -> Response {
     let (parts, _) = request.into_parts();
-    let browse = BrowseUser::check(&state, &parts);
+    let browse = browse_user(&state, &parts);
     if !browse.signed_in() {
         return browse.finish(sign_in());
     }
@@ -179,7 +179,7 @@ fn result_json(result: &UpgradeResult) -> Value {
 /// The upgrade queue, how many run at once and why, Soulseek's state, and the gate.
 async fn get_upgrades(State(state): State<AppState>, request: Request) -> Response {
     let (parts, _) = request.into_parts();
-    let browse = BrowseUser::check(&state, &parts);
+    let browse = browse_user(&state, &parts);
     let Some(user) = browse.user.clone() else {
         return browse.finish(sign_in());
     };
@@ -287,11 +287,7 @@ struct UpgradeIdsRequest {
 /// Refused unless every gate of the Better quality action is open for that person.
 async fn queue_upgrades(State(state): State<AppState>, request: Request) -> Response {
     let (parts, body) = split(request).await;
-    let request: UpgradeQueueRequest = match bind_body(
-        &parts,
-        &body,
-        "Octo.Controllers.AdminController+UpgradeQueueRequest",
-    ) {
+    let request: UpgradeQueueRequest = match bind_body(&parts, &body) {
         Ok(r) => r,
         Err(answer) => return *answer,
     };
@@ -310,7 +306,7 @@ async fn queue_upgrades(State(state): State<AppState>, request: Request) -> Resp
         return validation_problem(&errors);
     }
 
-    let browse = BrowseUser::check(&state, &parts);
+    let browse = browse_user(&state, &parts);
     let Some(user) = browse.user.clone() else {
         return browse.finish(sign_in());
     };
@@ -375,15 +371,11 @@ async fn queue_upgrades(State(state): State<AppState>, request: Request) -> Resp
 /// Take back songs that have not started.
 async fn cancel_upgrades(State(state): State<AppState>, request: Request) -> Response {
     let (parts, body) = split(request).await;
-    let request: UpgradeIdsRequest = match bind_body(
-        &parts,
-        &body,
-        "Octo.Controllers.AdminController+UpgradeIdsRequest",
-    ) {
+    let request: UpgradeIdsRequest = match bind_body(&parts, &body) {
         Ok(r) => r,
         Err(answer) => return *answer,
     };
-    let browse = BrowseUser::check(&state, &parts);
+    let browse = browse_user(&state, &parts);
     if !browse.signed_in() {
         return browse.finish(sign_in());
     }
@@ -394,7 +386,7 @@ async fn cancel_upgrades(State(state): State<AppState>, request: Request) -> Res
 /// Forget finished jobs.
 async fn clear_upgrades(State(state): State<AppState>, request: Request) -> Response {
     let (parts, _) = request.into_parts();
-    let browse = BrowseUser::check(&state, &parts);
+    let browse = browse_user(&state, &parts);
     if !browse.signed_in() {
         return browse.finish(sign_in());
     }
