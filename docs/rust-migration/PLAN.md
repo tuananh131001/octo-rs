@@ -121,11 +121,11 @@ Phases are ordered by dependency. Each module task includes porting its xUnit te
 
 ### Phase 9: Parity, hardening and cutover
 
-- [ ] Run the full parity corpus and fix every diff, or record it in `docs/rust-migration/known-diffs.md` with a reason.
+- [x] Run the full parity corpus and fix every diff, or record it in `docs/rust-migration/known-diffs.md` with a reason.
 - [ ] Soak test: run the Rust image against a real Navidrome and slskd library for at least 7 days, with a daily state-file and tag audit.
-- [ ] Upgrade test: start the Rust image on a `/app/config` and `/music` written by C# `2026.10.03.2`. No migration step may be needed, and every queue and journal must resume.
-- [ ] Downgrade test: the C# image can still read state written by Rust, or the unsupported files are documented.
-- [ ] Load test against the Phase 0 baseline.
+- [x] Upgrade test: start the Rust image on a `/app/config` and `/music` written by C# `2026.10.03.2`. No migration step may be needed, and every queue and journal must resume.
+- [x] Downgrade test: the C# image can still read state written by Rust, or the unsupported files are documented.
+- [x] Load test against the Phase 0 baseline. Results for these four: [`cutover-report.md`](cutover-report.md).
 - [ ] Rewrite the `Dockerfile`: `rust:<ver>-bookworm` builder (with `cargo-chef` for caching) → `debian:bookworm-slim` runtime with ffmpeg, fonts and `libchromaprint-tools`. Keep `EXPOSE 8080`, the volumes and the entrypoint semantics.
 - [ ] Update `ci.yml` (replace the .NET job with the Rust one, keep the shim and updater jobs) and `docker.yml` (no change to tags or caching).
 - [ ] Cutover commit: delete `octo/*.cs`, `octo.Tests/`, `octo.sln` and `octo.csproj`, move `wwwroot/` and `Assets/` to their new home, and update the README badges and build docs.
