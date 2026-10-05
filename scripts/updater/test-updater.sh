@@ -29,7 +29,7 @@ if [ "$1" = compose ]; then
   exit 0
 fi
 if [ "$1" = inspect ]; then
-  if [ -n "${FAKE_BAD_VERSION:-}" ] && grep -q "$FAKE_BAD_VERSION" "$OCTO_DIR/octo/octo.csproj"; then
+  if [ -n "${FAKE_BAD_VERSION:-}" ] && grep -qs "$FAKE_BAD_VERSION" "$OCTO_DIR/VERSION"; then
     echo restarting
   else
     echo "${FAKE_STATE:-running}"
@@ -41,13 +41,16 @@ printf '#!/usr/bin/env bash\nexit 0\n' > "$work/bin/sleep"
 chmod +x "$work/bin/"*
 export PATH="$work/bin:$PATH" FAKE_LOG="$work/docker.log"
 
-# An origin whose main is at 2026.10.01, with a newer release 2026.10.04 tagged.
+# An origin whose main is at 2026.10.01, with a newer release 2026.10.04 tagged. Releases name
+# themselves in VERSION; 2026.09.30 is from before that, when octo/octo.csproj held the number.
 (
   cd "$work/origin-src" || exit 1
   git init -q -b main . && git config user.email test@example.com && git config user.name test
-  version() { printf '<Project>\n  <PropertyGroup>\n    <InformationalVersion>%s</InformationalVersion>\n  </PropertyGroup>\n</Project>\n' "$1" > octo/octo.csproj; }
-  version 2026.10.01 && git add -A && git commit -qm one && git tag 2026.10.01
-  version 2026.10.04 && git add -A && git commit -qm two && git tag 2026.10.04
+  printf 'services:\n  octo:\n    build: .\n' > docker-compose.yml
+  printf '<Project>\n  <PropertyGroup>\n    <InformationalVersion>2026.09.30</InformationalVersion>\n  </PropertyGroup>\n</Project>\n' > octo/octo.csproj
+  git add -A && git commit -qm csharp && git tag 2026.09.30
+  git rm -q -r octo && echo 2026.10.01 > VERSION && git add -A && git commit -qm one && git tag 2026.10.01
+  echo 2026.10.04 > VERSION && git add -A && git commit -qm two && git tag 2026.10.04
   git reset -q --hard 2026.10.01
 ) || { echo "could not build the test origin"; exit 1; }
 git clone -q --bare "$work/origin-src" "$work/origin.git"
@@ -79,6 +82,7 @@ check() { # name, expected state, expected checkout, words the error must hold
 
 fresh; request 2026.10.04
 check "updates to a newer release" "done" 2026.10.04 ""
+[ "$(status_of from)" = 2026.10.01 ] && echo "ok    reports the release it came from, from VERSION" || { echo "FAIL  from=$(status_of from) (want 2026.10.01)"; failures=$((failures + 1)); }
 grep -q '^mode=build$' "$work/config/update/helper" && echo "ok    describes itself as a built install" || { echo "FAIL  helper file"; failures=$((failures + 1)); }
 
 fresh; request "2026.10.04; touch $work/pwned"
@@ -94,8 +98,16 @@ check "a release that does not exist" failed 2026.10.01 "is not a release tag"
 fresh; request 2026.10.01
 check "the same release is refused" failed 2026.10.01 "not older than"
 
-fresh; echo "<!-- edit -->" >> "$work/octo/octo/octo.csproj"; request 2026.10.04
-check "local changes to Octo's own files are left alone" failed 2026.10.01 "(octo/octo.csproj)"
+fresh; echo "# edit" >> "$work/octo/docker-compose.yml"; request 2026.10.04
+check "local changes to Octo's own files are left alone" failed 2026.10.01 "(docker-compose.yml)"
+
+# A folder still on a release from before VERSION: its number comes from octo/octo.csproj.
+fresh; git -C "$work/octo" checkout -q --detach 2026.09.30; request 2026.09.30
+check "a folder from before VERSION is read from octo.csproj" failed 2026.09.30 "already holds 2026.09.30"
+
+fresh; git -C "$work/octo" checkout -q --detach 2026.09.30; request 2026.10.04
+check "a folder from before VERSION updates to a newer release" "done" 2026.10.04 ""
+[ "$(status_of from)" = 2026.09.30 ] && echo "ok    reports the csproj release it came from" || { echo "FAIL  from=$(status_of from) (want 2026.09.30)"; failures=$((failures + 1)); }
 
 fresh; echo "KEY=value" > "$work/octo/.env"; request 2026.10.04
 check "untracked files such as .env are fine" "done" 2026.10.04 ""

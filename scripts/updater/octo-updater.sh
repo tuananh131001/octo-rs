@@ -96,9 +96,16 @@ compose_mode() {
     END { print (built ? "build" : "image") }'
 }
 
-# The release this folder holds, from octo.csproj.
+# The release this folder holds: its VERSION file, or octo/octo.csproj in a folder still on
+# a release from before the Rust build (2026.10.03.2 and older), for example one this helper
+# rolled back to. Those releases carry their own copy of this script that reads only the
+# csproj; the update away from one runs that copy, and refresh_helper installs this one.
 folder_version() {
-  sed -n '/<InformationalVersion>/{s:.*<InformationalVersion>\(.*\)</InformationalVersion>.*:\1:p;q}' "$OCTO_DIR/octo/octo.csproj" 2>/dev/null || true
+  if [ -f "$OCTO_DIR/VERSION" ]; then
+    sed -n '1{s/[[:space:]]//g;p;q}' "$OCTO_DIR/VERSION" 2>/dev/null || true
+  else
+    sed -n '/<InformationalVersion>/{s:.*<InformationalVersion>\(.*\)</InformationalVersion>.*:\1:p;q}' "$OCTO_DIR/octo/octo.csproj" 2>/dev/null || true
+  fi
 }
 
 describe() {
