@@ -760,7 +760,16 @@ async fn mix_cover_seeds(
 /// is not in the library, so it wants covers without the badge. Told apart by the Subsonic
 /// client name it sends on every call.
 pub(crate) fn draws_its_own_marks(call: &SubsonicCall) -> bool {
-    call.param("c").trim().eq_ignore_ascii_case("Octo")
+    draws_its_own_marks_in(&call.parameters)
+}
+
+/// [`draws_its_own_marks`] over the request's parameters (`DrawsItsOwnMarks`).
+pub(crate) fn draws_its_own_marks_in(parameters: &octo_subsonic::Parameters) -> bool {
+    parameters
+        .get("c")
+        .map_or("", String::as_str)
+        .trim()
+        .eq_ignore_ascii_case("Octo")
 }
 
 /// Returns a 200 response with the Octo placeholder JPEG. Used in every code path that

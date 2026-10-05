@@ -8,8 +8,23 @@ pub mod lyrics;
 pub mod media;
 pub mod stars;
 
+pub(crate) mod playlist_names_6a2;
+
 #[cfg(test)]
 mod test_support_6a2;
+
+#[cfg(test)]
+mod browsing_tests_6a2;
+#[cfg(test)]
+mod extensions_tests_6a2;
+#[cfg(test)]
+mod lyrics_endpoint_tests_6a2;
+#[cfg(test)]
+mod media_tests_6a2;
+#[cfg(test)]
+mod rating_tests_6a2;
+#[cfg(test)]
+mod scrobble_tests_6a2;
 
 use crate::http::routes::RouteSet;
 
