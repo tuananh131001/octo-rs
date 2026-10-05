@@ -67,7 +67,9 @@ impl Respond for FakeDeezer {
                   {"title":"Sad Songs & Depression (Nightcore Remix)","duration":280,"track_position":3,"disk_number":1,"artist":{"name":"Nightcore"}}
                 ]}"#,
             ),
-            "/album/30" => json(r#"{"id":30,"title":"Nightcore","release_date":"2014-01-01","artist":{"name":"Nightcore"}}"#),
+            "/album/30" => json(
+                r#"{"id":30,"title":"Nightcore","release_date":"2014-01-01","artist":{"name":"Nightcore"}}"#,
+            ),
             _ if path.starts_with("/search/album") => json(
                 r#"{"data":[{"id":1,"title":"Test Album","record_type":"album","nb_tracks":4,"artist":{"name":"Test Artist"}}]}"#,
             ),
@@ -82,7 +84,9 @@ impl Respond for FakeDeezer {
             "/album/2" => json(
                 r#"{"id":2,"title":"Other Album","nb_tracks":9,"release_date":"2005-05-05","artist":{"name":"Test Artist"}}"#,
             ),
-            "/album/1" => json(r#"{"id":1,"title":"Test Album","release_date":"2001-01-01","artist":{"name":"Test Artist"}}"#),
+            "/album/1" => json(
+                r#"{"id":1,"title":"Test Album","release_date":"2001-01-01","artist":{"name":"Test Artist"}}"#,
+            ),
             // A bigger act whose name contains this one comes first, and a better known
             // artist of the very same name before the one the library holds.
             _ if path.starts_with("/search/artist") => json(
@@ -224,7 +228,8 @@ impl Merged {
 
     async fn xml(&self, uri: &str) -> XElement {
         let reply = self.get(uri).await;
-        XElement::parse(&reply.text()).unwrap_or_else(|e| panic!("{uri} is not XML ({e:?}): {}", reply.text()))
+        XElement::parse(&reply.text())
+            .unwrap_or_else(|e| panic!("{uri} is not XML ({e:?}): {}", reply.text()))
     }
 }
 
@@ -289,7 +294,14 @@ async fn get_album_leaves_an_album_alone_when_the_catalog_album_only_shares_its_
     );
     assert_eq!(album["songCount"], 3);
     // The catalog was asked, and its album turned down for having none of these songs.
-    assert!(fixture.deezer.calls.lock().iter().any(|c| c == "/album/30/tracks"));
+    assert!(
+        fixture
+            .deezer
+            .calls
+            .lock()
+            .iter()
+            .any(|c| c == "/album/30/tracks")
+    );
 }
 
 #[tokio::test]
@@ -320,7 +332,14 @@ async fn get_album_marks_the_songs_the_library_does_not_hold() {
     for title in ["Two", "Four"] {
         let song = &songs[title];
         assert_eq!(song["isExternal"], true, "{title}");
-        for key in ["path", "size", "created", "bitDepth", "samplingRate", "channelCount"] {
+        for key in [
+            "path",
+            "size",
+            "created",
+            "bitDepth",
+            "samplingRate",
+            "channelCount",
+        ] {
             assert!(song.get(key).is_none(), "{title} has {key}");
         }
         assert_eq!(song["suffix"], "m4a", "{title}");
@@ -369,7 +388,8 @@ async fn get_album_xml_writes_lists_and_objects_the_open_subsonic_way() {
         .expect("Two");
 
     // A list of plain values: one text element each. An object: one child element.
-    let isrcs = |song: &XElement| -> Vec<String> { children(song, "isrc").iter().map(|e| e.value()).collect() };
+    let isrcs =
+        |song: &XElement| -> Vec<String> { children(song, "isrc").iter().map(|e| e.value()).collect() };
     assert_eq!(isrcs(one), ["GBAAA0000001"]);
     assert_eq!(child(one, "replayGain").attribute("trackGain"), Some("-6.5"));
     // An outside song carries Deezer's code the same way.
@@ -520,13 +540,10 @@ async fn missing_and_unknown_ids_answer_as_the_csharp_did() {
     let fixture = Merged::new().await;
 
     for endpoint in ["getSong", "getArtist", "getAlbum"] {
-        let missing = fixture
-            .json(&format!("/rest/{endpoint}?{AUTH}&f=json"))
-            .await;
+        let missing = fixture.json(&format!("/rest/{endpoint}?{AUTH}&f=json")).await;
         assert_eq!(missing["subsonic-response"]["error"]["code"], 10, "{endpoint}");
         assert_eq!(
-            missing["subsonic-response"]["error"]["message"],
-            "Missing id parameter",
+            missing["subsonic-response"]["error"]["message"], "Missing id parameter",
             "{endpoint}"
         );
     }
@@ -544,5 +561,8 @@ async fn missing_and_unknown_ids_answer_as_the_csharp_did() {
     // A local getSong goes to Navidrome, and Navidrome's failure escapes to the global handler.
     let relayed = fixture.get(&format!("/rest/getSong?{AUTH}&f=json&id=nope")).await;
     assert_eq!(relayed.status, StatusCode::BAD_GATEWAY);
-    assert_eq!(relayed.envelope()["error"]["message"], "External service unavailable");
+    assert_eq!(
+        relayed.envelope()["error"]["message"],
+        "External service unavailable"
+    );
 }

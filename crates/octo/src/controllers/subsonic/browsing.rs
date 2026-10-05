@@ -39,7 +39,9 @@ pub async fn get_song(State(state): State<AppState>, req: Request) -> AppResult 
     let builder = &state.subsonic_response_builder;
 
     if is_blank(&id) {
-        return Ok(builder.create_error(&format, 10, "Missing id parameter").into_response());
+        return Ok(builder
+            .create_error(&format, 10, "Missing id parameter")
+            .into_response());
     }
 
     let (is_external, provider, external_id) = state.local_library.parse_song_id(&id);
@@ -62,7 +64,9 @@ pub async fn get_song(State(state): State<AppState>, req: Request) -> AppResult 
         .await;
 
     let Some(song) = song else {
-        return Ok(builder.create_error(&format, 70, "Song not found").into_response());
+        return Ok(builder
+            .create_error(&format, 70, "Song not found")
+            .into_response());
     };
 
     Ok(builder.create_song_response(&format, &song).into_response())
@@ -80,7 +84,9 @@ pub async fn get_artist(State(state): State<AppState>, req: Request) -> AppResul
     let metadata = &state.music_metadata;
 
     if is_blank(&id) {
-        return Ok(builder.create_error(&format, 10, "Missing id parameter").into_response());
+        return Ok(builder
+            .create_error(&format, 10, "Missing id parameter")
+            .into_response());
     }
 
     let (is_external, provider, external_id) = state.local_library.parse_song_id(&id);
@@ -89,7 +95,9 @@ pub async fn get_artist(State(state): State<AppState>, req: Request) -> AppResul
         let provider = provider.unwrap_or_default();
         let external_id = external_id.unwrap_or_default();
         let Some(artist) = metadata.get_artist(&provider, &external_id).await else {
-            return Ok(builder.create_error(&format, 70, "Artist not found").into_response());
+            return Ok(builder
+                .create_error(&format, 70, "Artist not found")
+                .into_response());
         };
 
         let mut albums = metadata.get_artist_albums(&provider, &external_id).await;
@@ -104,13 +112,21 @@ pub async fn get_artist(State(state): State<AppState>, req: Request) -> AppResul
             }
         }
 
-        return Ok(builder.create_artist_response(&format, &artist, &albums).into_response());
+        return Ok(builder
+            .create_artist_response(&format, &artist, &albums)
+            .into_response());
     }
 
     // Merged from Navidrome's JSON whatever the client asked for, then answered in the
     // client's format: see CreateMergedResponse.
-    let Some(navidrome) = call.proxy.relay_safe("rest/getArtist", &as_json(&call.parameters)).await else {
-        return Ok(builder.create_error(&format, 70, "Artist not found").into_response());
+    let Some(navidrome) = call
+        .proxy
+        .relay_safe("rest/getArtist", &as_json(&call.parameters))
+        .await
+    else {
+        return Ok(builder
+            .create_error(&format, 70, "Artist not found")
+            .into_response());
     };
 
     let mut artist_name = String::new();
@@ -118,7 +134,11 @@ pub async fn get_artist(State(state): State<AppState>, req: Request) -> AppResul
     let mut local_albums: Vec<Value> = Vec::new();
     let mut artist_data: Option<Value> = None;
 
-    if navidrome.content_type.as_deref().is_some_and(|ct| ct.contains("json")) {
+    if navidrome
+        .content_type
+        .as_deref()
+        .is_some_and(|ct| ct.contains("json"))
+    {
         let document = parse_json(&navidrome.body)?;
         if let Some(artist_element) = property(property(Some(&document), "subsonic-response")?, "artist")? {
             artist_name = string_property(artist_element, "name")?;
@@ -187,7 +207,8 @@ pub async fn get_artist(State(state): State<AppState>, req: Request) -> AppResul
 
     // An owned album is one the library has by the matcher's key, so "Discovery" in the
     // library hides the catalog's "Discovery" however either is spelled or punctuated.
-    let local_album_names: HashSet<String> = local_album_titles.iter().map(|t| SongIdentity::key(t)).collect();
+    let local_album_names: HashSet<String> =
+        local_album_titles.iter().map(|t| SongIdentity::key(t)).collect();
 
     let mut merged_albums = local_albums;
     for deezer_album in &deezer_albums {
@@ -219,19 +240,25 @@ pub async fn get_album(State(state): State<AppState>, req: Request) -> AppResult
     let metadata = &state.music_metadata;
 
     if is_blank(&id) {
-        return Ok(builder.create_error(&format, 10, "Missing id parameter").into_response());
+        return Ok(builder
+            .create_error(&format, 10, "Missing id parameter")
+            .into_response());
     }
 
     // Check if this is an external playlist
     if playlist_id_helper::is_external_playlist(Some(&id)) {
         let Ok((provider, external_id)) = playlist_id_helper::parse_playlist_id(&id) else {
             error!("Error getting playlist {id}");
-            return Ok(builder.create_error(&format, 70, "Playlist not found").into_response());
+            return Ok(builder
+                .create_error(&format, 70, "Playlist not found")
+                .into_response());
         };
 
         // Get playlist metadata
         let Some(playlist) = metadata.get_playlist(&provider, &external_id).await else {
-            return Ok(builder.create_error(&format, 70, "Playlist not found").into_response());
+            return Ok(builder
+                .create_error(&format, 70, "Playlist not found")
+                .into_response());
         };
 
         // Get playlist tracks
@@ -258,7 +285,9 @@ pub async fn get_album(State(state): State<AppState>, req: Request) -> AppResult
             .await;
 
         let Some(album) = album else {
-            return Ok(builder.create_error(&format, 70, "Album not found").into_response());
+            return Ok(builder
+                .create_error(&format, 70, "Album not found")
+                .into_response());
         };
 
         return Ok(builder.create_album_response(&format, &album).into_response());
@@ -266,8 +295,14 @@ pub async fn get_album(State(state): State<AppState>, req: Request) -> AppResult
 
     // Merged from Navidrome's JSON whatever the client asked for, then answered in the
     // client's format: see CreateMergedResponse.
-    let Some(navidrome) = call.proxy.relay_safe("rest/getAlbum", &as_json(&call.parameters)).await else {
-        return Ok(builder.create_error(&format, 70, "Album not found").into_response());
+    let Some(navidrome) = call
+        .proxy
+        .relay_safe("rest/getAlbum", &as_json(&call.parameters))
+        .await
+    else {
+        return Ok(builder
+            .create_error(&format, 70, "Album not found")
+            .into_response());
     };
 
     let mut album_name = String::new();
@@ -275,7 +310,11 @@ pub async fn get_album(State(state): State<AppState>, req: Request) -> AppResult
     let mut local_songs: Vec<Value> = Vec::new();
     let mut album_data: Option<Value> = None;
 
-    if navidrome.content_type.as_deref().is_some_and(|ct| ct.contains("json")) {
+    if navidrome
+        .content_type
+        .as_deref()
+        .is_some_and(|ct| ct.contains("json"))
+    {
         let document = parse_json(&navidrome.body)?;
         if let Some(album_element) = property(property(Some(&document), "subsonic-response")?, "album")? {
             album_name = string_property(album_element, "name")?;
@@ -290,7 +329,8 @@ pub async fn get_album(State(state): State<AppState>, req: Request) -> AppResult
         }
     }
 
-    let Some(mut album_data) = album_data.filter(|_| !album_name.is_empty() && !artist_name.is_empty()) else {
+    let Some(mut album_data) = album_data.filter(|_| !album_name.is_empty() && !artist_name.is_empty())
+    else {
         return Ok(relay_as_asked(
             &state,
             &call,
@@ -387,7 +427,10 @@ async fn relay_as_asked(
     json_content_type: Option<&str>,
 ) -> Response {
     if format == "json" {
-        return file(json_body.to_vec(), json_content_type.unwrap_or("application/json"));
+        return file(
+            json_body.to_vec(),
+            json_content_type.unwrap_or("application/json"),
+        );
     }
     match call.proxy.relay_safe(endpoint, &call.parameters).await {
         Some(asked) => file(
@@ -475,8 +518,11 @@ fn convert_to_int32(value: &Value) -> Result<i32, AppError> {
         Value::Bool(b) => Ok(i32::from(*b)),
         Value::Number(n) => {
             if let Some(i) = n.as_i64() {
-                return i32::try_from(i)
-                    .map_err(|_| AppError::Internal(anyhow::anyhow!("Value was either too large or too small for an Int32.")));
+                return i32::try_from(i).map_err(|_| {
+                    AppError::Internal(anyhow::anyhow!(
+                        "Value was either too large or too small for an Int32."
+                    ))
+                });
             }
             let x = n.as_f64().unwrap_or(0.0);
             let rounded = dotnet::round(x, 0);

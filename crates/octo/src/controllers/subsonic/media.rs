@@ -108,7 +108,7 @@ pub async fn stream(State(state): State<AppState>, req: Request) -> AppResult {
         if let Some(local_path) = local_path
             && Path::new(&local_path).is_file()
         {
-            return Ok(serve_file(&call, &local_path).await?);
+            return serve_file(&call, &local_path).await;
         }
     }
 
@@ -200,7 +200,12 @@ async fn serve_acquired(
 ) -> anyhow::Result<Response> {
     // Above 0, the wait is bounded and the preview stands in while the fetch keeps
     // running in the background; the next play of this id serves the landed file.
-    let timeout = state.settings.current().subsonic.lossless_wait_timeout_seconds.max(0);
+    let timeout = state
+        .settings
+        .current()
+        .subsonic
+        .lossless_wait_timeout_seconds
+        .max(0);
     let fallback = allow_preview_fallback && timeout > 0;
 
     let outcome = if fallback {
@@ -485,14 +490,20 @@ pub async fn get_cover_art(State(state): State<AppState>, req: Request) -> AppRe
             );
             return Ok(missing_cover(&state, plain).await);
         };
-        let watermarked = if plain { raw.to_vec() } else { badge(&state, raw.to_vec()).await };
+        let watermarked = if plain {
+            raw.to_vec()
+        } else {
+            badge(&state, raw.to_vec()).await
+        };
         return Ok(file(watermarked, "image/jpeg"));
     }
 
     // Legacy "ext-album-{hash}" / "ext-artist-{hash}" ids that pre-date the
     // registry. We can't reverse-resolve them, but returning a 404 makes
     // Arpeggio drop the song, so serve the Octo placeholder instead.
-    if dotnet::starts_with_ignore_case(&id, "ext-album-") || dotnet::starts_with_ignore_case(&id, "ext-artist-") {
+    if dotnet::starts_with_ignore_case(&id, "ext-album-")
+        || dotnet::starts_with_ignore_case(&id, "ext-artist-")
+    {
         return Ok(missing_cover(&state, plain).await);
     }
 
@@ -530,7 +541,11 @@ pub async fn get_cover_art(State(state): State<AppState>, req: Request) -> AppRe
             let response = state.http.get(&cover_url).send().await?;
             if response.status().is_success() {
                 let image_bytes = response.bytes().await?.to_vec();
-                let watermarked = if plain { image_bytes } else { badge(&state, image_bytes).await };
+                let watermarked = if plain {
+                    image_bytes
+                } else {
+                    badge(&state, image_bytes).await
+                };
                 return Ok(file(watermarked, "image/jpeg"));
             }
         }
@@ -600,9 +615,9 @@ fn requested_cover_size(call: &SubsonicCall) -> Option<i32> {
 /// A genre or pinned station's tag, which stands in for its colour when its songs give none.
 fn station_cover_label(station: &LastFmRadioStation) -> Option<String> {
     match station.kind {
-        LastFmRadioStationKind::Genre | LastFmRadioStationKind::Pinned | LastFmRadioStationKind::Discovery => {
-            station.seeds.first().cloned()
-        }
+        LastFmRadioStationKind::Genre
+        | LastFmRadioStationKind::Pinned
+        | LastFmRadioStationKind::Discovery => station.seeds.first().cloned(),
         _ => None,
     }
 }
@@ -612,7 +627,9 @@ fn station_cover_label(station: &LastFmRadioStation) -> Option<String> {
 /// album, four at most. Looked up like any song's cover outside the library.
 pub(crate) fn station_cover_seeds(state: &AppState, station: &LastFmRadioStation) -> Vec<CoverSeed> {
     let seed_artists: Vec<String> = match station.kind {
-        LastFmRadioStationKind::Artist | LastFmRadioStationKind::YourMix | LastFmRadioStationKind::Starter => station
+        LastFmRadioStationKind::Artist
+        | LastFmRadioStationKind::YourMix
+        | LastFmRadioStationKind::Starter => station
             .seeds
             .iter()
             .take(3)

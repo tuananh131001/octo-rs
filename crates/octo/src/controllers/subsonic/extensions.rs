@@ -30,9 +30,15 @@ pub fn routes() -> RouteSet {
             "getOpenSubsonicExtensions",
             get(get_open_subsonic_extensions).post(get_open_subsonic_extensions),
         )
-        .subsonic("getLibraryActions", get(get_library_actions).post(get_library_actions))
+        .subsonic(
+            "getLibraryActions",
+            get(get_library_actions).post(get_library_actions),
+        )
         .subsonic("getUpgrades", get(get_upgrades).post(get_upgrades))
-        .subsonic("libraryAction", get(apply_library_action).post(apply_library_action))
+        .subsonic(
+            "libraryAction",
+            get(apply_library_action).post(apply_library_action),
+        )
         .subsonic("jukeboxControl", get(jukebox_control).post(jukebox_control))
 }
 
@@ -248,9 +254,10 @@ fn queue_upgrade(state: &AppState, id: &str, username: Option<&str>) -> Response
     let settings = state.settings.current().library_actions.clone();
     let username = username.filter(|u| !is_blank(u));
     let refusal = match username {
-        None => {
-            Some("Sign in with a username to upgrade songs; an API key alone does not say who is asking.".to_string())
-        }
+        None => Some(
+            "Sign in with a username to upgrade songs; an API key alone does not say who is asking."
+                .to_string(),
+        ),
         Some(_) if !settings.enabled => Some("Library actions are off.".to_string()),
         Some(user) if !settings.is_allowed(Some(user)) => {
             Some(format!("{user} is not on the library actions allowed list."))

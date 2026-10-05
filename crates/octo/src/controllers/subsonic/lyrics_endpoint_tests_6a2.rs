@@ -2,6 +2,9 @@
 //! of `LyricsChoiceTests` (octoLyrics v1, and what every other client sees of a choice). The
 //! service half of those tests is in `services/lyrics/lyrics_choice_service_tests.rs`.
 
+// `&[source.clone()]` coerces each source to `Arc<dyn ILyricsSource>`, which `from_ref` cannot.
+#![allow(clippy::cloned_ref_to_slice_refs)]
+
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -379,15 +382,14 @@ fn first_line(response: &Value) -> String {
 
 /// `LyricsTests.LyricsWebFactory`: Navidrome unreachable, one LRCLIB stand-in.
 async fn lyrics_web_factory(fetch: bool, answer: LyricsLookup) -> Factory {
-    let factory = Factory::new(
+    Factory::new(
         fetch,
         vec![Arc::new(FixedSource {
             key: "lrclib".into(),
             answer,
         })],
     )
-    .await;
-    factory
+    .await
 }
 
 #[tokio::test]

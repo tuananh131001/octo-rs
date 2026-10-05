@@ -17,7 +17,9 @@ use octo_core::models::domain::Song;
 use octo_subsonic::xml::XElement;
 use tokio_util::sync::CancellationToken;
 
-use super::helpers_6a2::{SubsonicCall, check_caller, file, is_successful_subsonic_response, is_true, native_username};
+use super::helpers_6a2::{
+    SubsonicCall, check_caller, file, is_successful_subsonic_response, is_true, native_username,
+};
 use super::media::draws_its_own_marks;
 use crate::app::AppState;
 use crate::http::routes::RouteSet;
@@ -36,7 +38,10 @@ const CANDIDATES_BUDGET: Duration = Duration::from_secs(12);
 
 pub fn routes() -> RouteSet {
     RouteSet::new()
-        .subsonic("getLyricsBySongId", get(get_lyrics_by_song_id).post(get_lyrics_by_song_id))
+        .subsonic(
+            "getLyricsBySongId",
+            get(get_lyrics_by_song_id).post(get_lyrics_by_song_id),
+        )
         .subsonic("getLyrics", get(get_lyrics).post(get_lyrics))
         .subsonic(
             "getLyricsCandidates",
@@ -402,7 +407,9 @@ pub async fn set_lyrics_choice(State(state): State<AppState>, req: Request) -> R
             )
             .into_response();
     }
-    builder.create_lyrics_choice_response(&id, &candidate).into_response()
+    builder
+        .create_lyrics_choice_response(&id, &candidate)
+        .into_response()
 }
 
 /// A token cancelled after `limit` (`CancellationTokenSource.CancelAfter`). The caller cancels
@@ -506,7 +513,8 @@ pub(crate) fn navidrome_lyrics_timing(body: &[u8]) -> Option<LyricsTiming> {
     };
     let mut best = LyricsTiming::None;
     for entry in entries {
-        let non_empty_array = |node: Option<&Node>| matches!(node, Some(Node::Array(items)) if !items.is_empty());
+        let non_empty_array =
+            |node: Option<&Node>| matches!(node, Some(Node::Array(items)) if !items.is_empty());
         if !non_empty_array(index(Some(entry), "line").ok()?) {
             continue;
         }

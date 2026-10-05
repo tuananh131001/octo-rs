@@ -42,10 +42,16 @@ fn without_cues_drops_the_cue_lines_and_kind_only() {
 /// escaping survive the rewrite as `JsonNode.ToJsonString` wrote them.
 #[test]
 fn navidrome_timing_and_without_cues_handle_odd_answers_as_the_csharp_did() {
-    assert_eq!(navidrome_lyrics_timing(br#"{"subsonic-response":{}}"#), Some(LyricsTiming::None));
+    assert_eq!(
+        navidrome_lyrics_timing(br#"{"subsonic-response":{}}"#),
+        Some(LyricsTiming::None)
+    );
     assert_eq!(navidrome_lyrics_timing(br#"{"subsonic-response":7}"#), None);
     assert_eq!(navidrome_lyrics_timing(&answer("3")), None);
-    assert_eq!(navidrome_lyrics_timing(br#"{"subsonic-response":{"lyricsList":{"structuredLyrics":{}}}}"#), None);
+    assert_eq!(
+        navidrome_lyrics_timing(br#"{"subsonic-response":{"lyricsList":{"structuredLyrics":{}}}}"#),
+        None
+    );
     assert_eq!(navidrome_lyrics_timing(b"not json"), None);
 
     let body = "{\"subsonic-response\":{\"lyricsList\":{\"structuredLyrics\":[{\"kind\":\"main\",\"offset\":1.50,\"line\":[{\"value\":\"caf\u{e9}\"}]}]}}}";

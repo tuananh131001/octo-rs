@@ -14,8 +14,8 @@ use octo_core::soulseek::soulseek_metadata_service::RoutingKind;
 use tracing::{debug, info};
 
 use super::helpers_6a2::{
-    SubsonicCall, favorite_credential, file, is_successful_subsonic_response, is_true, refuse_unless_signed_in,
-    requester_for, signed_in_user,
+    SubsonicCall, favorite_credential, file, is_successful_subsonic_response, is_true,
+    refuse_unless_signed_in, requester_for, signed_in_user,
 };
 use crate::app::AppState;
 use crate::http::error::{AppError, AppResult};
@@ -64,7 +64,11 @@ pub async fn star(State(state): State<AppState>, req: Request) -> AppResult {
             .into_response());
     }
 
-    let sources = state.settings.current().subsonic.effective_heart_download_sources();
+    let sources = state
+        .settings
+        .current()
+        .subsonic
+        .effective_heart_download_sources();
 
     // Starring a whole album. Subsonic sends the album under albumId, though some
     // clients reuse id, so accept either.
@@ -286,14 +290,16 @@ pub async fn set_rating(State(state): State<AppState>, req: Request) -> AppResul
         // Navidrome answered ok to a call carrying this u/t/s, which IS the auth check.
         // Octo does not validate the password itself; it trusts it exactly as far as
         // Navidrome just did, the same idiom getPlaylist and star already use.
-        state.library_action_rating_worker.try_enqueue(RatingActionRequest {
-            action: definition.action,
-            navidrome_id: item_id.clone(),
-            username: username.to_string(),
-            auth_user: username.to_string(),
-            auth_token: token.to_string(),
-            auth_salt: salt.to_string(),
-        });
+        state
+            .library_action_rating_worker
+            .try_enqueue(RatingActionRequest {
+                action: definition.action,
+                navidrome_id: item_id.clone(),
+                username: username.to_string(),
+                auth_user: username.to_string(),
+                auth_token: token.to_string(),
+                auth_salt: salt.to_string(),
+            });
     }
 
     let content_type = result
@@ -380,7 +386,10 @@ pub async fn scrobble(State(state): State<AppState>, req: Request) -> AppResult 
             // Nothing for Navidrome to record, but its answer was also the credential
             // check that gates learning below. A ping checks the same credentials and
             // answers in the very shape a scrobble does, failures included.
-            let check = call.proxy.relay("rest/ping", relay_parameters.iter().map(|(k, v)| (k, v))).await?;
+            let check = call
+                .proxy
+                .relay("rest/ping", relay_parameters.iter().map(|(k, v)| (k, v)))
+                .await?;
             if is_successful_subsonic_response(&check.body, &format) {
                 learn_from_scrobbles(&state, &call, &ids, &submissions, &times).await?;
             }
@@ -396,7 +405,10 @@ pub async fn scrobble(State(state): State<AppState>, req: Request) -> AppResult 
                 .map(|v| ("submission".to_string(), v)),
         );
         relay_parameters.extend(library_only(&times).into_iter().map(|v| ("time".to_string(), v)));
-        let result = call.proxy.relay("rest/scrobble", relay_parameters.iter().map(|(k, v)| (k, v))).await?;
+        let result = call
+            .proxy
+            .relay("rest/scrobble", relay_parameters.iter().map(|(k, v)| (k, v)))
+            .await?;
         if is_successful_subsonic_response(&result.body, &format) {
             learn_from_scrobbles(&state, &call, &ids, &submissions, &times).await?;
         }

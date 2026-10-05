@@ -19,15 +19,14 @@ use parking_lot::Mutex;
 use serde_json::Value;
 use tokio_util::sync::CancellationToken;
 use tower::ServiceExt;
-use wiremock::matchers::{method, path_regex};
-use wiremock::{Mock, MockServer, Request as MockRequest, Respond, ResponseTemplate};
+use wiremock::{MockServer, Request as MockRequest, ResponseTemplate};
 
 use crate::app::{AppInner, AppState};
 use crate::http::pipeline::{App, build_with};
 use crate::services::i_download_service::{AudioStream, DirectStreamInfo, IDownloadService};
 use crate::services::library::ReplacementHandoff;
-use crate::services::local::{ILocalLibraryService, LocalSongMapping};
 use crate::services::local::i_local_library_service::{ParsedExternalId, ParsedSongId};
+use crate::services::local::{ILocalLibraryService, LocalSongMapping};
 
 /// One answer, read in full.
 pub(crate) struct Reply {
@@ -42,8 +41,7 @@ impl Reply {
     }
 
     pub fn json(&self) -> Value {
-        serde_json::from_slice(&self.body)
-            .unwrap_or_else(|e| panic!("not JSON ({e}): {}", self.text()))
+        serde_json::from_slice(&self.body).unwrap_or_else(|e| panic!("not JSON ({e}): {}", self.text()))
     }
 
     pub fn header(&self, name: &str) -> Option<&str> {
@@ -129,42 +127,13 @@ pub(crate) fn navidrome_json(body: &str) -> ResponseTemplate {
     ResponseTemplate::new(200).set_body_raw(body.as_bytes().to_vec(), "application/json")
 }
 
-pub(crate) const NAVIDROME_OK: &str = r#"{"subsonic-response":{"status":"ok","version":"1.16.1","type":"navidrome"}}"#;
+pub(crate) const NAVIDROME_OK: &str =
+    r#"{"subsonic-response":{"status":"ok","version":"1.16.1","type":"navidrome"}}"#;
 pub(crate) const NAVIDROME_WRONG_PASSWORD: &str = r#"{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":40,"message":"Wrong username or password"}}}"#;
 
 /// The query of a request Navidrome received, as a map (a repeated key keeps its last value).
 pub(crate) fn query_of(request: &MockRequest) -> HashMap<String, String> {
     request.url.query_pairs().into_owned().collect()
-}
-
-/// Navidrome's `rest/ping` accepting the token `good` for anyone (`t=good`) and refusing
-/// anything else, in JSON (as Octo's checks ask) or XML.
-pub(crate) struct PingByToken;
-
-impl Respond for PingByToken {
-    fn respond(&self, request: &MockRequest) -> ResponseTemplate {
-        let query = query_of(request);
-        let ok = query.get("t").map(String::as_str) == Some("good");
-        if query.get("f").map(String::as_str) == Some("json") {
-            navidrome_json(if ok { NAVIDROME_OK } else { NAVIDROME_WRONG_PASSWORD })
-        } else {
-            let body = if ok {
-                r#"<subsonic-response xmlns="http://subsonic.org/restapi" status="ok" version="1.16.1"></subsonic-response>"#
-            } else {
-                r#"<subsonic-response xmlns="http://subsonic.org/restapi" status="failed" version="1.16.1"><error code="40" message="Wrong username or password"></error></subsonic-response>"#
-            };
-            ResponseTemplate::new(200).set_body_raw(body.as_bytes().to_vec(), "application/xml")
-        }
-    }
-}
-
-/// Mounts [`PingByToken`] at `rest/ping` and `rest/ping.view`.
-pub(crate) async fn mount_ping(server: &MockServer) {
-    Mock::given(method("GET"))
-        .and(path_regex(r"^/rest/ping(\.view)?$"))
-        .respond_with(PingByToken)
-        .mount(server)
-        .await;
 }
 
 /// The paths of every request the mock server received, in order.
@@ -204,7 +173,12 @@ pub(crate) struct FakeStreams {
 
 impl FakeStreams {
     /// Answers `bytes` as a 200 of `content_type` for this provider and id.
-    pub fn streaming(provider: &str, external_id: &str, bytes: &'static [u8], content_type: &'static str) -> Self {
+    pub fn streaming(
+        provider: &str,
+        external_id: &str,
+        bytes: &'static [u8],
+        content_type: &'static str,
+    ) -> Self {
         let fake = FakeStreams::default();
         fake.answers.lock().insert(
             (provider.to_string(), external_id.to_string()),
@@ -234,7 +208,12 @@ impl IDownloadService for FakeStreams {
         anyhow::bail!("not set up")
     }
 
-    async fn download_and_stream(&self, _: &str, _: &str, _: &CancellationToken) -> anyhow::Result<AudioStream> {
+    async fn download_and_stream(
+        &self,
+        _: &str,
+        _: &str,
+        _: &CancellationToken,
+    ) -> anyhow::Result<AudioStream> {
         *self.download_and_stream_calls.lock() += 1;
         anyhow::bail!("not set up")
     }

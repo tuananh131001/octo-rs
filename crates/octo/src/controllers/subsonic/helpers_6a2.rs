@@ -33,6 +33,7 @@ pub(crate) struct SubsonicCall {
 
 impl SubsonicCall {
     /// Reads the body and the parameters (query, then form or JSON body).
+    #[allow(clippy::result_large_err)] // the error is the answer itself, sent at once
     pub async fn read(state: &AppState, req: Request) -> Result<SubsonicCall, Response> {
         let (parts, body) = req.into_parts();
         let body = axum::body::to_bytes(body, MAX_REQUEST_BODY)

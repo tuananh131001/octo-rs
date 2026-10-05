@@ -23,7 +23,9 @@ use super::test_support_6a2::*;
 async fn ping_ok() -> MockServer {
     let server = MockServer::start().await;
     Mock::given(any())
-        .respond_with(navidrome_json(r#"{"subsonic-response":{"status":"ok","version":"1.16.1"}}"#))
+        .respond_with(navidrome_json(
+            r#"{"subsonic-response":{"status":"ok","version":"1.16.1"}}"#,
+        ))
         .mount(&server)
         .await;
     server
@@ -44,8 +46,17 @@ fn playback_settings(url: &str, wait_for_lossless: bool, download_on_play: bool)
 #[tokio::test]
 async fn external_playback_uses_you_tube_regardless_of_legacy_storage_mode() {
     let navidrome = ping_ok().await;
-    let downloads = Arc::new(FakeStreams::streaming("soulseek", "track-id", &[1, 2, 3], "audio/mp4"));
-    let library = Arc::new(FakeLibrary::with_external("external-track", "soulseek", "track-id"));
+    let downloads = Arc::new(FakeStreams::streaming(
+        "soulseek",
+        "track-id",
+        &[1, 2, 3],
+        "audio/mp4",
+    ));
+    let library = Arc::new(FakeLibrary::with_external(
+        "external-track",
+        "soulseek",
+        "track-id",
+    ));
     let state = state_with(playback_settings(&navidrome.uri(), false, false), |inner| {
         inner.download_service = downloads.clone();
         inner.local_library = library.clone();
@@ -71,7 +82,11 @@ async fn external_playback_uses_you_tube_regardless_of_legacy_storage_mode() {
 async fn wait_for_lossless_still_acquires_before_playback_when_enabled() {
     let navidrome = ping_ok().await;
     let downloads = Arc::new(FakeStreams::default());
-    let library = Arc::new(FakeLibrary::with_external("external-track", "soulseek", "track-id"));
+    let library = Arc::new(FakeLibrary::with_external(
+        "external-track",
+        "soulseek",
+        "track-id",
+    ));
     let state = state_with(playback_settings(&navidrome.uri(), true, false), |inner| {
         inner.download_service = downloads.clone();
         inner.local_library = library.clone();
@@ -113,8 +128,17 @@ async fn wait_for_lossless_still_acquires_before_playback_when_enabled() {
 async fn streaming_an_outside_song_queues_its_download_only_from_the_first_byte() {
     for (range, waiting) in [(None, 1), (Some("bytes=0-"), 1), (Some("bytes=4096-"), 0)] {
         let navidrome = ping_ok().await;
-        let downloads = Arc::new(FakeStreams::streaming("soulseek", "track-id", &[1, 2, 3], "audio/mp4"));
-        let library = Arc::new(FakeLibrary::with_external("external-track", "soulseek", "track-id"));
+        let downloads = Arc::new(FakeStreams::streaming(
+            "soulseek",
+            "track-id",
+            &[1, 2, 3],
+            "audio/mp4",
+        ));
+        let library = Arc::new(FakeLibrary::with_external(
+            "external-track",
+            "soulseek",
+            "track-id",
+        ));
         let state = state_with(playback_settings(&navidrome.uri(), false, true), |inner| {
             inner.download_service = downloads.clone();
             inner.local_library = library.clone();
@@ -174,7 +198,11 @@ impl Respond for SignInNavidrome {
         if path.ends_with("/rest/ping") {
             let ok = query.get("t").map(String::as_str) == Some("good")
                 || query.get("apiKey").map(String::as_str) == Some("bob-key");
-            return navidrome_json(if ok { NAVIDROME_OK } else { NAVIDROME_WRONG_PASSWORD });
+            return navidrome_json(if ok {
+                NAVIDROME_OK
+            } else {
+                NAVIDROME_WRONG_PASSWORD
+            });
         }
         if path.ends_with("/rest/tokenInfo") {
             return navidrome_json(if query.get("apiKey").map(String::as_str) == Some("bob-key") {
@@ -203,8 +231,17 @@ impl SignIn {
             .respond_with(SignInNavidrome)
             .mount(&navidrome)
             .await;
-        let downloads = Arc::new(FakeStreams::streaming("soulseek", "track-id", &[1, 2, 3], "audio/mp4"));
-        let library = Arc::new(FakeLibrary::with_external("external-track", "soulseek", "track-id"));
+        let downloads = Arc::new(FakeStreams::streaming(
+            "soulseek",
+            "track-id",
+            &[1, 2, 3],
+            "audio/mp4",
+        ));
+        let library = Arc::new(FakeLibrary::with_external(
+            "external-track",
+            "soulseek",
+            "track-id",
+        ));
         let state = state_with(settings(&navidrome.uri()), |inner| {
             inner.download_service = downloads.clone();
             inner.local_library = library.clone();
@@ -439,9 +476,9 @@ impl Respond for LibraryNavidrome {
             .collect::<Vec<_>>()
             .join(",");
         let body = match path.as_str() {
-            "rest/getGenres" => {
-                library_ok(r#""genres":{"genre":[{"value":"Rock","songCount":40},{"value":"Polka","songCount":3}]}"#)
-            }
+            "rest/getGenres" => library_ok(
+                r#""genres":{"genre":[{"value":"Rock","songCount":40},{"value":"Polka","songCount":3}]}"#,
+            ),
             "rest/getSongsByGenre" => library_ok(&format!(r#""songsByGenre":{{"song":[{songs}]}}"#)),
             "rest/getRandomSongs" => library_ok(r#""randomSongs":{"song":[]}"#),
             "rest/getCoverArt" => {
@@ -494,7 +531,12 @@ async fn get_cover_art_for_a_mix_is_an_image() {
     let mix = mixes
         .iter()
         .find(|mix| mix.name == "Rock Mix")
-        .unwrap_or_else(|| panic!("a Rock Mix in {:?}", mixes.iter().map(|m| &m.name).collect::<Vec<_>>()));
+        .unwrap_or_else(|| {
+            panic!(
+                "a Rock Mix in {:?}",
+                mixes.iter().map(|m| &m.name).collect::<Vec<_>>()
+            )
+        });
 
     let cover = get(
         &app(&state),
@@ -559,7 +601,11 @@ async fn a_lossless_copy_on_disk_is_served_with_ranges() {
     let dir = tempfile::tempdir().expect("a temp dir");
     let path = dir.path().join("song.m4a");
     std::fs::write(&path, (0u8..100).collect::<Vec<_>>()).expect("written");
-    let library = Arc::new(FakeLibrary::with_external("external-track", "soulseek", "track-id"));
+    let library = Arc::new(FakeLibrary::with_external(
+        "external-track",
+        "soulseek",
+        "track-id",
+    ));
     library.local_paths.lock().insert(
         ("soulseek".into(), "track-id".into()),
         path.to_string_lossy().into_owned(),
@@ -577,9 +623,18 @@ async fn a_lossless_copy_on_disk_is_served_with_ranges() {
     assert_eq!(whole.header("accept-ranges"), Some("bytes"));
 
     let mut cases: HashMap<&str, (StatusCode, Option<&str>, usize)> = HashMap::new();
-    cases.insert("bytes=10-19", (StatusCode::PARTIAL_CONTENT, Some("bytes 10-19/100"), 10));
-    cases.insert("bytes=-5", (StatusCode::PARTIAL_CONTENT, Some("bytes 95-99/100"), 5));
-    cases.insert("bytes=200-", (StatusCode::RANGE_NOT_SATISFIABLE, Some("bytes */100"), 0));
+    cases.insert(
+        "bytes=10-19",
+        (StatusCode::PARTIAL_CONTENT, Some("bytes 10-19/100"), 10),
+    );
+    cases.insert(
+        "bytes=-5",
+        (StatusCode::PARTIAL_CONTENT, Some("bytes 95-99/100"), 5),
+    );
+    cases.insert(
+        "bytes=200-",
+        (StatusCode::RANGE_NOT_SATISFIABLE, Some("bytes */100"), 0),
+    );
     for (range, (status, content_range, length)) in cases {
         let reply = send(&app, Method::GET, url, &[("Range", range)], Body::empty()).await;
         assert_eq!(reply.status, status, "{range}");
