@@ -9,7 +9,7 @@ members = ["crates/*"]
 version = "2026.10.3"
 edition = "2024"
 rust-version = "1.99"
-license = "MIT"
+license = "GPL-3.0-only"
 publish = false
 
 [workspace.dependencies]

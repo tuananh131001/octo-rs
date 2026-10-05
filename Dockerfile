@@ -74,7 +74,7 @@ COPY crates/octo-media/assets/cover-design/Fonts/OFL.txt /app/licenses/Inter-OFL
 # No version label here: the published image gets org.opencontainers.image.version (and the
 # rest) from docker.yml's metadata step, and the release itself is in the binary.
 LABEL org.opencontainers.image.title="octo" \
-      org.opencontainers.image.licenses="MIT"
+      org.opencontainers.image.licenses="GPL-3.0-only"
 
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
