@@ -3,8 +3,9 @@ resolver = "3"
 members = ["crates/*"]
 
 [workspace.package]
-# The release tag the dashboard shows. CARGO_PKG_VERSION cannot hold a leading zero
-# (2026.10.03.2), so build.rs in the octo crate reads OCTO_VERSION, falling back to this.
+# Not the release the dashboard shows: CARGO_PKG_VERSION cannot hold the leading zero of
+# 2026.10.03.2. That comes from the root VERSION file (or OCTO_VERSION at build time), read by
+# crates/octo-core/build.rs.
 version = "2026.10.3"
 edition = "2024"
 rust-version = "1.99"

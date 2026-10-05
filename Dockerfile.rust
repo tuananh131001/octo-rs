@@ -4,7 +4,7 @@
 # drains requests and workers within its 10 s budget.
 #
 #   docker build -f Dockerfile.rust -t octo-rust:dev .
-#   docker build -f Dockerfile.rust --build-arg OCTO_VERSION=2026.11.01.1 -t octo-rust:dev .
+#   docker build -f Dockerfile.rust --build-arg OCTO_VERSION=2026.11.01.1 -t octo-rust:dev .   # instead of VERSION
 
 ARG RUST_VERSION=1.99
 
@@ -36,10 +36,11 @@ COPY crates crates
 # binary from the C# tree until the cutover moves it beside octo-media.
 COPY octo/Services/CoverArt/Design octo/Services/CoverArt/Design
 
-# The release the dashboard and User-Agent show. octo_core::VERSION reads it at compile
-# time (option_env!), so changing it rebuilds octo-core and everything above it.
-ARG OCTO_VERSION=2026.10.03.2
-ENV OCTO_VERSION=${OCTO_VERSION}
+# The release the dashboard and User-Agent show: the VERSION file, compiled in by
+# octo-core's build.rs, so a bump rebuilds octo-core and everything above it.
+# --build-arg OCTO_VERSION=... stamps another release without editing the file.
+COPY VERSION ./
+ARG OCTO_VERSION
 RUN cargo build --release --locked --package octo --bin octo \
     && install -D -m 0755 target/release/octo /out/octo
 
@@ -70,9 +71,9 @@ COPY octo/Assets /app/Assets
 # Inter is compiled into the binary; its licence ships beside it.
 COPY octo/Services/CoverArt/Design/Fonts/OFL.txt /app/licenses/Inter-OFL.txt
 
-ARG OCTO_VERSION=2026.10.03.2
+# No version label here: the published image gets org.opencontainers.image.version (and the
+# rest) from docker.yml's metadata step, and the release itself is in the binary.
 LABEL org.opencontainers.image.title="octo" \
-      org.opencontainers.image.version="${OCTO_VERSION}" \
       org.opencontainers.image.licenses="MIT"
 
 EXPOSE 8080
