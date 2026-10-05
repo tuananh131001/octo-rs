@@ -595,13 +595,21 @@ impl RadioFixture {
             .collect()
     }
 
+    /// Waits until the transcoder has been called `at_least` times. The deadline is generous
+    /// (10 s) because `cargo test --workspace` on a loaded machine can starve these tasks;
+    /// returning early used to let a late background transcode land after a test had moved
+    /// on, which made the pool counts below flaky.
     async fn wait_for_calls(&self, at_least: usize) {
-        for _ in 0..100 {
+        for _ in 0..1000 {
             if self.transcoder.calls() >= at_least {
                 return;
             }
             tokio::time::sleep(Duration::from_millis(10)).await;
         }
+        panic!(
+            "the transcoder was called {} times, expected at least {at_least}",
+            self.transcoder.calls()
+        );
     }
 }
 
@@ -622,9 +630,9 @@ async fn first_bytes(response: &mut axum::response::Response, count: usize) -> V
     let mut read = Vec::new();
     let body = response.body_mut();
     while read.len() < count {
-        let frame = tokio::time::timeout(Duration::from_secs(2), body.frame())
+        let frame = tokio::time::timeout(Duration::from_secs(10), body.frame())
             .await
-            .expect("bytes within two seconds")
+            .expect("bytes within ten seconds")
             .expect("more body")
             .expect("a frame");
         if let Ok(data) = frame.into_data() {
@@ -847,7 +855,7 @@ async fn internet_radio_list_waits_for_starter_and_publishes_in_that_same_respon
         )
         .await
     });
-    tokio::time::timeout(Duration::from_secs(2), fixture.transcoder.started().wait())
+    tokio::time::timeout(Duration::from_secs(10), fixture.transcoder.started().wait())
         .await
         .expect("the starter began");
     tokio::time::sleep(Duration::from_millis(50)).await;
@@ -872,7 +880,7 @@ async fn internet_radio_list_answers_inside_the_starter_bound_and_publishes_on_t
     let first = tokio::time::timeout(Duration::from_secs(10), fixture.station_list(url))
         .await
         .expect("answered inside the bound");
-    tokio::time::timeout(Duration::from_secs(2), fixture.transcoder.started().wait())
+    tokio::time::timeout(Duration::from_secs(10), fixture.transcoder.started().wait())
         .await
         .expect("the starter began");
     assert!(!first.contains("Your Mix"), "{first}");
@@ -931,7 +939,7 @@ async fn internet_radio_list_returns_ready_stations_without_waiting_for_cache_mi
         fixture.station_list("/rest/getInternetRadioStations?u=alice&t=token&s=salt&f=json"),
     )
     .await;
-    let started = tokio::time::timeout(Duration::from_secs(2), fixture.transcoder.started().wait()).await;
+    let started = tokio::time::timeout(Duration::from_secs(10), fixture.transcoder.started().wait()).await;
     gate.set();
     let body = listing.expect("the listing did not wait for the cold station");
     assert!(body.contains("Your Mix"), "{body}");
@@ -1048,10 +1056,11 @@ async fn published_stream_consumes_and_replenishes_three_track_session_pool() {
     // The body has to be read for the stream to start writing.
     let mut body = response.into_body().into_data_stream();
     let reading = tokio::spawn(async move { while body.next().await.is_some() {} });
-    tokio::time::timeout(Duration::from_secs(2), fixture.transcoder.started().wait())
+    tokio::time::timeout(Duration::from_secs(10), fixture.transcoder.started().wait())
         .await
         .expect("a replenishing transcode began");
-    for _ in 0..100 {
+    // Polls allow 10 s: a loaded test machine can delay the stream task well past 1 s.
+    for _ in 0..1000 {
         if fixture.pool_keys(&token).len() == READY_POOL_SIZE - 1 {
             break;
         }
@@ -1063,7 +1072,7 @@ async fn published_stream_consumes_and_replenishes_three_track_session_pool() {
 
     gate.set();
     reading.abort();
-    for _ in 0..100 {
+    for _ in 0..1000 {
         if fixture.pool_keys(&token).len() >= READY_POOL_SIZE {
             break;
         }
