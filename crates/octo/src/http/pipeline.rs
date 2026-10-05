@@ -41,6 +41,7 @@ pub fn app_routes(assets: &StaticAssets) -> RouteSet {
         .merge(assets.routes())
         .merge(admin_root::routes())
         .merge(crate::controllers::subsonic::routes())
+        .merge(crate::controllers::admin::routes())
 }
 
 pub fn build(state: AppState, assets: &StaticAssets) -> App {
