@@ -59,6 +59,6 @@ depends on have been merged into `rust-rewrite`. Status: ☐ not started · ◐ 
 
 | | Task | C# sources | Tests |
 |---|---|---|---|
-| ◐ | 6-A Subsonic controller | `Controllers/SubSonicController` (4.4k lines) | AcquisitionEndpoint, LibraryActionEndpoint, LastFmRadioController |
+| ☑ | 6-A Subsonic controller | `Controllers/SubSonicController` (4.4k lines) | AcquisitionEndpoint, LibraryActionEndpoint, LastFmRadioController |
 | ◐ | 6-B admin controllers | `Controllers/{AdminController,CoverUpgradeController,LyricsAdminController,UpdateController}` | AdminContract |
 | ☐ | 6-C parity run, Dockerfile, CI, cutover | Phase 9 | the full corpus |
