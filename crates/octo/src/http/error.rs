@@ -203,7 +203,9 @@ pub fn problem(status: StatusCode) -> Response {
         }),
         None => json!({ "status": status.as_u16(), "traceId": trace_id() }),
     };
-    json_response(status, &body, "application/problem+json; charset=utf-8")
+    // A ProblemDetails is an ObjectResult, written by SystemTextJsonOutputFormatter, which
+    // swaps the default encoder for UnsafeRelaxedJsonEscaping when none is configured.
+    json_relaxed_response(status, &body, "application/problem+json; charset=utf-8")
 }
 
 /// The type URI and title ASP.NET's ProblemDetailsFactory gives a status (its
@@ -271,7 +273,7 @@ pub fn validation_problem(errors: &[(&str, &[&str])]) -> Response {
         "errors": map,
         "traceId": trace_id(),
     });
-    json_response(
+    json_relaxed_response(
         StatusCode::BAD_REQUEST,
         &body,
         "application/problem+json; charset=utf-8",

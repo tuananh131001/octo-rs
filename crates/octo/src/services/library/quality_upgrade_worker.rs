@@ -457,6 +457,13 @@ impl QualityUpgradeWorker {
         Tick::Ran
     }
 
+    /// `ListSongs`: one walk of the library, and whether it reached the end. The Better quality
+    /// page's list (`GET /api/admin/lossy`) reads it too.
+    pub async fn list_songs(&self) -> (Vec<LibrarySongRow>, bool) {
+        let list = self.seams().list_songs;
+        list().await
+    }
+
     /// What the weekly run has tried, by file, for the Better quality page.
     pub fn tried(&self) -> QualityUpgradeState {
         self.store.snapshot()
