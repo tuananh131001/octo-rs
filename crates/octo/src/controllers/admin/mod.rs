@@ -12,11 +12,18 @@
 //! sign-in ([`helpers_6b1::BrowseUser`]).
 
 pub mod browse;
+pub mod cover_upgrade;
+pub mod genre;
 pub mod helpers_6b1;
+pub mod helpers_6b2;
 pub mod lastfm;
+pub mod library_actions;
+pub mod lyrics_admin;
 pub mod raw_config;
 pub mod settings;
 pub mod system;
+pub mod update;
+pub mod upgrades;
 
 use axum::routing::{delete, get, post};
 
@@ -92,8 +99,25 @@ pub fn routes_6b1() -> RouteSet {
 
 /// Every AdminController route.
 pub fn routes() -> RouteSet {
-    routes_6b1()
+    routes_6b1().merge(routes_6b2())
 }
+
+/// The routes of task 6-B2: the library actions, questions and checks, the Better quality page,
+/// genre normalisation, and the `CoverUpgradeController`, `LyricsAdminController` and
+/// `UpdateController` routes.
+pub fn routes_6b2() -> RouteSet {
+    RouteSet::new()
+        .merge(library_actions::routes())
+        .merge(upgrades::routes())
+        .merge(genre::routes())
+        .merge(cover_upgrade::routes())
+        .merge(lyrics_admin::routes())
+        .merge(update::routes())
+}
+
+#[cfg(test)]
+#[path = "tests_6b2.rs"]
+mod tests_6b2;
 
 #[cfg(test)]
 #[path = "test_support_6b1.rs"]
