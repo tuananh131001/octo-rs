@@ -93,3 +93,4 @@ __pycache__/
 /target/
 # Claude Code worktrees
 /.claude/
+/target-main/
