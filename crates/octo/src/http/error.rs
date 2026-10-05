@@ -203,7 +203,8 @@ pub fn problem(status: StatusCode) -> Response {
         }),
         None => json!({ "status": status.as_u16(), "traceId": trace_id() }),
     };
-    json_response(status, &body, "application/problem+json; charset=utf-8")
+    // Problem documents go out through MVC's output formatter, whose encoder is relaxed.
+    json_relaxed_response(status, &body, "application/problem+json; charset=utf-8")
 }
 
 /// The type URI and title ASP.NET's ProblemDetailsFactory gives a status (its
@@ -271,7 +272,9 @@ pub fn validation_problem(errors: &[(&str, &[&str])]) -> Response {
         "errors": map,
         "traceId": trace_id(),
     });
-    json_response(
+    // Through MVC's output formatter, whose encoder is relaxed (a message quoting the input
+    // keeps its `'` as written).
+    json_relaxed_response(
         StatusCode::BAD_REQUEST,
         &body,
         "application/problem+json; charset=utf-8",
