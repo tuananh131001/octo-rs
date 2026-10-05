@@ -168,9 +168,24 @@ pub fn json_node(status: StatusCode, node: &Node) -> Response {
     )
 }
 
+/// An MVC `ObjectResult` (`Ok(obj)`, `BadRequest(obj)`, `Accepted(obj)`, `Conflict(obj)`,
+/// `StatusCode(n, obj)`, ...). In .NET 9 its output formatter swaps the default encoder for
+/// `UnsafeRelaxedJsonEscaping` when none is configured, so `'`, `+` and non-ASCII letters go
+/// out as they are, while `new JsonResult(obj)` (written with [`crate::http::error::json_ok`])
+/// escapes them. The C# baseline shows both: `browse` and `lastfm/scrobble/disconnect` are not
+/// escaped, `settings`, `status` and `config-sources` are.
+pub fn object_result(status: StatusCode, body: &impl serde::Serialize) -> Response {
+    crate::http::error::json_relaxed_response(status, body, "application/json; charset=utf-8")
+}
+
+/// `Ok(obj)`: [`object_result`] with 200.
+pub fn ok(body: &impl serde::Serialize) -> Response {
+    object_result(StatusCode::OK, body)
+}
+
 /// `{"error": message}` with a status, as `BadRequest(new { error })` and its kin wrote it.
 pub fn error_json(status: StatusCode, message: &str) -> Response {
-    crate::http::error::json_status(status, &serde_json::json!({ "error": message }))
+    object_result(status, &serde_json::json!({ "error": message }))
 }
 
 /// STJ's camelCase naming policy (`JsonNamingPolicy.CamelCase`) for one property name.
@@ -717,7 +732,7 @@ impl StjReader<'_> {
 
 /// `Accepted(new { ... })`.
 pub fn accepted(body: &impl serde::Serialize) -> Response {
-    crate::http::error::json_status(StatusCode::ACCEPTED, body)
+    object_result(StatusCode::ACCEPTED, body)
 }
 
 #[cfg(test)]

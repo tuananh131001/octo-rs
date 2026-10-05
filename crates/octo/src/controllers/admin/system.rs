@@ -16,9 +16,9 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tracing::{info, warn};
 
-use super::helpers_6b1::{bind_body, camel_case_value};
+use super::helpers_6b1::{bind_body, camel_case_value, object_result, ok};
 use crate::app::AppState;
-use crate::http::error::{json_ok, json_status};
+use crate::http::error::json_ok;
 use crate::services::admin::directory_browser::is_writable;
 use crate::services::http_client_factory::{connect_failure_message, timeout_message};
 use crate::services::soulseek::soulseek_link::ISoulseekLink;
@@ -29,7 +29,7 @@ use crate::services::subsonic::subsonic_response_builder::acquisition_json;
 /// when Octo cannot see the LAN (a Docker bridge network, for example).
 pub async fn discover_servers(State(state): State<AppState>) -> Response {
     let servers = state.subsonic_discovery.scan().await;
-    json_ok(&json!({ "servers": servers }))
+    ok(&json!({ "servers": servers }))
 }
 
 /// `GET /api/admin/library-status`: where downloads will actually land, and why. Octo fronts
@@ -60,7 +60,7 @@ pub async fn library_status(State(state): State<AppState>) -> Response {
         })
         .collect();
 
-    json_ok(&json!({
+    ok(&json!({
         "autoDetect": subsonic.auto_detect_download_path,
         "pinnedLibraryPath": subsonic.library_path,
         "navidromeReports": reported,
@@ -81,7 +81,7 @@ pub async fn library_status(State(state): State<AppState>) -> Response {
 /// including the transport's real error text on failure.
 pub async fn test_notification(State(state): State<AppState>) -> Response {
     let results = state.notifications.send_test().await;
-    json_ok(&json!({ "results": results }))
+    ok(&json!({ "results": results }))
 }
 
 /// `GET /api/admin/downloads`: the running log of songs Octo has fetched, newest first.
@@ -90,7 +90,7 @@ pub async fn downloads(State(state): State<AppState>) -> Response {
     // The entries are written to disk PascalCase; the API answer is camelCase, with the
     // report's dictionaries keeping their keys.
     let value = serde_json::to_value(&recent).unwrap_or_default();
-    json_ok(&json!({ "downloads": camel_case_value(value, &["fields", "stageSeconds"]) }))
+    ok(&json!({ "downloads": camel_case_value(value, &["fields", "stageSeconds"]) }))
 }
 
 /// `GET /api/admin/acquisitions`: every hearted download in flight or ended in the last half
@@ -113,7 +113,7 @@ pub async fn acquisitions(State(state): State<AppState>) -> Response {
             serde_json::Value::Object(fields)
         })
         .collect();
-    json_ok(&json!({ "acquisitions": rows }))
+    ok(&json!({ "acquisitions": rows }))
 }
 
 /// Health of one backing service. `configured` is false for an optional service nobody set
@@ -309,7 +309,7 @@ pub async fn get_status(State(state): State<AppState>) -> Response {
 pub async fn get_lidarr_options(State(state): State<AppState>) -> Response {
     match state.lidarr_client.get_options().await {
         Ok(options) => json_ok(&options),
-        Err(e) => json_status(StatusCode::BAD_REQUEST, &json!({ "error": e.to_string() })),
+        Err(e) => object_result(StatusCode::BAD_REQUEST, &json!({ "error": e.to_string() })),
     }
 }
 
@@ -338,12 +338,12 @@ pub async fn test_lidarr_connection(
         )
         .await
     {
-        Ok(options) => json_ok(&json!({
+        Ok(options) => ok(&json!({
             "ok": true,
             "message": "Connected to Lidarr. Choices loaded.",
             "options": options,
         })),
-        Err(e) => json_status(
+        Err(e) => object_result(
             StatusCode::BAD_REQUEST,
             &json!({ "ok": false, "error": e.to_string() }),
         ),
@@ -364,7 +364,7 @@ pub async fn restart(State(state): State<AppState>) -> Response {
         // docker-compose treats it as a crash and restarts.
         std::process::exit(1);
     });
-    json_status(
+    object_result(
         StatusCode::ACCEPTED,
         &json!({ "ok": true, "message": "restarting" }),
     )
@@ -377,7 +377,7 @@ pub async fn restart(State(state): State<AppState>) -> Response {
 pub async fn clear_rejected_peers(State(state): State<AppState>) -> Response {
     let cleared = state.rejected_peers.clear();
     info!("Rejected-peer memory cleared by admin request ({cleared} entries)");
-    json_ok(&json!({ "cleared": cleared }))
+    ok(&json!({ "cleared": cleared }))
 }
 
 /// `POST /api/admin/clear-metadata-cache`: drops every cached metadata answer and cover image.
@@ -388,7 +388,7 @@ pub async fn clear_metadata_cache(State(state): State<AppState>) -> Response {
     state.deezer_metadata.clear_caches();
     state.cover_art_aggregator.clear_cache();
     info!("Metadata and cover-art caches cleared by admin request");
-    json_ok(&json!({ "cleared": true }))
+    ok(&json!({ "cleared": true }))
 }
 
 #[cfg(test)]

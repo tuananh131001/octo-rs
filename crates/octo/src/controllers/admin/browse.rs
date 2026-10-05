@@ -15,10 +15,9 @@ use tracing::{info, warn};
 
 use super::helpers_6b1::{
     BROWSE_COOKIE_NAME, BROWSE_TOKEN_HEADER, BrowseUser, bind_body, browse_cookie, browse_cookie_deleted,
-    camel_case_value, error_json, header_value, is_https, query_value, request_cookie,
+    camel_case_value, error_json, header_value, is_https, ok, query_value, request_cookie,
 };
 use crate::app::AppState;
-use crate::http::error::json_ok;
 use crate::middleware::forwarded::RequestScheme;
 
 /// Credentials for `browse/auth`. Body-only by design.
@@ -104,7 +103,7 @@ pub async fn browse_auth(
             // to hold. It survives a reload, so the user is not asked to sign in again every
             // time they come back to the settings, and script on the page cannot read it even
             // if something managed to inject some.
-            let mut res = json_ok(&json!({ "ok": true, "user": username }));
+            let mut res = ok(&json!({ "ok": true, "user": username }));
             res.headers_mut().append(
                 header::SET_COOKIE,
                 browse_cookie(&token, is_https(scheme.as_deref())),
@@ -142,7 +141,7 @@ pub async fn browse(
             serde_json::Value::Bool(std::path::Path::new("/.dockerenv").is_dir()),
         );
     }
-    signed_in.finish(json_ok(&answer))
+    signed_in.finish(ok(&answer))
 }
 
 /// `GET /api/admin/browse/session`: who this browser is signed in as, for the dashboard's
@@ -154,8 +153,8 @@ pub async fn browse_session(
 ) -> Response {
     let signed_in = BrowseUser::check(&state, &headers, scheme.as_deref(), None);
     let answer = match &signed_in.user {
-        Some(user) => json_ok(&json!({ "signedIn": true, "user": user })),
-        None => json_ok(&json!({ "signedIn": false })),
+        Some(user) => ok(&json!({ "signedIn": true, "user": user })),
+        None => ok(&json!({ "signedIn": false })),
     };
     signed_in.finish(answer)
 }
@@ -166,7 +165,7 @@ pub async fn browse_sign_out(State(state): State<AppState>, headers: HeaderMap) 
     state
         .browse_sessions
         .revoke(request_cookie(&headers, BROWSE_COOKIE_NAME).as_deref());
-    let mut res = json_ok(&json!({ "ok": true }));
+    let mut res = ok(&json!({ "ok": true }));
     res.headers_mut()
         .append(header::SET_COOKIE, browse_cookie_deleted());
     res
@@ -239,7 +238,7 @@ pub async fn preview_tags(
     let answer = match report {
         Ok(report) => {
             let value = serde_json::to_value(&report).unwrap_or_default();
-            json_ok(&camel_case_value(value, &["fields", "stageSeconds"]))
+            ok(&camel_case_value(value, &["fields", "stageSeconds"]))
         }
         Err(_) => crate::http::error::problem(StatusCode::INTERNAL_SERVER_ERROR),
     };

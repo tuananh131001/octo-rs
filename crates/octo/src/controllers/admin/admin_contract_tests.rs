@@ -480,7 +480,7 @@ async fn settings_post_refusals_read_as_recorded() {
         ("", r#"{"error":"empty body"}"#),
         (
             "{not json",
-            r#"{"error":"invalid JSON: \u0027n\u0027 is an invalid start of a property name. Expected a \u0027\u0022\u0027. LineNumber: 0 | BytePositionInLine: 1."}"#,
+            r#"{"error":"invalid JSON: 'n' is an invalid start of a property name. Expected a '\"'. LineNumber: 0 | BytePositionInLine: 1."}"#,
         ),
         ("[]", r#"{"error":"invalid JSON: expected object"}"#),
         (
@@ -497,7 +497,7 @@ async fn settings_post_refusals_read_as_recorded() {
         ),
         (
             r#"{"Genre":{"Mappings":[{"Pattern":"rock"},{"Pattern":"ROCK"}]}}"#,
-            r#"{"error":"Duplicate genre rule pattern \u0027ROCK\u0027: only the first could ever fire"}"#,
+            r#"{"error":"Duplicate genre rule pattern 'ROCK': only the first could ever fire"}"#,
         ),
         (
             r#"{"LastFm":{"DiscoveryStations":[{"Id":"a","Name":"A","Tags":[]}]}}"#,

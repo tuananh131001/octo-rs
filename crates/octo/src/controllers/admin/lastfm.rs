@@ -13,9 +13,9 @@ use serde::Deserialize;
 use serde_json::json;
 use tracing::warn;
 
-use super::helpers_6b1::{SECRET_PLACEHOLDER, accepted, bind_body, error_json, query_value};
+use super::helpers_6b1::{SECRET_PLACEHOLDER, accepted, bind_body, error_json, ok, query_value};
 use crate::app::AppState;
-use crate::http::error::{json_ok, validation_problem};
+use crate::http::error::validation_problem;
 use crate::services::last_fm::last_fm_scrobble_service::{LastFmConnectError, LastFmScrobbleService};
 
 /// `GET /api/admin/lastfm/radio`: the radio's switches, its listeners, and the selected
@@ -74,7 +74,7 @@ pub async fn get_last_fm_radio(State(state): State<AppState>, RawQuery(query): R
         })
         .unwrap_or_default();
 
-    json_ok(&json!({
+    ok(&json!({
         "enabled": settings.enable_radio,
         "hasApiKey": !is_blank(&settings.api_key),
         "personalizedEnabled": settings.enable_personalized_stations,
@@ -104,14 +104,14 @@ async fn validate_listen_brainz(state: &AppState, user: Option<&str>, token: Opt
             .unwrap_or_default(),
     };
     if candidate.is_empty() {
-        return json_ok(&json!({
+        return ok(&json!({
             "configured": false,
             "valid": false,
             "detail": "No token configured.",
         }));
     }
     let check = state.listen_brainz.validate_token(&candidate).await;
-    json_ok(&json!({
+    ok(&json!({
         "configured": true,
         "valid": check.valid,
         "userName": check.user_name,
@@ -163,7 +163,7 @@ pub async fn get_last_fm_scrobbling(State(state): State<AppState>) -> Response {
         .map(|summary| summary.username)
         .collect();
     known.extend(settings.listen_brainz.user_tokens.keys().cloned());
-    json_ok(&json!({
+    ok(&json!({
         "available": true,
         "hasApiKey": !is_blank(&lastfm.api_key),
         "hasApiSecret": !is_blank(&lastfm.api_secret),
@@ -218,7 +218,7 @@ pub async fn check_last_fm_credentials(
             typed(&request.api_secret).as_deref(),
         )
         .await;
-    json_ok(&json!({ "key": check.key, "secret": check.secret, "message": check.message }))
+    ok(&json!({ "key": check.key, "secret": check.secret, "message": check.message }))
 }
 
 /// `POST /api/admin/lastfm/scrobble/cancel`: stops waiting on a Connect nobody is going to
@@ -233,7 +233,7 @@ pub async fn cancel_last_fm_connect(
         Err(res) => return res,
     };
     state.last_fm_scrobbles.cancel_connect(request.user());
-    json_ok(&json!({ "ok": true }))
+    ok(&json!({ "ok": true }))
 }
 
 /// `POST /api/admin/lastfm/scrobble/connect`: step one of connecting, the page on last.fm
@@ -244,7 +244,7 @@ pub async fn connect_last_fm(State(state): State<AppState>, headers: HeaderMap, 
         Err(res) => return res,
     };
     match state.last_fm_scrobbles.begin_connect(request.user()).await {
-        Ok(url) => json_ok(&json!({ "user": request.user().trim(), "url": url })),
+        Ok(url) => ok(&json!({ "user": request.user().trim(), "url": url })),
         Err(e) => error_json(StatusCode::BAD_REQUEST, &e.message),
     }
 }
@@ -258,7 +258,7 @@ pub async fn finish_last_fm(State(state): State<AppState>, headers: HeaderMap, b
         Err(res) => return res,
     };
     match state.last_fm_scrobbles.finish_connect(request.user()).await {
-        Ok(session) => json_ok(&json!({
+        Ok(session) => ok(&json!({
             "ok": true,
             "user": request.user().trim(),
             "lastFmUser": session.last_fm_user,
@@ -311,7 +311,7 @@ pub async fn disconnect_last_fm(State(state): State<AppState>, headers: HeaderMa
     } else {
         "Disconnected. To revoke Octo on Last.fm too, remove it from that account's applications.".to_string()
     };
-    json_ok(&json!({ "ok": true, "user": user, "message": message }))
+    ok(&json!({ "ok": true, "user": user, "message": message }))
 }
 
 /// `RadioUserRequest`: `{ user, stationId? }`.
@@ -354,7 +354,7 @@ pub async fn reset_last_fm_radio(State(state): State<AppState>, RawQuery(query):
     let radio = &state.last_fm_radio_state;
     let before = radio.get_user(&user);
     let removed = radio.reset(&user);
-    json_ok(&json!({
+    ok(&json!({
         "ok": removed,
         "user": user,
         "removedPlays": if removed { before.plays.len() } else { 0 },

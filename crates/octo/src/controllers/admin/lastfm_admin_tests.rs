@@ -271,7 +271,7 @@ async fn connect_finish_disconnect_links_and_unlinks_a_user() {
     assert_eq!(disconnect.status, StatusCode::OK);
     assert_eq!(
         disconnect.text(),
-        r#"{"ok":true,"user":"alice","message":"Disconnected. To revoke Octo on Last.fm too, remove it from that account\u0027s applications."}"#
+        r#"{"ok":true,"user":"alice","message":"Disconnected. To revoke Octo on Last.fm too, remove it from that account's applications."}"#
     );
     assert!(!factory.saved().contains("sk-alice"));
     assert!(!factory.state.last_fm_scrobbles.is_enabled_for("alice"));
