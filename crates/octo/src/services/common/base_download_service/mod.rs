@@ -31,6 +31,10 @@ mod tagging_tests;
 #[path = "ownership_tests.rs"]
 mod ownership_tests;
 
+#[cfg(test)]
+#[path = "parallel_lock_split_tests.rs"]
+mod parallel_lock_split_tests;
+
 use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicI32, Ordering};
 use std::sync::{Arc, OnceLock, Weak};

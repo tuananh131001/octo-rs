@@ -17,7 +17,6 @@ pub mod listen_brainz;
 pub mod local;
 pub mod lyrics;
 pub mod metadata;
-pub mod not_ported;
 pub mod notifications;
 pub mod soulseek;
 pub mod state_file;

@@ -35,9 +35,9 @@ use tokio_util::sync::CancellationToken;
 use crate::services::admin::{BrowseSessionStore, DirectoryBrowser};
 use crate::services::common::{
     AcquisitionActivity, AcquisitionTracker, AcquisitionWorker, CacheCleanupService, CatalogBlanks,
-    DownloadConcurrency, ExternalSearchService, HeartAcquisitionCoordinator, HeartCoordinatorExtras,
-    MeterPreview, SoulseekHoldResumer, SoulseekHoldStore, StarNavidrome, StarOnArrival,
-    TrackAcquisitionQueue, TrackerServices,
+    DownloadConcurrency, DownloadCore, DownloadServices, ExternalSearchService, HeartAcquisitionCoordinator,
+    HeartCoordinatorExtras, MeterPreview, ReviewQueue, SoulseekHoldResumer, SoulseekHoldStore, StarNavidrome,
+    StarOnArrival, TrackAcquisitionQueue, TrackerServices,
 };
 use crate::services::cover_art::{
     CoverArtAggregator, CoverArtArchiveLookup, DeezerCoverArtLookup, DownloadCoverResolver, ICoverArtSource,
@@ -77,8 +77,8 @@ use crate::services::lyrics::{
 };
 use crate::services::metadata::{DeezerMetadataService, DeezerRateLimitHandler, DeezerRateLimiter};
 use crate::services::metadata::{GenreBackfillJournal, GenreBackfillStore};
-use crate::services::not_ported::NotPortedDownloadService;
 use crate::services::notifications::{DiscordSink, INotificationSink, NotificationService, NtfySink};
+use crate::services::soulseek::soulseek_download_service::{SoulseekDownloadParts, SoulseekDownloadService};
 use crate::services::soulseek::soulseek_metadata_service::LastFmTrackLengths;
 use crate::services::soulseek::{
     ExternalIdRegistry, ISoulseekLink, RadioQueueStore, RejectedPeerRegistry, SoulseekClient, SoulseekLink,
@@ -242,8 +242,8 @@ pub struct AppInner {
     pub soulseek_link: Arc<SoulseekLink>,
     /// `AddSingleton<IMusicMetadataService, SoulseekMetadataService>()`.
     pub music_metadata: Arc<SoulseekMetadataService>,
-    /// `IDownloadService` (`SoulseekDownloadService`).
-    /// STUB(4-C): `NotPortedDownloadService` until 4-C lands.
+    /// `AddSingleton<IDownloadService, SoulseekDownloadService>()`: the download base over the
+    /// Soulseek backend, which hearts, plays, upgrades, Lidarr and library actions all go through.
     pub download_service: Arc<dyn IDownloadService>,
     /// `AddSingleton<LidarrClient>()`: the Lidarr v1 client, its address and key read live.
     pub lidarr_client: Arc<LidarrClient>,
@@ -387,6 +387,31 @@ impl Tagging {
     }
 }
 
+/// What the download service (4-C) is built over beyond the acquisition pipeline's own
+/// services: the tagging and verification services, the lyrics writer, slskd's client and the
+/// notice queue it asks people through.
+struct DownloadDeps<'a> {
+    tagging: &'a Tagging,
+    lyrics: &'a Arc<LyricsSidecarWriter>,
+    soulseek_client: &'a SoulseekClient,
+    notice_queue: &'a Arc<NoticeQueue>,
+}
+
+/// `NoticeQueue.AddReview` as the download base asks for it.
+struct NoticeReviews(Arc<NoticeQueue>);
+
+impl ReviewQueue for NoticeReviews {
+    fn add_review(
+        &self,
+        owner: &str,
+        local_path: &str,
+        song: &octo_core::models::domain::Song,
+        verdict: &octo_core::fingerprint::VerificationResult,
+    ) -> bool {
+        self.0.add_review(owner, local_path, song, verdict)
+    }
+}
+
 /// The acquisition pipeline of task 4-D, over the services it routes to. The C# broke two
 /// cycles with lazy `IServiceProvider` lookups: `AcquisitionActivity` holds the download
 /// service weakly, set once it exists, and `StarOnArrival` listens to the tracker through a weak
@@ -420,13 +445,10 @@ impl Acquisition {
         clients: &MetadataClients,
         music_metadata: Arc<dyn IMusicMetadataService>,
         soulseek_link: Arc<dyn ISoulseekLink>,
+        downloads: DownloadDeps<'_>,
     ) -> Acquisition {
-        // STUB(4-C): the real service replaces this when it lands.
-        let download_service: Arc<dyn IDownloadService> = Arc::new(NotPortedDownloadService);
-
         let track_acquisition_queue = Arc::new(TrackAcquisitionQueue::new());
         let acquisition_activity = Arc::new(AcquisitionActivity::new(track_acquisition_queue.clone()));
-        acquisition_activity.set_downloads(&download_service);
         let acquisition_tracker = Arc::new(AcquisitionTracker::new(
             Some(TrackerServices {
                 identity: navidrome.navidrome_identity.clone(),
@@ -469,6 +491,50 @@ impl Acquisition {
             lidarr_album_claims.clone(),
             Some(clients.music_brainz.clone()),
         ));
+
+        // The download service (4-C): the base's service-provider lookups are the services built
+        // above, and the Soulseek backend's optional ones the link and Lidarr's two.
+        let (download_base, _) = SoulseekDownloadService::build(
+            DownloadCore {
+                settings: settings.clone(),
+                local_library: navidrome.local_library.clone(),
+                metadata: music_metadata.clone(),
+                navidrome_identity: navidrome.navidrome_identity.clone(),
+                history: stores.download_history.clone(),
+                notifications: integrations.notifications.clone(),
+            },
+            DownloadServices {
+                concurrency: Some(stores.download_concurrency.clone()),
+                tracker: Some(acquisition_tracker.clone()),
+                ownership: Some(library_ownership.clone()),
+                upgrade_queue: Some(upgrade_queue.clone()),
+                upgrade_sources: Some(upgrade_sources.clone()),
+                action_journal: Some(stores.library_action_journal.clone()),
+                review_queue: Some(Arc::new(NoticeReviews(downloads.notice_queue.clone()))),
+                // PlaylistSyncService is never registered (see known-diffs).
+                playlist_sync: None,
+                deezer: Some(clients.deezer_metadata.clone()),
+                music_brainz: Some(clients.music_brainz.clone()),
+                release_identifier: Some(downloads.tagging.release_identifier.clone()),
+                loudness_meter: Some(downloads.tagging.loudness_meter.clone()),
+                cover_resolver: Some(downloads.tagging.download_cover_resolver.clone()),
+                lyrics: Some(downloads.lyrics.clone()),
+                last_fm: Some(integrations.last_fm.clone()),
+            },
+            SoulseekDownloadParts {
+                slskd: downloads.soulseek_client.clone(),
+                rejected_peers: stores.rejected_peers.clone(),
+                verification: downloads.tagging.download_verification.clone(),
+                youtube: stores.you_tube_resolver.clone(),
+                id_registry: stores.external_id_registry.clone(),
+                soulseek_link: Some(soulseek_link.clone()),
+                lidarr_imports: Some(lidarr_import_handoff.clone()),
+                lidarr_fetcher: Some(lidarr_track_fetcher.clone()),
+            },
+        );
+        let download_service: Arc<dyn IDownloadService> = download_base;
+        acquisition_activity.set_downloads(&download_service);
+
         let lidarr_hearts: Arc<dyn ILidarrHeartAcquisitionService> =
             Arc::new(LidarrHeartAcquisitionService::new(
                 lidarr_client.clone(),
@@ -1031,9 +1097,8 @@ impl LibraryActions {
         acquisition: &Acquisition,
         soulseek_link: Arc<dyn ISoulseekLink>,
         spectrum: Arc<SpectrumAnalyzer>,
+        notice_queue: Arc<NoticeQueue>,
     ) -> Self {
-        // STUB(5-B): the real queue, with its file, replaces this when 5-B lands.
-        let notice_queue = Arc::new(NoticeQueue::new());
         let quarantine = Arc::new(LibraryActionQuarantine::new(settings.clone()));
         let executor = Arc::new(LibraryActionExecutor::new(LibraryActionExecutorParts {
             resolver: navidrome.navidrome_song_path_resolver.clone(),
@@ -1143,6 +1208,9 @@ impl AppState {
         lyrics.sidecar_writer.set_library(navidrome.local_library.clone());
         let lyrics_library = lyrics.library_job(&settings, Some(&config_dir), &navidrome);
         lyrics_library.register_workers(&workers);
+        // STUB(5-B): the real queue, with its file, replaces this when 5-B lands. Built before the
+        // download service, which asks people through it (`NoticeQueue.AddReview`).
+        let notice_queue = Arc::new(NoticeQueue::new());
         let acquisition = Acquisition::build(
             &settings,
             &stores,
@@ -1151,6 +1219,12 @@ impl AppState {
             &clients,
             soulseek.metadata.clone(),
             soulseek.link.clone(),
+            DownloadDeps {
+                tagging: &tagging,
+                lyrics: &lyrics.sidecar_writer,
+                soulseek_client: &soulseek.client,
+                notice_queue: &notice_queue,
+            },
         );
         acquisition.register_workers(&workers, &settings, &stores, &integrations.notifications);
         let library_actions = LibraryActions::build(
@@ -1160,6 +1234,7 @@ impl AppState {
             &acquisition,
             soulseek.link.clone(),
             tagging.spectrum_analyzer.clone(),
+            notice_queue.clone(),
         );
         library_actions.register_workers(&workers);
         let radio = Radio::build(
@@ -1286,6 +1361,15 @@ impl AppState {
     pub fn for_tests(settings: AppSettings) -> AppState {
         let store = SettingsStore::for_tests(settings);
         let config_dir = std::env::temp_dir().join(format!("octo-test-{}", uuid::Uuid::new_v4().simple()));
+        // The download service makes its music folder when it is built. Without a configured one
+        // that is "./downloads" beside the test binary's working directory, so a handler test's
+        // goes in its own temp folder instead.
+        if store.raw("Library:DownloadPath").is_none() {
+            store.set_raw(
+                "Library:DownloadPath",
+                Some(&config_dir.join("music").to_string_lossy()),
+            );
+        }
         let restart_tracker = Arc::new(RestartTracker::new(&store));
         let settings = Arc::new(store);
         let stores = Stores::build(&settings, &config_dir);
@@ -1303,6 +1387,9 @@ impl AppState {
         lyrics.sidecar_writer.set_library(navidrome.local_library.clone());
         let lyrics_library = lyrics.library_job(&settings, None, &navidrome);
         // No workers: the acquisition worker, the resumer and the cache cleanup are not run.
+        // STUB(5-B): the real queue, with its file, replaces this when 5-B lands. Built before the
+        // download service, which asks people through it (`NoticeQueue.AddReview`).
+        let notice_queue = Arc::new(NoticeQueue::new());
         let acquisition = Acquisition::build(
             &settings,
             &stores,
@@ -1311,6 +1398,12 @@ impl AppState {
             &clients,
             soulseek.metadata.clone(),
             soulseek.link.clone(),
+            DownloadDeps {
+                tagging: &tagging,
+                lyrics: &lyrics.sidecar_writer,
+                soulseek_client: &soulseek.client,
+                notice_queue: &notice_queue,
+            },
         );
         // Library actions keep their journal in the test's config directory; no worker is run.
         let library_actions = LibraryActions::build(
@@ -1320,6 +1413,7 @@ impl AppState {
             &acquisition,
             soulseek.link.clone(),
             tagging.spectrum_analyzer.clone(),
+            notice_queue.clone(),
         );
         // The radio's state files sit in the test's config directory; its workers are not run.
         let radio = Radio::build(

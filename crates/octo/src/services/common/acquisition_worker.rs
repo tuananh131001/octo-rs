@@ -168,3 +168,7 @@ impl AcquisitionWorker {
         });
     }
 }
+
+#[cfg(test)]
+#[path = "acquisition_worker_tests.rs"]
+mod tests;

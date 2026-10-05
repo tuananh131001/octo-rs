@@ -243,23 +243,30 @@ fn is_rejected(error: &anyhow::Error) -> Option<&ReplacementRejectedException> {
 }
 
 /// `FileNotFoundException`: a search that found nothing usable. A download reports it as an
-/// `io::Error` of kind `NotFound`, or Lidarr's `FileNotFound`.
+/// `io::Error` of kind `NotFound`, Lidarr's `FileNotFound`, or the download base's
+/// `FileNotFoundException` (a file gone before it could be kept).
 fn is_file_not_found(error: &anyhow::Error) -> bool {
     error
         .downcast_ref::<std::io::Error>()
         .is_some_and(|e| e.kind() == std::io::ErrorKind::NotFound)
+        || error
+            .downcast_ref::<crate::services::common::FileNotFoundException>()
+            .is_some()
         || matches!(
             error.downcast_ref::<LidarrError>(),
             Some(LidarrError::FileNotFound(_))
         )
 }
 
-/// `InvalidOperationException`, as Lidarr's client and fetcher report it.
+/// `InvalidOperationException`, as Lidarr's client and fetcher report it, and as the Soulseek
+/// download service does (no artist or title, no Lidarr, no download path).
 fn is_invalid_operation(error: &anyhow::Error) -> bool {
     matches!(
         error.downcast_ref::<LidarrError>(),
         Some(LidarrError::InvalidOperation(_))
-    )
+    ) || error
+        .downcast_ref::<crate::services::soulseek::soulseek_download_service::InvalidOperationException>()
+        .is_some()
 }
 
 /// `Path.GetFileName`.
