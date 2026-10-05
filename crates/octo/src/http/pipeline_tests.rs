@@ -567,7 +567,7 @@ async fn static_files_answer_only_get_and_head() {
 
 #[tokio::test]
 async fn the_real_admin_ui_is_served_with_the_c_sharp_etags() {
-    let repo = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../octo");
+    let repo = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let roots = StaticRoots::resolve(None, None, None, Some(&repo));
     let assets = StaticAssets::load(&roots);
     assets.warm_all();

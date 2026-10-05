@@ -23,10 +23,10 @@ use super::text::lower_invariant;
 use crate::config::{ConfigNode, ConfigTree};
 use crate::json::dom::Node;
 
-/// `octo/appsettings.json`, compiled in (the C# image shipped it beside the binary).
+/// `assets/appsettings.json` (the C# app's `appsettings.json`), compiled in; the C# image shipped it beside the binary.
 pub const APPSETTINGS_JSON: &str = include_str!("../../assets/appsettings.json");
 
-/// `octo/appsettings.Development.json`, layered over it when the environment is Development.
+/// `assets/appsettings.Development.json`, layered over it when the environment is Development.
 pub const APPSETTINGS_DEVELOPMENT_JSON: &str = include_str!("../../assets/appsettings.Development.json");
 
 /// Where the C# build always read settings.json from.

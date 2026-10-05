@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="octo/Assets/octo_logo.png" alt="Octo, self-hosted music discovery for Navidrome" width="280" />
+<img src="crates/octo/Assets/octo_logo.png" alt="Octo, self-hosted music discovery for Navidrome" width="280" />
 
 # Octo
 

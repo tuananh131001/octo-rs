@@ -3,7 +3,8 @@
 // Rust renderer can be compared with the C# one and not only with the design's Pillow goldens.
 // The fallback fonts are whatever the container sees under /usr/share/fonts, so mount the
 // host's, read-only, and both builds set the same files. From the repo root, with no .NET SDK
-// on the host (it compiles against octo/octo.csproj as octo.Tests, for the internal types):
+// on the host (it compiles against octo/octo.csproj as octo.Tests, for the internal types; since
+// the cutover, restore that tree from csharp-final first, see state-files.md "Regenerating"):
 //
 //   docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -e DOTNET_CLI_HOME=/tmp \
 //     -v "$PWD":/repo -v /usr/share/fonts:/usr/share/fonts:ro \

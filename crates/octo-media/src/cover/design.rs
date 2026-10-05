@@ -1,18 +1,13 @@
 //! The list cover design, shared with the Octo apps, with its fonts and painted backgrounds,
 //! built into the binary as the csproj embedded them (`Octo.CoverDesign.*` resources).
 //!
-//! The files are read from the C# tree for now; the cutover commit moves `Design/` beside this
-//! crate and these paths with it. `Fonts/OFL.txt` (Inter's licence) ships as a file
-//! (`licenses/Inter-OFL.txt`), not inside the binary.
+//! The files live in this crate's `assets/cover-design/`. `Fonts/OFL.txt` (Inter's licence)
+//! ships as a file (`licenses/Inter-OFL.txt` in the image), not inside the binary.
 
-/// Where the design lives until the cutover moves it.
+/// A file of the design, for `include_bytes!` / `include_str!`.
 macro_rules! design_path {
     ($file:expr) => {
-        concat!(
-            env!("CARGO_MANIFEST_DIR"),
-            "/../../octo/Services/CoverArt/Design/",
-            $file
-        )
+        concat!(env!("CARGO_MANIFEST_DIR"), "/assets/cover-design/", $file)
     };
 }
 

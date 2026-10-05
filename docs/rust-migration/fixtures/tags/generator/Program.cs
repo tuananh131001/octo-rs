@@ -5,6 +5,7 @@
 // The Rust test (crates/octo-media/src/tags/fixture_tests.rs) runs the same scenarios with the
 // Rust writer and compares its dump of its own files, and of these files, with these dumps.
 //
+// Since the cutover, restore octo/ from csharp-final first (state-files.md, "Regenerating").
 // Run ../generate.sh from anywhere; it builds this against octo/octo.csproj as octo.Tests (for
 // the internal types) in the .NET 9 SDK image, with no LANG set, as the shipped image runs (the
 // current culture is the invariant one, so a new USLT frame's language is "ivl").

@@ -4,7 +4,9 @@ Read this before porting any part of `octo/` to Rust. The contract documents sit
 [`endpoints.md`](endpoints.md) (routes), [`config.md`](config.md) (settings),
 [`state-files.md`](state-files.md) (files on disk, with byte-exact fixtures in `fixtures/state/`) and
 [`packages.md`](packages.md). The C# code at tag `csharp-final` (commit `15d6840`) is the
-behaviour to match. It is frozen, so never edit anything under `octo/` or `octo.Tests/`.
+behaviour to match. It is frozen. Since the cutover it is no longer in the working tree: read it
+with `git show csharp-final:octo/<path>`, or check it out somewhere else
+(`git worktree add ../octo-csharp csharp-final`).
 
 ## The rule
 
@@ -21,6 +23,17 @@ diverged, saying why. Don't silently "fix" anything.
 | `octo-media` | `tags` (lofty), `audio` (ffmpeg/fpcalc: loudness, spectrum, fingerprint), `cover` (list-cover rendering, cover image files) | `Services/Audio`, `Services/Fingerprint/{AudioFingerprinter,SpectrumAnalyzer}`, `Services/Common/TagWriterExtras`, `Services/CoverArt/{CoverBook,CoverPainter,CoverLayout,CoverFonts,CoverColours,CoverBackgrounds,CoverVeil,CoverImage,CoverFiles}` |
 | `octo-subsonic` | The Subsonic wire format: the XML/JSON response model, request parsing, credentials | `Services/Subsonic/{SubsonicRequestParser,SubsonicCredential}`, and the format-only parts of `SubsonicResponseBuilder` |
 | `octo` | Everything with I/O or service wiring: HTTP clients, stores, workers, the acquisition pipeline, controllers, middleware, `main` | the rest |
+
+Files beside the code that the build or the binary reads:
+
+| Path | What | How it is used |
+|---|---|---|
+| `VERSION` | the release (`2026.10.03.2`) | compiled into `octo_core::VERSION` by `crates/octo-core/build.rs`; `OCTO_VERSION` at build time overrides it |
+| `crates/octo-core/assets/` | the built-in `appsettings.json` and `appsettings.Development.json` | compiled in |
+| `crates/octo-media/assets/cover-design/` | the list-cover design: JSON, Inter fonts, painted backgrounds | compiled in; `Fonts/OFL.txt` ships as `/app/licenses/Inter-OFL.txt` |
+| `crates/octo/wwwroot/admin/` | the admin UI (HTML/JS/CSS, no build step) | served from disk: `/app/wwwroot` in the image, this directory in a debug build |
+| `crates/octo/Assets/` | the logo and social images | served at `/Assets/...` and used as the cover watermark: `/app/Assets` in the image |
+| `crates/octo-media/testdata/cover-golden/` | the cover goldens shared with the Octo apps | tests only |
 
 Modules mirror the C# namespaces and file names, in snake case:
 `Services/Common/SongIdentity.cs` → `octo_core::common::song_identity`, and
@@ -134,7 +147,8 @@ pull in `mockall` unless a fake would be much bigger than the test.
   the assert message.
 - Unit tests go in a `#[cfg(test)] mod tests` at the bottom of the module, or in a sibling
   `tests.rs` (`#[cfg(test)] #[path = "song_identity_tests.rs"] mod tests;`) when they are long.
-- Shared fixtures: `docs/song-identity-cases.json`, `octo.Tests/CoverGolden/samples.json`, and
+- Shared fixtures: `docs/song-identity-cases.json`,
+  `crates/octo-media/testdata/cover-golden/samples.json`, and
   `docs/rust-migration/fixtures/state/*`. Read them from the repo through
   `env!("CARGO_MANIFEST_DIR")` with `../../` paths. Don't copy them.
 - Tests that need ffmpeg or fpcalc skip themselves with a printed reason when the tool is

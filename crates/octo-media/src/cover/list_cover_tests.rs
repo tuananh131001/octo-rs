@@ -432,7 +432,7 @@ impl Fixture {
 }
 
 fn logo() -> PathBuf {
-    repo("octo/Assets/octo_logo.png")
+    repo("crates/octo/Assets/octo_logo.png")
 }
 
 fn service_with(covers: Option<PathBuf>) -> CoverArtService {

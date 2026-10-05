@@ -46,12 +46,12 @@ pub struct StaticRoots {
 impl StaticRoots {
     /// `OCTO_WWWROOT` / `OCTO_ASSETS` when set; else `wwwroot/` and `Assets/` beside the
     /// executable (the C# image's `AppContext.BaseDirectory` layout); else, in debug builds, the
-    /// C# project's own `octo/wwwroot` and `octo/Assets` in this repository.
+    /// crate's own `crates/octo/wwwroot` and `crates/octo/Assets` in this repository.
     pub fn from_env() -> StaticRoots {
         let exe_dir = std::env::current_exe()
             .ok()
             .and_then(|p| p.parent().map(Path::to_path_buf));
-        let repo = cfg!(debug_assertions).then(|| Path::new(env!("CARGO_MANIFEST_DIR")).join("../../octo"));
+        let repo = cfg!(debug_assertions).then(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")));
         Self::resolve(
             std::env::var(WWWROOT_ENV).ok(),
             std::env::var(ASSETS_ENV).ok(),

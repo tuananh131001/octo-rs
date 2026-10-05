@@ -412,6 +412,18 @@ Map from external id to the local file Octo downloaded. It lives **in the music 
 
 ## Regenerating the fixtures
 
+The three C# generators (`fixtures/generator/`, `fixtures/covers/generator/`,
+`fixtures/tags/generator/`) build against the C# app, which left this branch at the cutover.
+Restore it from its tag first, as untracked files (`.gitignore` covers them), and remove it
+again afterwards:
+
+```sh
+# from the repo root
+git archive csharp-final octo octo.Tests | tar -x
+# ... run a generator as below ...
+rm -rf octo octo.Tests
+```
+
 The generator is in `fixtures/generator/` (`gen.csproj` + `Program.cs`). It compiles against `octo/octo.csproj` under the assembly name `octo.Tests`, so `InternalsVisibleTo` gives it the internal types, and it reaches private nested records (`ExternalIdRegistry.Persisted`, `BrowseSessionStore.Saved`, `ITunesCoverArtLookup.CachedMaster`, `GeneratedPlaylistService.StateDocument`) by reflection. With no .NET SDK on the host:
 
 ```sh

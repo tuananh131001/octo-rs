@@ -31,10 +31,10 @@ COPY --from=planner /src/recipe.json recipe.json
 RUN cargo chef cook --release --locked --package octo --recipe-path recipe.json
 
 COPY Cargo.toml Cargo.lock ./
+# Sources, plus what the binary compiles in: the list-cover design (JSON, Inter fonts,
+# painted backgrounds) under crates/octo-media/assets and the built-in appsettings under
+# crates/octo-core/assets.
 COPY crates crates
-# The list-cover design (JSON, Inter fonts, painted backgrounds) is compiled into the
-# binary from the C# tree until the cutover moves it beside octo-media.
-COPY octo/Services/CoverArt/Design octo/Services/CoverArt/Design
 
 # The release the dashboard and User-Agent show: the VERSION file, compiled in by
 # octo-core's build.rs, so a bump rebuilds octo-core and everything above it.
@@ -66,10 +66,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # The binary looks for wwwroot/ and Assets/ beside itself (StaticRoots::from_env, and the
 # cover service's logo lookup), as the C# app looked in its publish root.
 COPY --from=build /out/octo /app/octo
-COPY octo/wwwroot /app/wwwroot
-COPY octo/Assets /app/Assets
+COPY crates/octo/wwwroot /app/wwwroot
+COPY crates/octo/Assets /app/Assets
 # Inter is compiled into the binary; its licence ships beside it.
-COPY octo/Services/CoverArt/Design/Fonts/OFL.txt /app/licenses/Inter-OFL.txt
+COPY crates/octo-media/assets/cover-design/Fonts/OFL.txt /app/licenses/Inter-OFL.txt
 
 # No version label here: the published image gets org.opencontainers.image.version (and the
 # rest) from docker.yml's metadata step, and the release itself is in the binary.

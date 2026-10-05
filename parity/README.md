@@ -103,7 +103,7 @@ python3 parity/parity.py diff --mode bytes parity/recordings/csharp /tmp/parity/
 
 ### Hard-coded HTTPS upstreams
 
-Octo calls these with fixed `https://` URLs (from `grep -rn 'https://' octo/`): `api.deezer.com`
+Octo calls these with fixed `https://` URLs (from `grep -rn 'https://' crates/`): `api.deezer.com`
 (plus the `*.dzcdn.net` image CDN), `itunes.apple.com` (and `is1-ssl.mzstatic.com`),
 `musicbrainz.org`, `coverartarchive.org`, `api.acoustid.org`, `ws.audioscrobbler.com` and
 `www.last.fm`, `lrclib.net`, `lyrics.kugou.com`, `mobileservice.kugou.com`, `music.163.com`,
