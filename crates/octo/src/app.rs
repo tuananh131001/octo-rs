@@ -53,6 +53,7 @@ use crate::services::last_fm::{
     LastFmRadioStreamSessionStore, LastFmRadioTrackCache, LastFmRadioWarmupService, LastFmScrobbleService,
     LastFmService, RandomRadioTuneInSelector,
 };
+use crate::services::last_fm::{ILastFmRadioAudioTranscoder, IRadioTuneInSelector};
 use crate::services::library::GeneratedPlaylistService;
 use crate::services::library::{
     HeartOwnership, LibraryActionExecutor, LibraryActionExecutorParts, LibraryActionJournal,
@@ -238,6 +239,9 @@ pub struct AppInner {
     pub soulseek_link: Arc<SoulseekLink>,
     /// `AddSingleton<IMusicMetadataService, SoulseekMetadataService>()`.
     pub music_metadata: Arc<SoulseekMetadataService>,
+    /// `IMusicMetadataService` as the controllers resolve it: `music_metadata` in production,
+    /// a test's fake in handler tests (the C# factories swapped the registration).
+    pub metadata_service: Arc<dyn IMusicMetadataService>,
     /// `IDownloadService` (`SoulseekDownloadService`).
     /// STUB(4-C): `NotPortedDownloadService` until 4-C lands.
     pub download_service: Arc<dyn IDownloadService>,
@@ -345,9 +349,11 @@ impl Acquisition {
         clients: &MetadataClients,
         music_metadata: Arc<dyn IMusicMetadataService>,
         soulseek_link: Arc<dyn ISoulseekLink>,
+        download_service: Option<Arc<dyn IDownloadService>>,
     ) -> Acquisition {
         // STUB(4-C): the real service replaces this when it lands.
-        let download_service: Arc<dyn IDownloadService> = Arc::new(NotPortedDownloadService);
+        let download_service: Arc<dyn IDownloadService> =
+            download_service.unwrap_or_else(|| Arc::new(NotPortedDownloadService));
 
         let track_acquisition_queue = Arc::new(TrackAcquisitionQueue::new());
         let acquisition_activity = Arc::new(AcquisitionActivity::new(track_acquisition_queue.clone()));
@@ -505,6 +511,7 @@ impl Integrations {
         settings: &Arc<SettingsStore>,
         settings_writer: &Arc<SettingsFileWriter>,
         deezer: &Arc<DeezerMetadataService>,
+        last_fm_base_url: Option<&str>,
     ) -> Self {
         let notifications_client = NotificationService::client();
         // IEnumerable<INotificationSink>, so adding a transport is one line here.
@@ -513,7 +520,10 @@ impl Integrations {
             Arc::new(DiscordSink::new(notifications_client, Arc::clone(settings))),
         ];
         Self {
-            last_fm: Arc::new(LastFmService::new(Arc::clone(settings))),
+            last_fm: Arc::new(match last_fm_base_url {
+                Some(url) => LastFmService::with_base_url(Arc::clone(settings), url),
+                None => LastFmService::new(Arc::clone(settings)),
+            }),
             last_fm_scrobbles: Arc::new(LastFmScrobbleService::new(
                 Arc::clone(settings),
                 Arc::clone(settings_writer),
@@ -608,10 +618,19 @@ struct Stores {
 
 impl Stores {
     fn build(settings: &Arc<SettingsStore>, config_dir: &Path) -> Stores {
+        Self::build_with(settings, config_dir, None)
+    }
+
+    /// `registry`: a test's own registry in place of the one over `external-ids.json`.
+    fn build_with(
+        settings: &Arc<SettingsStore>,
+        config_dir: &Path,
+        registry: Option<Arc<ExternalIdRegistry>>,
+    ) -> Stores {
         let ttl_settings = settings.clone();
-        let external_id_registry = Arc::new(ExternalIdRegistry::new(Some(
-            config_dir.join("external-ids.json"),
-        )));
+        let external_id_registry = registry.unwrap_or_else(|| {
+            Arc::new(ExternalIdRegistry::new(Some(config_dir.join("external-ids.json"))))
+        });
         Stores {
             download_history: Arc::new(DownloadHistoryService::new(
                 config_dir.join("downloads-history.json"),
@@ -684,12 +703,21 @@ struct MetadataClients {
 impl MetadataClients {
     /// `itunes_cache`: where the iTunes matches persist, or None to keep them in memory only.
     fn build(settings: &Arc<SettingsStore>, itunes_cache: Option<PathBuf>) -> Self {
+        Self::build_with(settings, itunes_cache, None)
+    }
+
+    /// `deezer_base_url`: a test's mock server in place of api.deezer.com.
+    fn build_with(
+        settings: &Arc<SettingsStore>,
+        itunes_cache: Option<PathBuf>,
+        deezer_base_url: Option<&str>,
+    ) -> Self {
         let deezer_rate_limiter = Arc::new(DeezerRateLimiter::new());
         let deezer_client = Arc::new(DeezerRateLimitHandler::new(Arc::clone(&deezer_rate_limiter)));
-        let deezer_metadata = Arc::new(DeezerMetadataService::new(
-            Arc::clone(&deezer_client),
-            Arc::clone(settings),
-        ));
+        let deezer_metadata = Arc::new(match deezer_base_url {
+            Some(base) => DeezerMetadataService::with_base_url(Arc::clone(&deezer_client), Arc::clone(settings), base),
+            None => DeezerMetadataService::new(Arc::clone(&deezer_client), Arc::clone(settings)),
+        });
         let acoust_id_rate_limiter = Arc::new(AcoustIdRateLimiter::new());
         let acoust_id = Arc::new(AcoustIdClient::new(Arc::new(AcoustIdRateLimitHandler::new(
             Arc::clone(&acoust_id_rate_limiter),
@@ -866,6 +894,7 @@ impl Radio {
         integrations: &Integrations,
         music_metadata: Arc<dyn IMusicMetadataService>,
         downloads: Arc<dyn IDownloadService>,
+        overrides: &TestServices,
     ) -> Radio {
         let state = Arc::new(LastFmRadioStateStore::new(
             config_dir.join("lastfm-radio-state.json"),
@@ -874,7 +903,10 @@ impl Radio {
         ));
         let refresh_queue = Arc::new(LastFmRadioRefreshQueue::new());
         let sessions = Arc::new(LastFmRadioStreamSessionStore::new());
-        let cache = Arc::new(LastFmRadioTrackCache::new());
+        let cache = Arc::new(match &overrides.radio_cache_dir {
+            Some(dir) => LastFmRadioTrackCache::with_root(dir.clone()),
+            None => LastFmRadioTrackCache::new(),
+        });
         let recommendations = Arc::new(LastFmRadioRecommendationService::new(
             integrations.last_fm.clone(),
             state.clone(),
@@ -886,14 +918,20 @@ impl Radio {
             library: navidrome.local_library.clone(),
             proxy: navidrome.subsonic_proxy.clone(),
             downloads,
-            transcoder: Arc::new(FfmpegLastFmRadioAudioTranscoder),
+            transcoder: overrides
+                .radio_transcoder
+                .clone()
+                .unwrap_or_else(|| Arc::new(FfmpegLastFmRadioAudioTranscoder)),
             cache: cache.clone(),
             sessions: sessions.clone(),
             registry: stores.external_id_registry.clone(),
             metadata: music_metadata,
             queues: stores.radio_queues.clone(),
             refresh_queue: refresh_queue.clone(),
-            tune_in: Arc::new(RandomRadioTuneInSelector),
+            tune_in: overrides
+                .radio_tune_in
+                .clone()
+                .unwrap_or_else(|| Arc::new(RandomRadioTuneInSelector)),
             last_fm: Some(integrations.last_fm.clone()),
             listen_brainz: Some(integrations.listen_brainz.clone()),
             last_fm_scrobbles: Some(integrations.last_fm_scrobbles.clone()),
@@ -1011,6 +1049,32 @@ impl LibraryActions {
     }
 }
 
+/// What a handler test swaps for fakes, as the C# `WebApplicationFactory`s did in
+/// `ConfigureServices`. Anything left `None` is the production service.
+#[derive(Default)]
+pub struct TestServices {
+    /// `IMusicMetadataService` (a `Mock<IMusicMetadataService>` in C#).
+    pub metadata: Option<Arc<dyn IMusicMetadataService>>,
+    /// Where `LastFmService` sends its calls (the fake `ws.audioscrobbler.com`).
+    pub last_fm_base_url: Option<String>,
+    /// `ILastFmRadioAudioTranscoder`.
+    pub radio_transcoder: Option<Arc<dyn ILastFmRadioAudioTranscoder>>,
+    /// `IRadioTuneInSelector`.
+    pub radio_tune_in: Option<Arc<dyn IRadioTuneInSelector>>,
+    /// `LastFmRadioTrackCache`'s folder.
+    pub radio_cache_dir: Option<PathBuf>,
+    /// The config folder the state files go in (a fresh temp folder when `None`).
+    pub config_dir: Option<PathBuf>,
+    /// Where `DeezerMetadataService` sends its calls (the fake `api.deezer.com`).
+    pub deezer_base_url: Option<String>,
+    /// `ExternalIdRegistry`, when a test's own metadata service shares it.
+    pub external_id_registry: Option<Arc<ExternalIdRegistry>>,
+    /// Raw configuration keys (`IConfiguration[key]`), such as `YouTube:ShimUrl`.
+    pub raw_settings: Vec<(String, String)>,
+    /// `IDownloadService` (the real one is task 4-C's).
+    pub download_service: Option<Arc<dyn IDownloadService>>,
+}
+
 impl AppInner {
     /// `IHostApplicationLifetime.StopApplication()`: begins a graceful shutdown.
     pub fn stop_application(&self) {
@@ -1059,8 +1123,9 @@ impl AppState {
             async move { itunes.run_flush_loop(stopping).await }
         });
         let settings_writer = Arc::new(SettingsFileWriter::new(settings_path));
-        let integrations = Integrations::build(&settings, &settings_writer, &clients.deezer_metadata);
+        let integrations = Integrations::build(&settings, &settings_writer, &clients.deezer_metadata, None);
         let soulseek = SoulseekServices::build(&settings, &stores, &clients, &integrations.last_fm);
+        let metadata_service: Arc<dyn IMusicMetadataService> = soulseek.metadata.clone();
         let navidrome = NavidromeServices::build(&settings, &stores, true, vec![soulseek.validator]);
         lyrics.sidecar_writer.set_library(navidrome.local_library.clone());
         let lyrics_library = lyrics.library_job(&settings, Some(&config_dir), &navidrome);
@@ -1071,8 +1136,9 @@ impl AppState {
             &navidrome,
             &integrations,
             &clients,
-            soulseek.metadata.clone(),
+            metadata_service.clone(),
             soulseek.link.clone(),
+            None,
         );
         acquisition.register_workers(&workers, &settings, &stores, &integrations.notifications);
         let library_actions = LibraryActions::build(
@@ -1089,13 +1155,14 @@ impl AppState {
             &stores,
             &navidrome,
             &integrations,
-            soulseek.metadata.clone(),
+            metadata_service.clone(),
             acquisition.download_service.clone(),
+            &TestServices::default(),
         );
         radio.register_workers(&workers);
         let sync_catalog = Arc::new(SyncCatalogService::new(
             navidrome.subsonic_proxy.clone(),
-            soulseek.metadata.clone(),
+            metadata_service.clone(),
             stores.external_id_registry.clone(),
             settings.clone(),
             Clock::system(),
@@ -1157,6 +1224,7 @@ impl AppState {
             soulseek_client: soulseek.client,
             soulseek_link: soulseek.link,
             music_metadata: soulseek.metadata,
+            metadata_service,
             download_service: acquisition.download_service,
             lidarr_client: acquisition.lidarr_client,
             lidarr_album_claims: acquisition.lidarr_album_claims,
@@ -1198,20 +1266,40 @@ impl AppState {
     /// and a settings writer, the update folder and the state files pointed at a fresh directory in the temp
     /// directory that nothing creates until a test writes. No workers are registered.
     pub fn for_tests(settings: AppSettings) -> AppState {
+        Self::for_tests_with(settings, TestServices::default())
+    }
+
+    /// [`AppState::for_tests`] with some services swapped for a test's fakes.
+    pub fn for_tests_with(settings: AppSettings, overrides: TestServices) -> AppState {
         let store = SettingsStore::for_tests(settings);
-        let config_dir = std::env::temp_dir().join(format!("octo-test-{}", uuid::Uuid::new_v4().simple()));
+        for (key, value) in &overrides.raw_settings {
+            store.set_raw(key, Some(value));
+        }
+        let config_dir = overrides
+            .config_dir
+            .clone()
+            .unwrap_or_else(|| std::env::temp_dir().join(format!("octo-test-{}", uuid::Uuid::new_v4().simple())));
         let restart_tracker = Arc::new(RestartTracker::new(&store));
         let settings = Arc::new(store);
-        let stores = Stores::build(&settings, &config_dir);
+        let stores = Stores::build_with(&settings, &config_dir, overrides.external_id_registry.clone());
         // The clients point at the real hosts but ask nothing until a test calls them, and
         // the iTunes matches stay in memory.
-        let clients = MetadataClients::build(&settings, None);
+        let clients = MetadataClients::build_with(&settings, None, overrides.deezer_base_url.as_deref());
         let lyrics = Lyrics::build(&settings, None);
         // The Last.fm, ListenBrainz and notification clients point at the real hosts too, and
         // the default settings give none of them a key, token or URL to use.
         let settings_writer = Arc::new(SettingsFileWriter::new(config_dir.join("settings.json")));
-        let integrations = Integrations::build(&settings, &settings_writer, &clients.deezer_metadata);
+        let integrations = Integrations::build(
+            &settings,
+            &settings_writer,
+            &clients.deezer_metadata,
+            overrides.last_fm_base_url.as_deref(),
+        );
         let soulseek = SoulseekServices::build(&settings, &stores, &clients, &integrations.last_fm);
+        let metadata_service: Arc<dyn IMusicMetadataService> = overrides
+            .metadata
+            .clone()
+            .unwrap_or_else(|| soulseek.metadata.clone());
         let navidrome = NavidromeServices::build(&settings, &stores, false, vec![soulseek.validator]);
         lyrics.sidecar_writer.set_library(navidrome.local_library.clone());
         let lyrics_library = lyrics.library_job(&settings, None, &navidrome);
@@ -1222,8 +1310,9 @@ impl AppState {
             &navidrome,
             &integrations,
             &clients,
-            soulseek.metadata.clone(),
+            metadata_service.clone(),
             soulseek.link.clone(),
+            overrides.download_service.clone(),
         );
         // Library actions keep their journal in the test's config directory; no worker is run.
         let library_actions = LibraryActions::build(
@@ -1240,12 +1329,13 @@ impl AppState {
             &stores,
             &navidrome,
             &integrations,
-            soulseek.metadata.clone(),
+            metadata_service.clone(),
             acquisition.download_service.clone(),
+            &overrides,
         );
         let sync_catalog = Arc::new(SyncCatalogService::new(
             navidrome.subsonic_proxy.clone(),
-            soulseek.metadata.clone(),
+            metadata_service.clone(),
             stores.external_id_registry.clone(),
             settings.clone(),
             Clock::system(),
@@ -1305,6 +1395,7 @@ impl AppState {
             soulseek_client: soulseek.client,
             soulseek_link: soulseek.link,
             music_metadata: soulseek.metadata,
+            metadata_service,
             download_service: acquisition.download_service,
             lidarr_client: acquisition.lidarr_client,
             lidarr_album_claims: acquisition.lidarr_album_claims,
