@@ -8,7 +8,7 @@
 Play songs you don't own yet, and keep the ones you like as FLAC.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![.NET 9](https://img.shields.io/badge/.NET-9.0-512BD4)](https://dotnet.microsoft.com/)
+[![Rust 1.99](https://img.shields.io/badge/Rust-1.99-B7410E?logo=rust)](https://www.rust-lang.org/)
 [![Docker Compose](https://img.shields.io/badge/docker-compose-2496ED)](https://docs.docker.com/compose/)
 [![CI](https://github.com/winters27/octo/actions/workflows/ci.yml/badge.svg)](https://github.com/winters27/octo/actions/workflows/ci.yml)
 
@@ -700,11 +700,20 @@ Yes. Existing snapshots are served first; Starter and pinned stations can fall b
 
 ### Development
 
+Octo is a Rust workspace. `rust-toolchain.toml` pins the toolchain, which rustup installs on first use. Up to release 2026.10.03.2 Octo was an ASP.NET Core app; that code is kept at the [`csharp-final`](https://github.com/winters27/octo/tree/csharp-final) tag.
+
 ```bash
-dotnet restore
-dotnet build
-dotnet test
+cargo build
+cargo test --workspace
+cargo fmt --all --check
+cargo clippy --workspace --tests -- -D warnings
+cargo deny check            # after: cargo install cargo-deny --locked
+docker build -t octo:dev .  # the image docker-compose.yml builds
 ```
+
+Install ffmpeg, fpcalc (`libchromaprint-tools`) and the Noto CJK, Symbola and DejaVu fonts to run every test, as CI does. Tests that need a missing tool skip themselves and say why.
+
+The release Octo reports is the `VERSION` file (`2026.MM.DD.N`). Bump it in the commit you tag: the image build refuses a release tag that does not match it.
 
 To build and preview the admin UI locally in an isolated Docker container:
 
@@ -718,16 +727,24 @@ Project layout:
 
 | Path | What's there |
 |---|---|
-| `octo/Controllers/` | Subsonic API surface, admin API |
-| `octo/Services/Soulseek/` | slskd client, multi-peer download logic |
-| `octo/Services/Lidarr/` | Lidarr API, album submission, import reconciliation |
-| `octo/Services/YouTube/` | shim HTTP client |
-| `octo/Services/CoverArt/` | Deezer / iTunes / Last.fm aggregator |
-| `octo/Services/LastFm/` | Last.fm client, Radio state/recommendations, in-process refresh queue and worker |
-| `octo/Services/Subsonic/` | request parsing, response building |
-| `octo/Services/Admin/` | settings file writer (atomic, deep-merge) |
-| `octo/wwwroot/admin/` | the admin UI (vanilla JS, hand-rolled CSS, no build step) |
-| `yt-dlp-shim/` | Python/Flask sidecar (~200 lines) |
+| `crates/octo/` | the server binary: HTTP pipeline, middleware, background workers |
+| `crates/octo/src/controllers/` | Subsonic API surface, admin API |
+| `crates/octo/src/services/soulseek/` | slskd client, multi-peer download logic |
+| `crates/octo/src/services/lidarr/` | Lidarr API, album submission, import reconciliation |
+| `crates/octo/src/services/you_tube/` | shim HTTP client |
+| `crates/octo/src/services/cover_art/` | Deezer / iTunes / Last.fm aggregator, cover upgrades |
+| `crates/octo/src/services/last_fm/` | Last.fm client, Radio state/recommendations, in-process refresh queue and worker |
+| `crates/octo/src/services/subsonic/` | the Navidrome proxy, sync catalog, playlists |
+| `crates/octo/src/services/admin/` | settings file writer (atomic, deep-merge) |
+| `crates/octo/wwwroot/admin/` | the admin UI (vanilla JS, hand-rolled CSS, no build step) |
+| `crates/octo/Assets/` | the logo and social images |
+| `crates/octo-core/` | settings, models and pure logic: song identity, matching, tagging plans, lyrics text |
+| `crates/octo-subsonic/` | the Subsonic wire format: request parsing, XML and JSON responses |
+| `crates/octo-media/` | audio tags, ffmpeg/fpcalc tools, list covers and their design |
+| `parity/` | black-box HTTP parity harness against the last C# image |
+| `docs/rust-migration/` | the C# to Rust migration: plan, contracts, reports |
+| `scripts/updater/` | the host-side update helper |
+| `yt-dlp-shim/` | Python/Flask sidecar |
 
 </details>
 

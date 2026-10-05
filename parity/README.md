@@ -22,7 +22,8 @@ python3 parity/parity.py run --image octo-csharp:csharp-final --out /tmp/parity/
 python3 parity/parity.py diff parity/recordings/csharp /tmp/parity/csharp-again
 python3 parity/parity.py diff --mode bytes parity/recordings/csharp /tmp/parity/csharp-again
 
-# The Rust build, once an image exists. A different project and ports let it run beside a C# stack.
+# The Rust build (docker build -t octo-rust:dev .). A different project and ports let it run
+# beside a C# stack.
 python3 parity/parity.py run --image octo-rust:dev --project parity-rust --port 18580 --nd-port 18553 \
     --out /tmp/parity/rust
 python3 parity/parity.py diff parity/recordings/csharp /tmp/parity/rust --report /tmp/parity/rust.txt
@@ -45,6 +46,16 @@ after Octo first answers, default 10), `--keep` on `run` to leave the stack up.
 A run takes about 90 seconds. The stack is capped at roughly 1.4 GB of RAM (`mem_limit` on each
 service) and needs two small images besides Octo: `deluan/navidrome:0.64.2` and
 `python:3.13-alpine`. Nothing is built; nothing is pruned.
+
+**The C# image.** The harness only ever runs a prebuilt `octo-csharp:csharp-final`; nothing in
+`parity/` needs the C# sources, which left this branch at the cutover. If the image is gone,
+rebuild it from the tag (its own Dockerfile, the .NET 9 SDK image) in a scratch worktree:
+
+```sh
+git worktree add /tmp/octo-csharp csharp-final
+docker build -t octo-csharp:csharp-final /tmp/octo-csharp
+git worktree remove /tmp/octo-csharp
+```
 
 **Re-recording the baseline** (only when the corpus, the stubs or the fixtures change):
 
