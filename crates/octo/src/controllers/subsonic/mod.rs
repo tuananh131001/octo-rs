@@ -1,8 +1,7 @@
-//! Port of `Controllers/SubSonicController.cs`: the Subsonic API Octo answers itself, split by
-//! area. Every action is registered at `rest/{name}` and `rest/{name}.view` for GET and POST;
-//! any other method, and every path no action claims, reaches the catch-all
-//! (`http::catch_all`, the controller's `GenericEndpoint`).
-
+//! Port of `Controllers/SubSonicController.cs`: the Subsonic API Octo answers itself
+//! (endpoints.md §3), split by area. Every action is registered at `rest/{name}` and
+//! `rest/{name}.view` for GET and POST; any other method, and every path no action claims,
+//! reaches the catch-all (`http::catch_all`, the controller's `GenericEndpoint`).
 pub mod helpers_6a1;
 pub mod info;
 pub mod internet_radio;
@@ -14,6 +13,31 @@ pub mod similar_songs;
 
 #[cfg(test)]
 mod tests_6a1;
+
+pub mod browsing;
+pub mod extensions;
+pub(crate) mod helpers_6a2;
+pub mod lyrics;
+pub mod media;
+pub mod stars;
+
+pub(crate) mod playlist_names_6a2;
+
+#[cfg(test)]
+mod test_support_6a2;
+
+#[cfg(test)]
+mod browsing_tests_6a2;
+#[cfg(test)]
+mod extensions_tests_6a2;
+#[cfg(test)]
+mod lyrics_endpoint_tests_6a2;
+#[cfg(test)]
+mod media_tests_6a2;
+#[cfg(test)]
+mod rating_tests_6a2;
+#[cfg(test)]
+mod scrobble_tests_6a2;
 
 use axum::routing::get;
 
@@ -96,4 +120,9 @@ pub fn routes() -> RouteSet {
             "getArtistInfo",
             get(info::get_artist_info2).post(info::get_artist_info2),
         )
+        .merge(browsing::routes())
+        .merge(media::routes())
+        .merge(stars::routes())
+        .merge(extensions::routes())
+        .merge(lyrics::routes())
 }
