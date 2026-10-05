@@ -760,3 +760,18 @@ fn get_extension(path: &str) -> &str {
 #[cfg(test)]
 #[path = "download_verification_service_tests.rs"]
 mod tests;
+
+/// The review sweep's check (`FingerprintSweepVerifier` over the service): `VerifyAsync(path,
+/// artist, title)` with no ISRC and `refuseLive` off.
+#[async_trait::async_trait]
+impl crate::services::library::library_review_sweep_worker::SweepVerification
+    for DownloadVerificationService
+{
+    fn is_fingerprinting_enabled(&self) -> bool {
+        DownloadVerificationService::is_fingerprinting_enabled(self)
+    }
+
+    async fn verify(&self, path: &str, artist: Option<&str>, title: Option<&str>) -> VerificationResult {
+        DownloadVerificationService::verify(self, path, artist, title, None, false).await
+    }
+}

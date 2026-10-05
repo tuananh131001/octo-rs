@@ -36,12 +36,13 @@ use crate::services::admin::{BrowseSessionStore, DirectoryBrowser};
 use crate::services::common::{
     AcquisitionActivity, AcquisitionTracker, AcquisitionWorker, CacheCleanupService, CatalogBlanks,
     DownloadConcurrency, DownloadCore, DownloadServices, ExternalSearchService, HeartAcquisitionCoordinator,
-    HeartCoordinatorExtras, MeterPreview, ReviewQueue, SoulseekHoldResumer, SoulseekHoldStore, StarNavidrome,
+    HeartCoordinatorExtras, MeterPreview, SoulseekHoldResumer, SoulseekHoldStore, StarNavidrome,
     StarOnArrival, TrackAcquisitionQueue, TrackerServices,
 };
 use crate::services::cover_art::{
-    CoverArtAggregator, CoverArtArchiveLookup, DeezerCoverArtLookup, DownloadCoverResolver, ICoverArtSource,
-    ITunesCoverArtLookup, LastFmCoverArtLookup,
+    AlbumCoverFinder, CoverArtAggregator, CoverArtArchiveLookup, CoverUpgradeJournal, CoverUpgradeServices,
+    CoverUpgradeStore, CoverUpgradeWorker, DeezerCoverArtLookup, DownloadCoverResolver, IAlbumCoverFinder,
+    ICoverArtSource, ITunesCoverArtLookup, LastFmCoverArtLookup,
 };
 
 use crate::services::fingerprint::{
@@ -58,6 +59,12 @@ use crate::services::last_fm::{
     LastFmService, RandomRadioTuneInSelector,
 };
 use crate::services::library::GeneratedPlaylistService;
+use crate::services::library::library_review_sweep_worker::SweepVerification;
+use crate::services::library::{
+    DuplicateScanWorker, FingerprintSweepVerifier, LibraryReviewSweepParts, LibraryReviewSweepWorker,
+    NoticePlaylistWorker, QualityUpgradeStore, QualityUpgradeWorker, ReviewSweepStore, UpgradeWorker,
+    UpgradeWorkerParts,
+};
 use crate::services::library::{
     HeartOwnership, LibraryActionExecutor, LibraryActionExecutorParts, LibraryActionJournal,
     LibraryActionPlaylistWorker, LibraryActionQuarantine, LibraryActionRatingWorker, LibraryOwnership,
@@ -76,7 +83,7 @@ use crate::services::lyrics::{
     LyricsSidecarWriter, LyricsUndoJournal, lyrics_http,
 };
 use crate::services::metadata::{DeezerMetadataService, DeezerRateLimitHandler, DeezerRateLimiter};
-use crate::services::metadata::{GenreBackfillJournal, GenreBackfillStore};
+use crate::services::metadata::{GenreBackfillJournal, GenreBackfillStore, GenreBackfillWorker};
 use crate::services::notifications::{DiscordSink, INotificationSink, NotificationService, NtfySink};
 use crate::services::soulseek::soulseek_download_service::{SoulseekDownloadParts, SoulseekDownloadService};
 use crate::services::soulseek::soulseek_metadata_service::LastFmTrackLengths;
@@ -143,6 +150,19 @@ pub struct AppInner {
     pub genre_backfill_store: Arc<GenreBackfillStore>,
     /// `GenreBackfillJournal`: the genre undo log, `<config>/genre-backfill-journal.jsonl`.
     pub genre_backfill_journal: Arc<GenreBackfillJournal>,
+    /// `GenreBackfillWorker`, singleton and hosted: its queue is the "GenreBackfillWorker" worker.
+    pub genre_backfill_worker: Arc<GenreBackfillWorker>,
+    /// `AddSingleton<IAlbumCoverFinder, AlbumCoverFinder>()`: the largest cover of an album.
+    pub album_cover_finder: Arc<dyn IAlbumCoverFinder>,
+    /// `CoverUpgradeStore`: the cover upgrade run, `<config>/cover-upgrade.json`, and the found
+    /// covers in `<config>/cover-upgrade-found/`. Its coalescing flush (a timer in C#) is the
+    /// "CoverUpgradeStore" worker.
+    pub cover_upgrade_store: Arc<CoverUpgradeStore>,
+    /// `CoverUpgradeJournal`: the cover undo log, `<config>/cover-upgrade-journal.jsonl`, with the
+    /// old pictures in `<config>/cover-backups/`.
+    pub cover_upgrade_journal: Arc<CoverUpgradeJournal>,
+    /// `CoverUpgradeWorker`, singleton and hosted: its queue is the "CoverUpgradeWorker" worker.
+    pub cover_upgrade_worker: Arc<CoverUpgradeWorker>,
     /// `UpdateHost`: the handshake files with the host updater, `<config>/update/`.
     pub update_host: Arc<UpdateHost>,
     /// `IHostApplicationLifetime`: cancel it (see [`AppInner::stop_application`]) to shut the
@@ -264,7 +284,7 @@ pub struct AppInner {
     /// `StarOnArrival`, built eagerly as `Program.cs` resolved it after `Build()`, so it is
     /// listening when the first download finishes.
     pub star_on_arrival: Arc<StarOnArrival>,
-    /// `UpgradeQueue`. STUB(5-B): an in-memory stand-in until 5-B lands.
+    /// `UpgradeQueue`: songs asked to be found in higher quality, `upgrades.json`.
     pub upgrade_queue: Arc<UpgradeQueue>,
     /// `UpgradeSources`: where Better quality looks, over the Soulseek link.
     pub upgrade_sources: Arc<UpgradeSources>,
@@ -312,7 +332,8 @@ pub struct AppInner {
     /// "LibraryActionRatingWorker" worker. (`LibraryActionPlaylistWorker` is hosted only, and
     /// `LibraryActionPlaylistProvisioner` is scoped: built per request over its proxy.)
     pub library_action_rating_worker: Arc<LibraryActionRatingWorker>,
-    /// `NoticeQueue`. STUB(5-B): in memory, and only what library actions call, until 5-B lands.
+    /// `NoticeQueue`: what Octo asked each person, `notice-queue.json`. Its 5-second flush (a
+    /// timer in C#) is the "NoticeQueue" worker.
     pub notice_queue: Arc<NoticeQueue>,
     /// `ILoudnessMeter` (`LoudnessMeter`): ReplayGain for downloads and the tag preview.
     pub loudness_meter: Arc<dyn ILoudnessMeter>,
@@ -328,6 +349,22 @@ pub struct AppInner {
     pub download_verification: Arc<DownloadVerificationService>,
     /// `DownloadCoverResolver`: the download-time cover chain (#51).
     pub download_cover_resolver: Arc<DownloadCoverResolver>,
+    /// `UpgradeWorker`, singleton AND hosted: the "UpgradeWorker" worker.
+    pub upgrade_worker: Arc<UpgradeWorker>,
+    /// `QualityUpgradeStore`: what the weekly upgrade tried, `quality-upgrade.json`.
+    pub quality_upgrade_store: Arc<QualityUpgradeStore>,
+    /// `QualityUpgradeWorker`, singleton AND hosted: the "QualityUpgradeWorker" worker.
+    pub quality_upgrade_worker: Arc<QualityUpgradeWorker>,
+    /// `DuplicateScanWorker`, singleton AND hosted, so "Scan now" reaches the running instance:
+    /// the "DuplicateScanWorker" worker.
+    pub duplicate_scan_worker: Arc<DuplicateScanWorker>,
+    /// `ReviewSweepStore`: the library sweep's cursor, `review-sweep.json`. Its 5-second flush
+    /// (a timer in C#) is the "ReviewSweepStore" worker.
+    pub review_sweep_store: Arc<ReviewSweepStore>,
+    /// `LibraryReviewSweepWorker`, singleton AND hosted: the "LibraryReviewSweepWorker" worker.
+    pub library_review_sweep_worker: Arc<LibraryReviewSweepWorker>,
+    /// `FingerprintSweepVerifier`: the sweep's check, over the download verification service.
+    pub fingerprint_sweep_verifier: Arc<FingerprintSweepVerifier>,
 }
 
 /// The tagging and verification services of task 4-B, which the download base
@@ -388,28 +425,11 @@ impl Tagging {
 }
 
 /// What the download service (4-C) is built over beyond the acquisition pipeline's own
-/// services: the tagging and verification services, the lyrics writer, slskd's client and the
-/// notice queue it asks people through.
+/// services: the tagging and verification services, the lyrics writer and slskd's client.
 struct DownloadDeps<'a> {
     tagging: &'a Tagging,
     lyrics: &'a Arc<LyricsSidecarWriter>,
     soulseek_client: &'a SoulseekClient,
-    notice_queue: &'a Arc<NoticeQueue>,
-}
-
-/// `NoticeQueue.AddReview` as the download base asks for it.
-struct NoticeReviews(Arc<NoticeQueue>);
-
-impl ReviewQueue for NoticeReviews {
-    fn add_review(
-        &self,
-        owner: &str,
-        local_path: &str,
-        song: &octo_core::models::domain::Song,
-        verdict: &octo_core::fingerprint::VerificationResult,
-    ) -> bool {
-        self.0.add_review(owner, local_path, song, verdict)
-    }
 }
 
 /// The acquisition pipeline of task 4-D, over the services it routes to. The C# broke two
@@ -467,7 +487,7 @@ impl Acquisition {
             settings.clone(),
             Clock::system(),
         );
-        let upgrade_queue = Arc::new(UpgradeQueue::new());
+        let upgrade_queue = stores.upgrade_queue.clone();
         let upgrade_sources = Arc::new(UpgradeSources::new(settings.clone(), Some(soulseek_link.clone())));
         let library_ownership = Arc::new(LibraryOwnership::new(
             settings.clone(),
@@ -510,7 +530,7 @@ impl Acquisition {
                 upgrade_queue: Some(upgrade_queue.clone()),
                 upgrade_sources: Some(upgrade_sources.clone()),
                 action_journal: Some(stores.library_action_journal.clone()),
-                review_queue: Some(Arc::new(NoticeReviews(downloads.notice_queue.clone()))),
+                review_queue: Some(stores.notice_queue.clone()),
                 // PlaylistSyncService is never registered (see known-diffs).
                 playlist_sync: None,
                 deezer: Some(clients.deezer_metadata.clone()),
@@ -745,6 +765,10 @@ struct Stores {
     release_check: Arc<ReleaseCheck>,
     subsonic_response_builder: Arc<SubsonicResponseBuilder>,
     library_action_journal: Arc<LibraryActionJournal>,
+    upgrade_queue: Arc<UpgradeQueue>,
+    quality_upgrade_store: Arc<QualityUpgradeStore>,
+    notice_queue: Arc<NoticeQueue>,
+    review_sweep_store: Arc<ReviewSweepStore>,
 }
 
 impl Stores {
@@ -786,6 +810,12 @@ impl Stores {
             library_action_journal: Arc::new(LibraryActionJournal::with_path(Some(
                 config_dir.join("library-actions.json"),
             ))),
+            upgrade_queue: Arc::new(UpgradeQueue::with_path(Some(config_dir.join("upgrades.json")))),
+            quality_upgrade_store: Arc::new(QualityUpgradeStore::with_path(Some(
+                config_dir.join("quality-upgrade.json"),
+            ))),
+            notice_queue: Arc::new(NoticeQueue::with_path(Some(config_dir.join("notice-queue.json")))),
+            review_sweep_store: Arc::new(ReviewSweepStore::new(Some(config_dir.join("review-sweep.json")))),
         }
     }
 
@@ -806,6 +836,10 @@ impl Stores {
         workers.register("LibraryActionJournal", move |token| {
             journal.clone().run_flusher(token)
         });
+        let notices = self.notice_queue.clone();
+        workers.register("NoticeQueue", move |token| notices.clone().run_flusher(token));
+        let sweep = self.review_sweep_store.clone();
+        workers.register("ReviewSweepStore", move |token| sweep.clone().run_flusher(token));
     }
 }
 
@@ -949,6 +983,105 @@ impl LyricsLibraryJob {
         workers.register("LyricsLibraryWorker", move |stopping| {
             worker.clone().run(stopping)
         });
+    }
+}
+
+/// The genre backfill and the cover upgrade of task 5-D. `config_dir` None keeps their runs and
+/// journals in memory (handler tests).
+struct GenreAndCoverJobs {
+    genre_backfill_store: Arc<GenreBackfillStore>,
+    genre_backfill_journal: Arc<GenreBackfillJournal>,
+    genre_backfill_worker: Arc<GenreBackfillWorker>,
+    album_cover_finder: Arc<dyn IAlbumCoverFinder>,
+    cover_upgrade_store: Arc<CoverUpgradeStore>,
+    cover_upgrade_journal: Arc<CoverUpgradeJournal>,
+    cover_upgrade_worker: Arc<CoverUpgradeWorker>,
+}
+
+impl GenreAndCoverJobs {
+    fn build(
+        settings: &Arc<SettingsStore>,
+        config_dir: Option<&Path>,
+        navidrome: &NavidromeServices,
+        clients: &MetadataClients,
+    ) -> GenreAndCoverJobs {
+        // Genre backfill state lives beside the other config-dir files so a run survives a
+        // restart and can be resumed deliberately rather than silently restarting.
+        let genre_backfill_store = Arc::new(GenreBackfillStore::new(
+            config_dir.map(|dir| dir.join("genre-backfill.json")),
+        ));
+        let genre_backfill_journal = Arc::new(GenreBackfillJournal::new(
+            config_dir.map(|dir| dir.join("genre-backfill-journal.jsonl")),
+        ));
+        let genre_backfill_worker = Arc::new(GenreBackfillWorker::new(
+            genre_backfill_store.clone(),
+            genre_backfill_journal.clone(),
+            settings.clone(),
+            Some(navidrome.local_library.clone()),
+        ));
+
+        // The cover upgrade: same shape as the genre backfill. Its journal keeps every replaced
+        // picture (once per distinct picture, in cover-backups/) so a run can be undone.
+        let cover_upgrade_store = Arc::new(CoverUpgradeStore::new(
+            config_dir.map(|dir| dir.join("cover-upgrade.json")),
+        ));
+        let cover_upgrade_journal = Arc::new(CoverUpgradeJournal::new(
+            config_dir.map(|dir| dir.join("cover-upgrade-journal.jsonl")),
+        ));
+        let album_cover_finder: Arc<dyn IAlbumCoverFinder> = Arc::new(AlbumCoverFinder::new(
+            clients.itunes_cover_art.clone(),
+            clients.cover_art_archive.clone(),
+            clients.deezer_metadata.clone(),
+            navidrome.http.clone(),
+        ));
+        let cover_upgrade_worker = Arc::new(CoverUpgradeWorker::new(
+            cover_upgrade_store.clone(),
+            cover_upgrade_journal.clone(),
+            album_cover_finder.clone(),
+            settings.clone(),
+            CoverUpgradeServices {
+                library: Some(navidrome.local_library.clone()),
+                identity: Some(Arc::new(navidrome.navidrome_identity.clone())),
+                http: Some(navidrome.http.clone()),
+            },
+        ));
+        GenreAndCoverJobs {
+            genre_backfill_store,
+            genre_backfill_journal,
+            genre_backfill_worker,
+            album_cover_finder,
+            cover_upgrade_store,
+            cover_upgrade_journal,
+            cover_upgrade_worker,
+        }
+    }
+
+    /// The stores' flush timers (and the flush their `Dispose` did), and the two workers,
+    /// singleton AND hosted, the same instance both ways, so the controllers enqueue into the
+    /// loops the host is running rather than a second copy of them.
+    fn register_workers(&self, workers: &WorkerSupervisor) {
+        let store = self.genre_backfill_store.clone();
+        workers.register("GenreBackfillStore", move |stopping| {
+            let store = store.clone();
+            async move {
+                store.run_flusher(stopping).await;
+                Ok(())
+            }
+        });
+        let worker = self.genre_backfill_worker.clone();
+        workers.register("GenreBackfillWorker", move |stopping| {
+            worker.clone().run(stopping)
+        });
+        let store = self.cover_upgrade_store.clone();
+        workers.register("CoverUpgradeStore", move |stopping| {
+            let store = store.clone();
+            async move {
+                store.run_flusher(stopping).await;
+                Ok(())
+            }
+        });
+        let worker = self.cover_upgrade_worker.clone();
+        workers.register("CoverUpgradeWorker", move |stopping| worker.clone().run(stopping));
     }
 }
 
@@ -1097,8 +1230,8 @@ impl LibraryActions {
         acquisition: &Acquisition,
         soulseek_link: Arc<dyn ISoulseekLink>,
         spectrum: Arc<SpectrumAnalyzer>,
-        notice_queue: Arc<NoticeQueue>,
     ) -> Self {
+        let notice_queue = stores.notice_queue.clone();
         let quarantine = Arc::new(LibraryActionQuarantine::new(settings.clone()));
         let executor = Arc::new(LibraryActionExecutor::new(LibraryActionExecutorParts {
             resolver: navidrome.navidrome_song_path_resolver.clone(),
@@ -1153,6 +1286,119 @@ impl LibraryActions {
     }
 }
 
+/// The queues and sweeps of 5-B: the upgrade queue's worker, the weekly quality upgrade, the
+/// notice playlists, the duplicate scan and the library Review sweep, over the stores the
+/// [`Stores`] hold.
+struct LibraryJobs {
+    upgrade_worker: Arc<UpgradeWorker>,
+    quality_upgrade_worker: Arc<QualityUpgradeWorker>,
+    notice_playlist_worker: Arc<NoticePlaylistWorker>,
+    duplicate_scan_worker: Arc<DuplicateScanWorker>,
+    fingerprint_sweep_verifier: Arc<FingerprintSweepVerifier>,
+    library_review_sweep_worker: Arc<LibraryReviewSweepWorker>,
+}
+
+impl LibraryJobs {
+    fn build(
+        settings: &Arc<SettingsStore>,
+        stores: &Stores,
+        navidrome: &NavidromeServices,
+        clients: &MetadataClients,
+        acquisition: &Acquisition,
+        executor: &Arc<LibraryActionExecutor>,
+        soulseek_link: Arc<dyn ISoulseekLink>,
+    ) -> LibraryJobs {
+        let upgrade_worker = Arc::new(UpgradeWorker::new(
+            stores.upgrade_queue.clone(),
+            UpgradeWorkerParts {
+                executor: executor.clone(),
+                resolver: navidrome.navidrome_song_path_resolver.clone(),
+                concurrency: Some(stores.download_concurrency.clone()),
+                soulseek: Some(soulseek_link.clone()),
+                tracker: Some(acquisition.acquisition_tracker.clone()),
+                attempts: Some(stores.quality_upgrade_store.clone()),
+                settings: Some(settings.clone()),
+                sources: Some(acquisition.upgrade_sources.clone()),
+            },
+        ));
+        let quality_upgrade_worker = Arc::new(QualityUpgradeWorker::new(
+            stores.quality_upgrade_store.clone(),
+            executor.clone(),
+            acquisition.acquisition_activity.clone(),
+            navidrome.navidrome_playlist_api.clone(),
+            navidrome.navidrome_identity.clone(),
+            settings.clone(),
+            Some(soulseek_link),
+            Some(stores.upgrade_queue.clone()),
+            Some(acquisition.upgrade_sources.clone()),
+        ));
+        let notice_playlist_worker = Arc::new(NoticePlaylistWorker::new(
+            stores.notice_queue.clone(),
+            navidrome.navidrome_playlist_api.clone(),
+            navidrome.navidrome_song_path_resolver.clone(),
+            navidrome.navidrome_identity.clone(),
+            clients.acoust_id.clone(),
+            clients.music_brainz.clone(),
+            settings.clone(),
+        ));
+        let duplicate_scan_worker = Arc::new(DuplicateScanWorker::new(
+            stores.notice_queue.clone(),
+            navidrome.navidrome_identity.clone(),
+            navidrome.http.clone(),
+            settings.clone(),
+            Some(navidrome.navidrome_song_path_resolver.clone()),
+            Some(Arc::new(SpectrumAnalyzer::new())),
+        ));
+        let fingerprint_sweep_verifier = Arc::new(FingerprintSweepVerifier::new());
+        let resolver = navidrome.navidrome_song_path_resolver.clone();
+        let library_review_sweep_worker = Arc::new(LibraryReviewSweepWorker::new(
+            LibraryReviewSweepParts {
+                store: stores.review_sweep_store.clone(),
+                notices: stores.notice_queue.clone(),
+                verifier: fingerprint_sweep_verifier.clone(),
+                activity: acquisition.acquisition_activity.clone(),
+                library: navidrome.local_library.clone(),
+                settings: settings.clone(),
+                // The resolver's root, the same one review actions resolve inside.
+                music_root: Box::new(move || resolver.music_root()),
+            },
+            Clock::system(),
+        ));
+        LibraryJobs {
+            upgrade_worker,
+            quality_upgrade_worker,
+            notice_playlist_worker,
+            duplicate_scan_worker,
+            fingerprint_sweep_verifier,
+            library_review_sweep_worker,
+        }
+    }
+
+    /// `AddHostedService<NoticePlaylistWorker>()`, and the duplicate scan, the upgrade worker,
+    /// the weekly upgrade and the review sweep, each singleton AND hosted, the same instance
+    /// both ways.
+    fn register_workers(&self, workers: &WorkerSupervisor) {
+        let notices = self.notice_playlist_worker.clone();
+        workers.register("NoticePlaylistWorker", move |stopping| {
+            notices.clone().run(stopping)
+        });
+        let duplicates = self.duplicate_scan_worker.clone();
+        workers.register("DuplicateScanWorker", move |stopping| {
+            duplicates.clone().run(stopping)
+        });
+        let upgrades = self.upgrade_worker.clone();
+        workers.register("UpgradeWorker", move |stopping| upgrades.clone().run(stopping));
+        let weekly = self.quality_upgrade_worker.clone();
+        workers.register("QualityUpgradeWorker", move |stopping| {
+            weekly.clone().run(stopping)
+        });
+        let sweep = self.library_review_sweep_worker.clone();
+        workers.register("LibraryReviewSweepWorker", move |stopping| {
+            sweep.clone().run(stopping)
+        });
+    }
+}
+
 impl AppInner {
     /// `IHostApplicationLifetime.StopApplication()`: begins a graceful shutdown.
     pub fn stop_application(&self) {
@@ -1183,18 +1429,6 @@ impl AppState {
         stores.register_workers(&workers);
         lyrics.register_workers(&workers);
 
-        let genre_backfill_store = Arc::new(GenreBackfillStore::new(Some(
-            config_dir.join("genre-backfill.json"),
-        )));
-        let flushed = genre_backfill_store.clone();
-        workers.register("GenreBackfillStore", move |stopping| {
-            let store = flushed.clone();
-            async move {
-                store.run_flusher(stopping).await;
-                Ok(())
-            }
-        });
-
         // The C# lookup's 15-second Timer, and its Dispose's last write.
         let itunes = Arc::clone(&clients.itunes_cover_art);
         workers.register("ITunesCoverArtLookup", move |stopping| {
@@ -1208,9 +1442,8 @@ impl AppState {
         lyrics.sidecar_writer.set_library(navidrome.local_library.clone());
         let lyrics_library = lyrics.library_job(&settings, Some(&config_dir), &navidrome);
         lyrics_library.register_workers(&workers);
-        // STUB(5-B): the real queue, with its file, replaces this when 5-B lands. Built before the
-        // download service, which asks people through it (`NoticeQueue.AddReview`).
-        let notice_queue = Arc::new(NoticeQueue::new());
+        let genre_cover_jobs = GenreAndCoverJobs::build(&settings, Some(&config_dir), &navidrome, &clients);
+        genre_cover_jobs.register_workers(&workers);
         let acquisition = Acquisition::build(
             &settings,
             &stores,
@@ -1223,7 +1456,6 @@ impl AppState {
                 tagging: &tagging,
                 lyrics: &lyrics.sidecar_writer,
                 soulseek_client: &soulseek.client,
-                notice_queue: &notice_queue,
             },
         );
         acquisition.register_workers(&workers, &settings, &stores, &integrations.notifications);
@@ -1234,9 +1466,18 @@ impl AppState {
             &acquisition,
             soulseek.link.clone(),
             tagging.spectrum_analyzer.clone(),
-            notice_queue.clone(),
         );
         library_actions.register_workers(&workers);
+        let library_jobs = LibraryJobs::build(
+            &settings,
+            &stores,
+            &navidrome,
+            &clients,
+            &acquisition,
+            &library_actions.executor,
+            soulseek.link.clone(),
+        );
+        library_jobs.register_workers(&workers);
         let radio = Radio::build(
             &settings,
             &config_dir,
@@ -1254,6 +1495,11 @@ impl AppState {
             settings.clone(),
             Clock::system(),
         ));
+        // `FingerprintSweepVerifier(sp)` resolved the download verification service when the
+        // sweep first asked; here it is handed over once both exist.
+        library_jobs
+            .fingerprint_sweep_verifier
+            .set_service(tagging.download_verification.clone() as Arc<dyn SweepVerification>);
         let inner = AppInner {
             settings_writer,
             restart_tracker: Arc::new(restart_tracker),
@@ -1266,10 +1512,13 @@ impl AppState {
             lyrics_undo_journal: lyrics.undo_journal,
             lyrics_library_store: lyrics_library.store,
             lyrics_library_worker: lyrics_library.worker,
-            genre_backfill_store,
-            genre_backfill_journal: Arc::new(GenreBackfillJournal::new(Some(
-                config_dir.join("genre-backfill-journal.jsonl"),
-            ))),
+            genre_backfill_store: genre_cover_jobs.genre_backfill_store,
+            genre_backfill_journal: genre_cover_jobs.genre_backfill_journal,
+            genre_backfill_worker: genre_cover_jobs.genre_backfill_worker,
+            album_cover_finder: genre_cover_jobs.album_cover_finder,
+            cover_upgrade_store: genre_cover_jobs.cover_upgrade_store,
+            cover_upgrade_journal: genre_cover_jobs.cover_upgrade_journal,
+            cover_upgrade_worker: genre_cover_jobs.cover_upgrade_worker,
             update_host: Arc::new(UpdateHost::new(config_dir.join("update"), Clock::system())),
             lifetime: CancellationToken::new(),
             download_history: stores.download_history,
@@ -1349,6 +1598,13 @@ impl AppState {
             tag_preview: tagging.tag_preview,
             download_verification: tagging.download_verification,
             download_cover_resolver: tagging.download_cover_resolver,
+            upgrade_worker: library_jobs.upgrade_worker,
+            quality_upgrade_store: stores.quality_upgrade_store,
+            quality_upgrade_worker: library_jobs.quality_upgrade_worker,
+            duplicate_scan_worker: library_jobs.duplicate_scan_worker,
+            review_sweep_store: stores.review_sweep_store,
+            library_review_sweep_worker: library_jobs.library_review_sweep_worker,
+            fingerprint_sweep_verifier: library_jobs.fingerprint_sweep_verifier,
         };
         AppState {
             inner: Arc::new(inner),
@@ -1386,10 +1642,9 @@ impl AppState {
         let navidrome = NavidromeServices::build(&settings, &stores, false, vec![soulseek.validator]);
         lyrics.sidecar_writer.set_library(navidrome.local_library.clone());
         let lyrics_library = lyrics.library_job(&settings, None, &navidrome);
+        // The genre backfill and the cover upgrade keep their runs in memory.
+        let genre_cover_jobs = GenreAndCoverJobs::build(&settings, None, &navidrome, &clients);
         // No workers: the acquisition worker, the resumer and the cache cleanup are not run.
-        // STUB(5-B): the real queue, with its file, replaces this when 5-B lands. Built before the
-        // download service, which asks people through it (`NoticeQueue.AddReview`).
-        let notice_queue = Arc::new(NoticeQueue::new());
         let acquisition = Acquisition::build(
             &settings,
             &stores,
@@ -1402,7 +1657,6 @@ impl AppState {
                 tagging: &tagging,
                 lyrics: &lyrics.sidecar_writer,
                 soulseek_client: &soulseek.client,
-                notice_queue: &notice_queue,
             },
         );
         // Library actions keep their journal in the test's config directory; no worker is run.
@@ -1413,7 +1667,16 @@ impl AppState {
             &acquisition,
             soulseek.link.clone(),
             tagging.spectrum_analyzer.clone(),
-            notice_queue.clone(),
+        );
+        // The 5-B queues keep their files in the test's config directory; no worker is run.
+        let library_jobs = LibraryJobs::build(
+            &settings,
+            &stores,
+            &navidrome,
+            &clients,
+            &acquisition,
+            &library_actions.executor,
+            soulseek.link.clone(),
         );
         // The radio's state files sit in the test's config directory; its workers are not run.
         let radio = Radio::build(
@@ -1432,6 +1695,11 @@ impl AppState {
             settings.clone(),
             Clock::system(),
         ));
+        // `FingerprintSweepVerifier(sp)` resolved the download verification service when the
+        // sweep first asked; here it is handed over once both exist.
+        library_jobs
+            .fingerprint_sweep_verifier
+            .set_service(tagging.download_verification.clone() as Arc<dyn SweepVerification>);
         let inner = AppInner {
             restart_tracker,
             settings,
@@ -1444,8 +1712,13 @@ impl AppState {
             lyrics_undo_journal: lyrics.undo_journal,
             lyrics_library_store: lyrics_library.store,
             lyrics_library_worker: lyrics_library.worker,
-            genre_backfill_store: Arc::new(GenreBackfillStore::new(None)),
-            genre_backfill_journal: Arc::new(GenreBackfillJournal::new(None)),
+            genre_backfill_store: genre_cover_jobs.genre_backfill_store,
+            genre_backfill_journal: genre_cover_jobs.genre_backfill_journal,
+            genre_backfill_worker: genre_cover_jobs.genre_backfill_worker,
+            album_cover_finder: genre_cover_jobs.album_cover_finder,
+            cover_upgrade_store: genre_cover_jobs.cover_upgrade_store,
+            cover_upgrade_journal: genre_cover_jobs.cover_upgrade_journal,
+            cover_upgrade_worker: genre_cover_jobs.cover_upgrade_worker,
             update_host: Arc::new(UpdateHost::new(config_dir.join("update"), Clock::system())),
             lifetime: CancellationToken::new(),
             download_history: stores.download_history,
@@ -1525,6 +1798,13 @@ impl AppState {
             tag_preview: tagging.tag_preview,
             download_verification: tagging.download_verification,
             download_cover_resolver: tagging.download_cover_resolver,
+            upgrade_worker: library_jobs.upgrade_worker,
+            quality_upgrade_store: stores.quality_upgrade_store,
+            quality_upgrade_worker: library_jobs.quality_upgrade_worker,
+            duplicate_scan_worker: library_jobs.duplicate_scan_worker,
+            review_sweep_store: stores.review_sweep_store,
+            library_review_sweep_worker: library_jobs.library_review_sweep_worker,
+            fingerprint_sweep_verifier: library_jobs.fingerprint_sweep_verifier,
         };
         AppState {
             inner: Arc::new(inner),
@@ -1768,6 +2048,82 @@ mod tests {
         assert_eq!(off.detail.as_deref(), Some("Library actions are off."));
         assert_eq!(state.library_action_rating_worker.pending(), 0);
         assert!(!state.upgrade_sources.ready());
+    }
+
+    /// The genre backfill and the cover upgrade (5-D): their stores flush and their workers run
+    /// as workers, and the handler-test state keeps their runs in memory.
+    #[tokio::test]
+    async fn the_genre_backfill_and_the_cover_upgrade_are_wired_as_program_cs_registered_them() {
+        let state = AppState::build(SettingsStore::from_env(Vec::new(), None));
+        let names: Vec<String> = state.workers.status().into_iter().map(|s| s.name).collect();
+        for name in [
+            "GenreBackfillStore",
+            "GenreBackfillWorker",
+            "CoverUpgradeStore",
+            "CoverUpgradeWorker",
+        ] {
+            assert!(names.iter().any(|n| n == name), "{name} in {names:?}");
+        }
+
+        let state = AppState::for_tests(AppSettings::default());
+        assert!(!state.genre_backfill_worker.is_running());
+        assert!(!state.genre_backfill_worker.journal().exists());
+        assert!(!state.cover_upgrade_worker.is_busy());
+        assert!(!state.cover_upgrade_worker.can_undo());
+        assert_eq!(
+            state.cover_upgrade_worker.current().status,
+            crate::services::cover_art::CoverUpgradeStatus::Idle
+        );
+    }
+
+    /// 5-B: the stores sit beside settings.json, their flushers and the five hosted services run
+    /// as workers, and the queues are the ones library actions and hearts already use.
+    #[tokio::test]
+    async fn the_queues_and_sweeps_are_wired_as_program_cs_registered_them() {
+        let state = AppState::build(SettingsStore::from_env(Vec::new(), None));
+        let names: Vec<String> = state.workers.status().into_iter().map(|s| s.name).collect();
+        for name in [
+            "NoticeQueue",
+            "ReviewSweepStore",
+            "NoticePlaylistWorker",
+            "DuplicateScanWorker",
+            "UpgradeWorker",
+            "QualityUpgradeWorker",
+            "LibraryReviewSweepWorker",
+        ] {
+            assert!(names.iter().any(|n| n == name), "{name} in {names:?}");
+        }
+
+        let state = AppState::for_tests(AppSettings::default());
+        assert!(
+            state
+                .notice_queue
+                .path()
+                .is_some_and(|p| p.ends_with("notice-queue.json"))
+        );
+        assert!(
+            state
+                .upgrade_queue
+                .path()
+                .is_some_and(|p| p.ends_with("upgrades.json"))
+        );
+        assert!(
+            state
+                .review_sweep_store
+                .path()
+                .is_some_and(|p| p.ends_with("review-sweep.json"))
+        );
+        assert!(state.upgrade_queue.snapshot().is_empty());
+        assert_eq!(
+            state.quality_upgrade_worker.tick().await,
+            crate::services::library::quality_upgrade_worker::Tick::Off
+        );
+        assert_eq!(state.library_review_sweep_worker.status().state, "Off");
+        assert!(state.duplicate_scan_worker.last_result().is_none());
+        // The verification service is set, but with no AcoustID key the sweep is not set up.
+        use crate::services::library::IReviewSweepVerifier;
+        assert!(!state.fingerprint_sweep_verifier.is_ready());
+        assert_eq!(state.upgrade_worker.running(), 0);
     }
 
     #[test]

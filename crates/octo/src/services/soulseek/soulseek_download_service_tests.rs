@@ -481,6 +481,9 @@ struct SlskdState {
     enqueued: Vec<String>,
     /// What the yt-dlp shim was asked to fetch.
     you_tube_downloads: Vec<String>,
+    /// Files written with some audio after the STREAMINFO. TagLib# (and the tag reader after it)
+    /// gives a FLAC with no audio no length at all, so only these have one to check.
+    with_audio: HashSet<String>,
 }
 
 /// slskd as far as one walk needs: logged in, searches answered from a script, and every batch
@@ -649,7 +652,11 @@ impl Respond for FakeSlskd {
                     .to_string();
                 let local = std::path::Path::new(&self.root).join(&destination).join(&leaf);
                 std::fs::create_dir_all(local.parent().expect("a parent")).expect("made");
-                let bytes = flac(state.lengths.get(file).copied().unwrap_or(200));
+                let mut bytes = flac(state.lengths.get(file).copied().unwrap_or(200));
+                if state.with_audio.contains(file) {
+                    // Enough for a bitrate of at least 1 kbps, within the 64 KB size drift of the advertised size.
+                    bytes.extend_from_slice(&[0u8; 48_000]);
+                }
                 std::fs::write(&local, &bytes).expect("written");
                 state.ids += 1;
                 let transfer = json!({
@@ -1189,6 +1196,9 @@ async fn a_peer_that_delivers_the_wrong_length_is_passed_over_for_the_next() {
     // Advertised as 180 s, and 300 s when it arrives.
     walk.slskd.length(r"A\Drake\04 - Started.flac", 300);
     walk.slskd.length(r"B\Drake\04 - Started.flac", 180);
+    for file in [r"A\Drake\04 - Started.flac", r"B\Drake\04 - Started.flac"] {
+        walk.slskd.state.lock().with_audio.insert(file.to_string());
+    }
 
     let path = acquire(&walk, walk.songs[3].external_id.as_deref().expect("an id"), None)
         .await
