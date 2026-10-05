@@ -39,7 +39,9 @@ struct SyncUpstream {
 
 impl SyncUpstream {
     fn library_song_ids(&self) -> Vec<String> {
-        (0..self.library_size).map(|index| format!("lib-{index}")).collect()
+        (0..self.library_size)
+            .map(|index| format!("lib-{index}"))
+            .collect()
     }
 }
 
@@ -60,15 +62,14 @@ fn result(songs: Vec<Value>, albums: Vec<Value>, artists: Vec<Value>) -> String 
 impl Respond for SyncUpstream {
     fn respond(&self, request: &wiremock::Request) -> ResponseTemplate {
         let ok = |body: String| {
-            ResponseTemplate::new(200)
-                .set_body_raw(
-                    if body.is_empty() {
-                        r#"{"subsonic-response":{"status":"ok","version":"1.16.1"}}"#.to_string()
-                    } else {
-                        body
-                    },
-                    "application/json; charset=utf-8",
-                )
+            ResponseTemplate::new(200).set_body_raw(
+                if body.is_empty() {
+                    r#"{"subsonic-response":{"status":"ok","version":"1.16.1"}}"#.to_string()
+                } else {
+                    body
+                },
+                "application/json; charset=utf-8",
+            )
         };
         let path = request.url.path().trim_matches('/');
         if !path.starts_with("rest/search3") {
@@ -119,7 +120,9 @@ impl Respond for SyncUpstream {
         if term == "Owned Artist" {
             return ok(result(
                 vec![json!({"id": "lib-owned-hit", "title": "Owned Hit", "artist": "Owned Artist"})],
-                vec![json!({"id": "al-owned", "name": "Owned Album", "artist": "Owned Artist", "artistId": "ar-owned"})],
+                vec![
+                    json!({"id": "al-owned", "name": "Owned Album", "artist": "Owned Artist", "artistId": "ar-owned"}),
+                ],
                 vec![json!({"id": "ar-owned", "name": "Owned Artist"})],
             ));
         }
@@ -200,7 +203,11 @@ fn install_stations(state: &AppState) {
             track(
                 "Stranger",
                 &format!("Stranger Song {index}"),
-                Some(if index <= 6 { "First Record" } else { "Second Record" }),
+                Some(if index <= 6 {
+                    "First Record"
+                } else {
+                    "Second Record"
+                }),
                 200,
             )
         })
@@ -234,7 +241,11 @@ async fn walk(app: &App, kind: &str, page_size: usize, client: &str, extra: &str
         let counts = ["song", "album", "artist"]
             .iter()
             .map(|name| {
-                let (count, at) = if *name == kind { (page_size, offset) } else { (0, 0) };
+                let (count, at) = if *name == kind {
+                    (page_size, offset)
+                } else {
+                    (0, 0)
+                };
                 format!("{name}Count={count}&{name}Offset={at}")
             })
             .collect::<Vec<_>>()
@@ -283,7 +294,11 @@ async fn song_walk_returns_the_whole_library_then_the_catalog_once_each() {
             "{library_size}/{page_size}"
         );
         let catalog = &ids[library_size..];
-        assert_eq!(catalog.len(), expected_catalog_titles().len(), "{library_size}/{page_size}: {catalog:?}");
+        assert_eq!(
+            catalog.len(),
+            expected_catalog_titles().len(),
+            "{library_size}/{page_size}: {catalog:?}"
+        );
         assert!(catalog.iter().all(|id| id.starts_with("ph-")), "{catalog:?}");
     }
 }
@@ -308,10 +323,7 @@ async fn song_walk_leaves_out_what_the_library_owns_and_files_under_the_librarys
     expected.sort();
     assert_eq!(titles, expected);
 
-    let missing = catalog
-        .iter()
-        .find(|row| row["title"] == "Missing Hit")
-        .unwrap();
+    let missing = catalog.iter().find(|row| row["title"] == "Missing Hit").unwrap();
     assert_eq!(missing["artistId"], "ar-owned");
     assert_eq!(missing["albumId"], "al-owned");
 

@@ -28,17 +28,24 @@ pub async fn get_similar_songs(State(state): State<AppState>, req: Request) -> R
     let builder = &state.subsonic_response_builder;
     let id = call.param_or("id", "").to_string();
     let settings = state.settings.current();
-    let count = int_param(&call.parameters, "count", 50).clamp(1, settings.last_fm.effective_radio_track_count().max(1));
+    let count = int_param(&call.parameters, "count", 50)
+        .clamp(1, settings.last_fm.effective_radio_track_count().max(1));
 
     // Subsonic spec: getSimilarSongs.view → key "similarSongs"; getSimilarSongs2.view →
     // "similarSongs2". Clients (Arpeggi) parse the v2 key strictly and ignore v1-shaped
     // responses when they called v2 — that's why the radio queue showed up empty.
     let path = call.path();
     let is_v2_request = dotnet::to_lower_invariant(&path).contains("getsimilarsongs2");
-    let response_key = if is_v2_request { "similarSongs2" } else { "similarSongs" };
+    let response_key = if is_v2_request {
+        "similarSongs2"
+    } else {
+        "similarSongs"
+    };
 
     if dotnet::is_blank(&id) {
-        return builder.create_error(format, 10, "Missing id parameter").into_response();
+        return builder
+            .create_error(format, 10, "Missing id parameter")
+            .into_response();
     }
 
     // Check if Last.fm radio is configured and enabled
@@ -61,7 +68,10 @@ pub async fn get_similar_songs(State(state): State<AppState>, req: Request) -> R
         // External song - get metadata from our service
         if let Some(song) = state
             .metadata_service
-            .get_song(provider.as_deref().unwrap_or(""), external_id.as_deref().unwrap_or(""))
+            .get_song(
+                provider.as_deref().unwrap_or(""),
+                external_id.as_deref().unwrap_or(""),
+            )
             .await
         {
             artist_name = song.artist;
@@ -192,7 +202,12 @@ pub async fn get_similar_songs(State(state): State<AppState>, req: Request) -> R
     build_similar_songs_response(&state, format, &resolved_songs, response_key)
 }
 
-fn build_similar_songs_response(state: &AppState, format: &str, songs: &[Song], response_key: &str) -> Response {
+fn build_similar_songs_response(
+    state: &AppState,
+    format: &str,
+    songs: &[Song],
+    response_key: &str,
+) -> Response {
     let builder = &state.subsonic_response_builder;
     if format == "json" {
         let json_songs: Vec<Value> = songs

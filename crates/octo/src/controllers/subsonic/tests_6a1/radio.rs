@@ -32,11 +32,11 @@ use super::{Reply, TestMetadata, app, get, get_string, query_value, send, until}
 use crate::app::{AppState, TestServices};
 use crate::http::pipeline::App;
 use crate::services::i_download_service::{AudioStream, DirectStreamInfo, IDownloadService};
+use crate::services::last_fm::icy_metadata_stream::DEFAULT_INTERVAL;
+use crate::services::last_fm::{ILastFmRadioAudioTranscoder, IRadioTuneInSelector};
 use crate::services::library::ReplacementHandoff;
 use octo_core::models::download::DownloadInfo;
 use octo_core::settings::DownloadSource;
-use crate::services::last_fm::icy_metadata_stream::DEFAULT_INTERVAL;
-use crate::services::last_fm::{ILastFmRadioAudioTranscoder, IRadioTuneInSelector};
 
 /// A `TaskCompletionSource`: set once, awaited by anyone.
 struct Gate(watch::Sender<bool>);
@@ -149,7 +149,12 @@ impl IDownloadService for ShimDownloads {
         anyhow::bail!("not set up")
     }
 
-    async fn download_and_stream(&self, _: &str, _: &str, _: &CancellationToken) -> anyhow::Result<AudioStream> {
+    async fn download_and_stream(
+        &self,
+        _: &str,
+        _: &str,
+        _: &CancellationToken,
+    ) -> anyhow::Result<AudioStream> {
         anyhow::bail!("not set up")
     }
 
@@ -202,7 +207,9 @@ impl IDownloadService for ShimDownloads {
         _: &CancellationToken,
     ) -> anyhow::Result<Option<DirectStreamInfo>> {
         Ok(Some(DirectStreamInfo {
-            audio_stream: Box::pin(futures::stream::iter([Ok(bytes::Bytes::from_static(b"external-source-audio"))])),
+            audio_stream: Box::pin(futures::stream::iter([Ok(bytes::Bytes::from_static(
+                b"external-source-audio",
+            ))])),
             content_type: "audio/mp4".into(),
             content_length: None,
             quality: None,
@@ -247,7 +254,8 @@ fn ok_json(fields: &str) -> String {
 }
 
 const FAILED_JSON: &str = r#"{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":40,"message":"Wrong username or password"}}}"#;
-const OK_XML: &str = r#"<subsonic-response xmlns="http://subsonic.org/restapi" status="ok" version="1.16.1"/>"#;
+const OK_XML: &str =
+    r#"<subsonic-response xmlns="http://subsonic.org/restapi" status="ok" version="1.16.1"/>"#;
 const FAILED_XML: &str = r#"<subsonic-response xmlns="http://subsonic.org/restapi" status="failed" version="1.16.1"><error code="40" message="Wrong username or password"/></subsonic-response>"#;
 
 fn capitalized(word: &str) -> String {
@@ -261,8 +269,7 @@ fn capitalized(word: &str) -> String {
 impl Respond for RadioUpstream {
     fn respond(&self, request: &wiremock::Request) -> ResponseTemplate {
         let reply = |body: &str, content_type: &str| {
-            ResponseTemplate::new(200)
-                .set_body_raw(body, format!("{content_type}; charset=utf-8").as_str())
+            ResponseTemplate::new(200).set_body_raw(body, format!("{content_type}; charset=utf-8").as_str())
         };
         let json = |body: &str| reply(body, "application/json");
         let path = request.url.path().trim_matches('/').to_lowercase();
@@ -304,7 +311,11 @@ impl Respond for RadioUpstream {
                 };
                 // Answer with the recording that was asked for.
                 let prefix = if lower.starts_with("new ") { "New " } else { "" };
-                let suffix = if lower.ends_with(" refreshed") { " Refreshed" } else { "" };
+                let suffix = if lower.ends_with(" refreshed") {
+                    " Refreshed"
+                } else {
+                    ""
+                };
                 let id = format!(
                     "local-{}{ordinal}{}",
                     if prefix.is_empty() { "" } else { "new-" },
@@ -771,7 +782,10 @@ async fn internet_radio_list_merges_ordinary_and_generated_stations_with_opaque_
             format!("coverArt=\"{}\"", fixture.station_id())
         };
         assert!(body.contains(&cover), "{format}: {body}");
-        assert!(body.contains("https://localhost/radio/stream/"), "{format}: {body}");
+        assert!(
+            body.contains("https://localhost/radio/stream/"),
+            "{format}: {body}"
+        );
         assert!(!body.contains("t=token"), "{format}");
         assert!(!body.contains("u=alice"), "{format}");
     }
@@ -827,7 +841,11 @@ async fn internet_radio_list_waits_for_starter_and_publishes_in_that_same_respon
 
     let app = fixture.app.clone();
     let listing = tokio::spawn(async move {
-        get_string(&app, "/rest/getInternetRadioStations?u=alice&t=token&s=salt&f=json").await
+        get_string(
+            &app,
+            "/rest/getInternetRadioStations?u=alice&t=token&s=salt&f=json",
+        )
+        .await
     });
     tokio::time::timeout(Duration::from_secs(2), fixture.transcoder.started().wait())
         .await
@@ -887,7 +905,10 @@ async fn tune_in_starts_where_the_selector_says_and_wraps_through_the_cached_tra
 
     let path = fixture.your_mix_stream_path().await;
     let token = RadioFixture::token_of(&path);
-    assert_eq!(fixture.pool_titles(&token), ["Song Two", "Song Three", "Song One"]);
+    assert_eq!(
+        fixture.pool_titles(&token),
+        ["Song Two", "Song Three", "Song One"]
+    );
 }
 
 #[tokio::test]
@@ -1104,7 +1125,14 @@ async fn feishin_list_detail_and_paged_tracks_have_native_shape_headers_and_owne
         .capture_login(br#"{"token":"native-token","username":"alice","isAdmin":false}"#);
     let auth = [("X-Nd-Authorization", "Bearer native-token")];
 
-    let list = send(&fixture.app, Method::GET, "/api/playlist?_start=0&_end=20", &auth, Body::empty()).await;
+    let list = send(
+        &fixture.app,
+        Method::GET,
+        "/api/playlist?_start=0&_end=20",
+        &auth,
+        Body::empty(),
+    )
+    .await;
     assert_eq!(list.status, StatusCode::OK, "{}", list.body);
     assert_eq!(list.header("X-Total-Count"), Some("2"));
     let rows = list.json();

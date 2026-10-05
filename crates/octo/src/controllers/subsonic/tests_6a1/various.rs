@@ -35,8 +35,7 @@ fn ok_json(inner: &str) -> String {
 }
 
 fn json_reply(body: String) -> ResponseTemplate {
-    ResponseTemplate::new(200)
-        .set_body_raw(body, "application/json; charset=utf-8")
+    ResponseTemplate::new(200).set_body_raw(body, "application/json; charset=utf-8")
 }
 
 // ---------------------------------------------------------------------------------------
@@ -69,20 +68,29 @@ impl Respond for LibraryNavidrome {
             .lock()
             .push(format!("{path}?{}", request.url.query().unwrap_or_default()));
         let body = match path.as_str() {
-            "rest/getGenres" => {
-                ok_json(r#""genres":{"genre":[{"value":"Rock","songCount":40},{"value":"Polka","songCount":3}]}"#)
-            }
+            "rest/getGenres" => ok_json(
+                r#""genres":{"genre":[{"value":"Rock","songCount":40},{"value":"Polka","songCount":3}]}"#,
+            ),
             "rest/getSongsByGenre" => {
                 let first = if query_value(request, "offset").as_deref() == Some("0") {
                     0
                 } else {
                     1000
                 };
-                ok_json(&format!(r#""songsByGenre":{{"song":[{}]}}"#, library_songs(40, first, 5)))
+                ok_json(&format!(
+                    r#""songsByGenre":{{"song":[{}]}}"#,
+                    library_songs(40, first, 5)
+                ))
             }
             "rest/getRandomSongs" => match query_value(request, "fromYear").as_deref() {
-                Some("1990") => ok_json(&format!(r#""randomSongs":{{"song":[{}]}}"#, library_songs(25, 2000, 5))),
-                None => ok_json(&format!(r#""randomSongs":{{"song":[{}]}}"#, library_songs(30, 3000, 0))),
+                Some("1990") => ok_json(&format!(
+                    r#""randomSongs":{{"song":[{}]}}"#,
+                    library_songs(25, 2000, 5)
+                )),
+                None => ok_json(&format!(
+                    r#""randomSongs":{{"song":[{}]}}"#,
+                    library_songs(30, 3000, 0)
+                )),
                 Some(_) => ok_json(r#""randomSongs":{"song":[]}"#),
             },
             _ => ok_json(""),
@@ -161,14 +169,22 @@ async fn get_playlist_a_mix_is_its_draw() {
     let id = rock_mix(&fixture.app).await["id"].as_str().unwrap().to_string();
 
     let detail: Value = serde_json::from_str(
-        &get_string(&fixture.app, &format!("/rest/getPlaylist.view?{MIX_AUTH}&id={id}")).await,
+        &get_string(
+            &fixture.app,
+            &format!("/rest/getPlaylist.view?{MIX_AUTH}&id={id}"),
+        )
+        .await,
     )
     .unwrap();
     let playlist = &detail["subsonic-response"]["playlist"];
     assert_eq!(playlist["name"], "Rock Mix");
     let entries = playlist["entry"].as_array().unwrap();
     assert_eq!(entries.len(), 40);
-    assert!(entries.iter().all(|e| e["id"].as_str().unwrap().starts_with("lib")));
+    assert!(
+        entries
+            .iter()
+            .all(|e| e["id"].as_str().unwrap().starts_with("lib"))
+    );
 }
 
 #[tokio::test]
@@ -389,7 +405,10 @@ struct LengthFixture {
 async fn length_fixture() -> LengthFixture {
     let upstream = LengthUpstream::default();
     let server = MockServer::start().await;
-    Mock::given(any()).respond_with(upstream.clone()).mount(&server).await;
+    Mock::given(any())
+        .respond_with(upstream.clone())
+        .mount(&server)
+        .await;
     let state = AppState::for_tests_with(
         AppSettings {
             subsonic: SubsonicSettings {
@@ -491,10 +510,26 @@ async fn search3_rows_without_a_metadata_length_carry_one_in_the_next_response()
             .lock()
             .push((artist.into(), title.into()));
     }
-    fixture.upstream.video.lock().insert("Daft Punk Emotion".into(), 417);
-    fixture.upstream.last_fm.lock().insert("Kavinsky|Prelude".into(), 95);
-    fixture.upstream.video.lock().insert("Nobody Nothing".into(), 3600);
-    fixture.upstream.deezer.lock().insert("Justice Genesis".into(), 234);
+    fixture
+        .upstream
+        .video
+        .lock()
+        .insert("Daft Punk Emotion".into(), 417);
+    fixture
+        .upstream
+        .last_fm
+        .lock()
+        .insert("Kavinsky|Prelude".into(), 95);
+    fixture
+        .upstream
+        .video
+        .lock()
+        .insert("Nobody Nothing".into(), 3600);
+    fixture
+        .upstream
+        .deezer
+        .lock()
+        .insert("Justice Genesis".into(), 234);
 
     let first = search3_lengths(&fixture).await;
     assert_eq!(first["Filler|Song1"], 201);
@@ -512,9 +547,21 @@ async fn search3_rows_without_a_metadata_length_carry_one_in_the_next_response()
 #[tokio::test]
 async fn get_playlist_station_rows_without_a_length_carry_one_in_the_next_response() {
     let fixture = length_fixture().await;
-    fixture.upstream.deezer.lock().insert("Justice Genesis".into(), 234);
-    fixture.upstream.last_fm.lock().insert("Kavinsky|Prelude".into(), 95);
-    fixture.upstream.video.lock().insert("Daft Punk Emotion".into(), 417);
+    fixture
+        .upstream
+        .deezer
+        .lock()
+        .insert("Justice Genesis".into(), 234);
+    fixture
+        .upstream
+        .last_fm
+        .lock()
+        .insert("Kavinsky|Prelude".into(), 95);
+    fixture
+        .upstream
+        .video
+        .lock()
+        .insert("Daft Punk Emotion".into(), 417);
     let track = |artist: &str, title: &str, duration: Option<i32>| LastFmRadioTrack {
         artist: artist.into(),
         title: title.into(),
@@ -586,9 +633,24 @@ async fn ping_without_a_navidrome_url_explains_how_to_set_one_up() {
         "{}",
         xml.body
     );
-    let json = send(&app, Method::GET, "/rest/ping?f=json", &[("Host", "h")], Body::empty()).await;
-    assert_eq!(json.header("content-type"), Some("application/json; charset=utf-8"));
-    assert!(json.body.contains(r#"Octo isn\u0027t configured yet. Open http://h/admin"#), "{}", json.body);
+    let json = send(
+        &app,
+        Method::GET,
+        "/rest/ping?f=json",
+        &[("Host", "h")],
+        Body::empty(),
+    )
+    .await;
+    assert_eq!(
+        json.header("content-type"),
+        Some("application/json; charset=utf-8")
+    );
+    assert!(
+        json.body
+            .contains(r#"Octo isn\u0027t configured yet. Open http://h/admin"#),
+        "{}",
+        json.body
+    );
 }
 
 #[tokio::test]
@@ -614,7 +676,13 @@ async fn ping_that_cannot_reach_navidrome_says_where_it_looked() {
 async fn random_songs_relay_failures_reach_the_global_handler() {
     let reply = get(&unconfigured(), "/rest/getRandomSongs?f=xml").await;
     assert_eq!(reply.status, StatusCode::SERVICE_UNAVAILABLE);
-    assert!(reply.body.starts_with(r#"{"subsonic-response":{"status":"failed""#), "{}", reply.body);
+    assert!(
+        reply
+            .body
+            .starts_with(r#"{"subsonic-response":{"status":"failed""#),
+        "{}",
+        reply.body
+    );
 }
 
 #[tokio::test]
@@ -652,21 +720,28 @@ async fn info_for_outside_ids_carries_the_catalog_picture_in_both_formats() {
     );
     let app = app(state);
     // The fake knows no album: the URLs are empty, and the elements are still written.
-    let xml = get(&app, "/rest/getAlbumInfo.view?id=ext-deezer-album-1").await.body;
+    let xml = get(&app, "/rest/getAlbumInfo.view?id=ext-deezer-album-1")
+        .await
+        .body;
     assert_eq!(
         xml,
         "<subsonic-response status=\"ok\" version=\"1.16.1\" xmlns=\"http://subsonic.org/restapi\">\n  \
          <albumInfo>\n    <notes></notes>\n    <smallImageUrl></smallImageUrl>\n    <mediumImageUrl></mediumImageUrl>\n    \
          <largeImageUrl></largeImageUrl>\n  </albumInfo>\n</subsonic-response>"
     );
-    let json = get(&app, "/rest/getArtistInfo?id=ext-deezer-artist-1&f=json").await.body;
+    let json = get(&app, "/rest/getArtistInfo?id=ext-deezer-artist-1&f=json")
+        .await
+        .body;
     assert_eq!(
         json,
         r#"{"subsonic-response":{"status":"ok","version":"1.16.1","artistInfo2":{"biography":"","smallImageUrl":"","mediumImageUrl":"","largeImageUrl":""}}}"#
     );
     // A local id with Navidrome out of reach: the empty ok.
     let local = get(&app, "/rest/getArtistInfo2?id=ar-1&f=json").await.body;
-    assert_eq!(local, r#"{"subsonic-response":{"status":"ok","version":"1.16.1"}}"#);
+    assert_eq!(
+        local,
+        r#"{"subsonic-response":{"status":"ok","version":"1.16.1"}}"#
+    );
     let _ = Album::default();
 }
 
@@ -686,7 +761,10 @@ async fn similar_songs_need_an_id_and_relay_their_own_path_with_radio_off() {
     }));
     let missing = get(&app, "/rest/getSimilarSongs2?f=json").await.json();
     assert_eq!(missing["subsonic-response"]["error"]["code"], 10);
-    assert_eq!(missing["subsonic-response"]["error"]["message"], "Missing id parameter");
+    assert_eq!(
+        missing["subsonic-response"]["error"]["message"],
+        "Missing id parameter"
+    );
 
     get(&app, "/rest/GetSimilarSongs2.view?id=x&f=json").await;
     let asked = server.received_requests().await.unwrap();
@@ -711,7 +789,14 @@ async fn radio_stream_tokens_of_another_length_are_relayed_and_unknown_ones_are_
     }));
     let token = "0".repeat(48);
     for method in [Method::GET, Method::HEAD] {
-        let reply = send(&app, method.clone(), &format!("/radio/stream/{token}"), &[], Body::empty()).await;
+        let reply = send(
+            &app,
+            method.clone(),
+            &format!("/radio/stream/{token}"),
+            &[],
+            Body::empty(),
+        )
+        .await;
         assert_eq!(reply.status, StatusCode::NOT_FOUND, "{method}");
         assert_eq!(reply.body, "", "{method}");
         assert_eq!(reply.header("content-length"), Some("0"), "{method}");

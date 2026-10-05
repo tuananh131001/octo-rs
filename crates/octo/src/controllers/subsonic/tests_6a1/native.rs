@@ -28,8 +28,7 @@ struct FakeServers {
 }
 
 fn json(body: &str) -> ResponseTemplate {
-    ResponseTemplate::new(200)
-        .set_body_raw(body, "application/json; charset=utf-8")
+    ResponseTemplate::new(200).set_body_raw(body, "application/json; charset=utf-8")
 }
 
 impl Respond for FakeServers {
@@ -51,9 +50,13 @@ impl Respond for FakeServers {
                     r#"{"total":4,"data":[{"title":"One","duration":100,"track_position":1,"disk_number":1,"isrc":"GBAAA0000001","artist":{"name":"Test Artist"}},{"title":"Two","duration":200,"track_position":2,"disk_number":1,"isrc":"GBAAA0000002","artist":{"name":"Test Artist"}},{"title":"Three","duration":300,"track_position":3,"disk_number":1,"isrc":"GBAAA0000003","artist":{"name":"Test Artist"}},{"title":"Four","duration":400,"track_position":4,"disk_number":1,"isrc":"GBAAA0000004","artist":{"name":"Test Artist"}}]}"#,
                 )
             } else if path == "/album/2" {
-                json(r#"{"id":2,"title":"Other Album","nb_tracks":9,"release_date":"2005-05-05","artist":{"name":"Test Artist"}}"#)
+                json(
+                    r#"{"id":2,"title":"Other Album","nb_tracks":9,"release_date":"2005-05-05","artist":{"name":"Test Artist"}}"#,
+                )
             } else if path == "/album/1" {
-                json(r#"{"id":1,"title":"Test Album","release_date":"2001-01-01","artist":{"name":"Test Artist"}}"#)
+                json(
+                    r#"{"id":1,"title":"Test Album","release_date":"2001-01-01","artist":{"name":"Test Artist"}}"#,
+                )
             } else if path.starts_with("/search/artist") {
                 // A bigger act whose name contains this one comes first, and a better known
                 // artist of the very same name before the one the library holds.
@@ -61,7 +64,9 @@ impl Respond for FakeServers {
                     r#"{"data":[{"id":8,"name":"Test Artist Orchestra","nb_fan":90000,"picture_xl":"https://cdn/orchestra.jpg"},{"id":9,"name":"Test Artist","nb_fan":5000,"picture_xl":"https://cdn/somebody-else.jpg"},{"id":7,"name":"Test Artist","nb_fan":10,"picture_xl":"https://cdn/test-artist.jpg"}]}"#,
                 )
             } else if path.starts_with("/artist/9/albums") {
-                json(r#"{"data":[{"id":90,"title":"Somebody Else's Record","record_type":"album","release_date":"2010-01-01"}]}"#)
+                json(
+                    r#"{"data":[{"id":90,"title":"Somebody Else's Record","record_type":"album","release_date":"2010-01-01"}]}"#,
+                )
             } else if path.starts_with("/artist/7/albums") {
                 // The catalog's own shape: no artist and no track counts on this listing. An EP
                 // shares the album's title, and would open as the album (or the album as it).
@@ -82,7 +87,9 @@ impl Respond for FakeServers {
             return json(r#"{"id":"ar-1","name":"Test Artist","albumCount":1,"songCount":2,"size":1}"#);
         }
         if path == "/api/album" && query_value(request, "name").as_deref() == Some("Look Back") {
-            return json(r#"[{"id":"al-9","name":"Don't Look Back","albumArtist":"Test Artist","libraryId":1}]"#);
+            return json(
+                r#"[{"id":"al-9","name":"Don't Look Back","albumArtist":"Test Artist","libraryId":1}]"#,
+            );
         }
         if path == "/api/album" && query_value(request, "artist_id").as_deref() == Some("ar-1") {
             return json(r#"[{"id":"al-1","name":"Test Album","albumArtistId":"ar-1"}]"#)
@@ -204,15 +211,24 @@ async fn native_artist_the_page_and_its_albums_at_once_ask_the_catalog_once() {
     *fixture.servers.hold_catalog.lock() = Some(Duration::from_millis(300));
 
     let artist_uri = format!("/api/artist/{id}");
-    let albums_uri = format!("/api/album?_end=-1&_order=DESC&_sort=max_year&_start=0&artist_id={id}&missing=false");
+    let albums_uri =
+        format!("/api/album?_end=-1&_order=DESC&_sort=max_year&_start=0&artist_id={id}&missing=false");
     let (artist, albums) = tokio::join!(get(&fixture.app, &artist_uri), get(&fixture.app, &albums_uri));
     assert_eq!(artist.status, StatusCode::OK);
     assert_eq!(albums.status, StatusCode::OK);
 
     let calls = fixture.servers.deezer_calls.lock().clone();
     // The search that names the artist, the listing, and each album's own record, once.
-    assert_eq!(calls.iter().filter(|p| p.starts_with("/search/artist")).count(), 1, "{calls:?}");
-    assert_eq!(calls.iter().filter(|p| *p == "/artist/7/albums").count(), 1, "{calls:?}");
+    assert_eq!(
+        calls.iter().filter(|p| p.starts_with("/search/artist")).count(),
+        1,
+        "{calls:?}"
+    );
+    assert_eq!(
+        calls.iter().filter(|p| *p == "/artist/7/albums").count(),
+        1,
+        "{calls:?}"
+    );
     let mut records: Vec<&String> = calls.iter().filter(|p| p.starts_with("/album/")).collect();
     records.sort();
     assert_eq!(records, ["/album/1", "/album/2", "/album/3"], "{calls:?}");
@@ -224,7 +240,11 @@ async fn native_artist_albums_honour_the_page_asked() {
     let fixture = fixture().await;
     let id = register_outside_artist(&fixture.state);
 
-    let response = get(&fixture.app, &format!("/api/album?_start=1&_end=2&artist_id={id}")).await;
+    let response = get(
+        &fixture.app,
+        &format!("/api/album?_start=1&_end=2&artist_id={id}"),
+    )
+    .await;
     assert_eq!(response.status, StatusCode::OK);
     assert_eq!(names(&response.json()), ["Test Album"]);
     assert_eq!(response.header("X-Total-Count"), Some("3"));
@@ -237,9 +257,12 @@ async fn native_artist_albums_say_what_kind_of_release_they_are() {
     let fixture = fixture().await;
     let id = register_outside_artist(&fixture.state);
 
-    let list = get(&fixture.app, &format!("/api/album?_start=0&_end=-1&artist_id={id}"))
-        .await
-        .json();
+    let list = get(
+        &fixture.app,
+        &format!("/api/album?_start=0&_end=-1&artist_id={id}"),
+    )
+    .await
+    .json();
     let types = |name: &str| -> Vec<String> {
         let album = list
             .as_array()
@@ -264,7 +287,9 @@ async fn native_artist_a_library_artist_still_comes_from_navidrome() {
     let detail = get(&fixture.app, "/api/artist/ar-1").await.json();
     assert_eq!(detail["size"], 1);
 
-    let list = get(&fixture.app, "/api/album?_start=0&_end=-1&artist_id=ar-1").await.json();
+    let list = get(&fixture.app, "/api/album?_start=0&_end=-1&artist_id=ar-1")
+        .await
+        .json();
     let ids: Vec<&str> = list
         .as_array()
         .unwrap()
@@ -294,9 +319,7 @@ async fn native_album_search_an_owned_album_is_not_added_again_over_an_apostroph
 async fn plain_fixture(metadata: TestMetadata) -> (MockServer, AppState, App) {
     let server = MockServer::start().await;
     Mock::given(any())
-        .respond_with(
-            json(r#"[{"id":"lib-1","title":"Library Song"}]"#).insert_header("X-Total-Count", "1"),
-        )
+        .respond_with(json(r#"[{"id":"lib-1","title":"Library Song"}]"#).insert_header("X-Total-Count", "1"))
         .mount(&server)
         .await;
     let state = AppState::for_tests_with(
@@ -333,9 +356,19 @@ async fn an_external_id_on_an_unhandled_endpoint_gets_the_empty_ok() {
     assert_eq!(xml.header("content-type"), Some("application/xml"));
     assert!(xml.body.contains("<topSongs />"), "{}", xml.body);
     let json = get(&app, &format!("/rest/unstar?u=a&p=b&f=json&id={id}")).await;
-    assert_eq!(json.body, r#"{"subsonic-response":{"status":"ok","version":"1.16.1"}}"#);
+    assert_eq!(
+        json.body,
+        r#"{"subsonic-response":{"status":"ok","version":"1.16.1"}}"#
+    );
     // A DELETE on a Subsonic route reaches the catch-all too.
-    let delete = send(&app, Method::DELETE, &format!("/rest/getAlbum?id={id}"), &[], Body::empty()).await;
+    let delete = send(
+        &app,
+        Method::DELETE,
+        &format!("/rest/getAlbum?id={id}"),
+        &[],
+        Body::empty(),
+    )
+    .await;
     assert!(delete.body.contains("<album />"), "{}", delete.body);
 }
 
@@ -375,7 +408,10 @@ async fn a_native_song_detail_for_an_outside_song_is_answered_by_octo() {
     let reply = get(&app, "/api/song/ext-soulseek-song-ext-song-1").await;
     assert_eq!(reply.status, StatusCode::OK);
     assert_eq!(reply.header("content-type"), Some("application/json"));
-    assert!(reply.header("content-length").is_none(), "written to the body, so chunked");
+    assert!(
+        reply.header("content-length").is_none(),
+        "written to the body, so chunked"
+    );
     let object = reply.json();
     assert_eq!(object["path"], "Zephyr Echo/Unknown/Glass_Harbor.m4a");
     assert_eq!(object["albumId"], "ext-song-1-al");
@@ -415,7 +451,9 @@ fn native_album_objects_keep_the_csharp_shape() {
         release_types: vec!["EP".into()],
         ..Default::default()
     };
-    let text = octo_core::json::to_string(&crate::controllers::subsonic::native::native_album_object(&album, 3));
+    let text = octo_core::json::to_string(&crate::controllers::subsonic::native::native_album_object(
+        &album, 3,
+    ));
     assert_eq!(
         text,
         r#"{"id":"al","libraryId":3,"name":"T","albumArtist":"A","albumArtistId":"al-ar","maxYear":0,"minYear":0,"compilation":false,"missing":false,"songCount":2,"duration":150,"size":0,"playCount":0,"createdAt":"2020-01-01T00:00:00Z","updatedAt":"2020-01-01T00:00:00Z","tags":{"releasetype":["ep"]}}"#

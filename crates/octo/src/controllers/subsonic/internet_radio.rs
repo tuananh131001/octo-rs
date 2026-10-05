@@ -46,7 +46,9 @@ async fn stations_inner(state: &AppState, req: Request, aborted: &RequestAborted
         .relay_safe("rest/getInternetRadioStations", &call.parameters)
         .await;
     let relay = match relay {
-        Some(relay) if !relay.body.is_empty() && is_successful_subsonic_response(&relay.body, &format) => relay,
+        Some(relay) if !relay.body.is_empty() && is_successful_subsonic_response(&relay.body, &format) => {
+            relay
+        }
         Some(relay) if !relay.body.is_empty() => {
             return call.file(&relay.body, relay.content_type.as_deref());
         }
@@ -191,7 +193,11 @@ async fn prepare_starter(
     // Answer inside the bound instead. The cache produces the track under its
     // own single-flight regardless of who is still waiting, so the station is
     // simply on the next refresh; the warmer below keeps its runway filling.
-    let bound = state.settings.current().last_fm.effective_starter_publish_timeout();
+    let bound = state
+        .settings
+        .current()
+        .last_fm
+        .effective_starter_publish_timeout();
     let ready_pool = match bound {
         Some(limit) => {
             let mut preparing = preparing;
@@ -257,7 +263,10 @@ pub async fn stream_generated_radio(
     let include_icy_metadata = last_fm.enable_icy_metadata && icy_asked.trim() == "1";
     let mut headers = axum::http::HeaderMap::new();
     headers.insert(header::CONTENT_TYPE, HeaderValue::from_static("audio/mpeg"));
-    headers.insert(header::CACHE_CONTROL, HeaderValue::from_static("no-store, no-transform"));
+    headers.insert(
+        header::CACHE_CONTROL,
+        HeaderValue::from_static("no-store, no-transform"),
+    );
     headers.insert(header::ACCEPT_RANGES, HeaderValue::from_static("none"));
     // Kestrel refused a header value it could not send when the response started, inside the
     // C#'s try, and the answer became a 503.

@@ -445,7 +445,9 @@ pub fn queue_refresh_if_stale(state: &AppState, username: &str) {
     }
     let user = state.last_fm_radio_state.get_user(username);
     let settings = state.settings.current();
-    if user.stations.is_empty() || last_fm_radio_refresh_policy::is_stale(&user, &settings.last_fm, Utc::now()) {
+    if user.stations.is_empty()
+        || last_fm_radio_refresh_policy::is_stale(&user, &settings.last_fm, Utc::now())
+    {
         state.last_fm_radio_refresh_queue.enqueue(username, None);
     }
 }
@@ -573,16 +575,13 @@ pub async fn bootstrap_radio_profile(
         }
         // Every read below threw on a missing or mistyped field, and the catch around the whole
         // thing gave nothing, even for the albums already read.
-        let Some(albums) = serde_json::from_slice::<Value>(&result.body)
-            .ok()
-            .and_then(|d| {
-                d.get("subsonic-response")?
-                    .get("albumList2")?
-                    .get("album")?
-                    .as_array()
-                    .cloned()
-            })
-        else {
+        let Some(albums) = serde_json::from_slice::<Value>(&result.body).ok().and_then(|d| {
+            d.get("subsonic-response")?
+                .get("albumList2")?
+                .get("album")?
+                .as_array()
+                .cloned()
+        }) else {
             return Vec::new();
         };
         let mut output = Vec::new();
@@ -623,7 +622,14 @@ pub async fn bootstrap_radio_profile(
         output
     }
 
-    let mut seeds = fetch(proxy, authenticated_parameters, "rest/getStarred2", "starred2", true).await;
+    let mut seeds = fetch(
+        proxy,
+        authenticated_parameters,
+        "rest/getStarred2",
+        "starred2",
+        true,
+    )
+    .await;
     if (seeds.len() as i32) < last_fm.effective_minimum_plays() {
         seeds.extend(fetch_album_signals(proxy, authenticated_parameters, "frequent").await);
         seeds.extend(fetch_album_signals(proxy, authenticated_parameters, "recent").await);
@@ -651,7 +657,12 @@ pub async fn bootstrap_radio_profile(
                 is_local: true,
                 hearted: learned,
                 learned_signal: learned,
-                source: if learned { "bootstrap-star" } else { "bootstrap-random" }.to_string(),
+                source: if learned {
+                    "bootstrap-star"
+                } else {
+                    "bootstrap-random"
+                }
+                .to_string(),
                 played_at_utc: Utc::now() - TimeDelta::minutes(offset as i64 * 6),
             },
         );
@@ -822,7 +833,10 @@ mod tests {
     #[test]
     fn failed_bodies_are_told_apart_from_empty_and_unreadable_ones() {
         let failed_json = br#"{"subsonic-response":{"status":"FAILED"}}"#;
-        assert!(is_failed_subsonic_body(Some(failed_json), Some("application/json")));
+        assert!(is_failed_subsonic_body(
+            Some(failed_json),
+            Some("application/json")
+        ));
         assert!(!is_failed_subsonic_body(Some(b"{}"), Some("application/json")));
         assert!(is_failed_subsonic_body(
             Some(br#"<subsonic-response status="failed"/>"#),
@@ -834,8 +848,12 @@ mod tests {
 
     #[test]
     fn local_song_ids_come_in_response_order_from_either_shape() {
-        let json = br#"{"subsonic-response":{"searchResult2":{"song":[{"id":"a"},{"id":""},{"id":3},{"id":"b"}]}}}"#;
-        assert_eq!(extract_local_song_ids(Some(json), Some("application/json")), ["a", "b"]);
+        let json =
+            br#"{"subsonic-response":{"searchResult2":{"song":[{"id":"a"},{"id":""},{"id":3},{"id":"b"}]}}}"#;
+        assert_eq!(
+            extract_local_song_ids(Some(json), Some("application/json")),
+            ["a", "b"]
+        );
         let xml = br#"<subsonic-response xmlns="http://subsonic.org/restapi"><searchResult3><song id="x"/><album id="y"><song id="z"/></album></searchResult3></subsonic-response>"#;
         assert_eq!(extract_local_song_ids(Some(xml), Some("text/xml")), ["x", "z"]);
     }
@@ -864,7 +882,10 @@ mod tests {
             jwt_username(Some(&encode(r#"{"sub":"bob","username":"alice"}"#))).as_deref(),
             Some("alice")
         );
-        assert_eq!(jwt_username(Some(&encode(r#"{"sub":"bob"}"#))).as_deref(), Some("bob"));
+        assert_eq!(
+            jwt_username(Some(&encode(r#"{"sub":"bob"}"#))).as_deref(),
+            Some("bob")
+        );
         assert_eq!(jwt_username(Some(&encode(r#"{"username":7,"sub":"bob"}"#))), None);
         assert_eq!(jwt_username(Some("opaque")), None);
     }

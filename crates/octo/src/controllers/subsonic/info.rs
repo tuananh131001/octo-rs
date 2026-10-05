@@ -19,7 +19,10 @@ pub async fn get_album_info2(State(state): State<AppState>, req: Request) -> Res
     if is_external {
         let album = state
             .metadata_service
-            .get_album(provider.as_deref().unwrap_or(""), external_id.as_deref().unwrap_or(""))
+            .get_album(
+                provider.as_deref().unwrap_or(""),
+                external_id.as_deref().unwrap_or(""),
+            )
             .await;
         let url = album.and_then(|album| album.cover_art_url).unwrap_or_default();
         return builder
@@ -37,7 +40,11 @@ pub async fn get_album_info2(State(state): State<AppState>, req: Request) -> Res
     }
 
     // Always the v2 endpoint upstream, even for a v1 request.
-    match call.proxy.relay_safe("rest/getAlbumInfo2", &call.parameters).await {
+    match call
+        .proxy
+        .relay_safe("rest/getAlbumInfo2", &call.parameters)
+        .await
+    {
         Some(relay) => call.file(&relay.body, relay.content_type.as_deref()),
         None => builder.create_response(format, "albumInfo").into_response(),
     }
@@ -56,7 +63,10 @@ pub async fn get_artist_info2(State(state): State<AppState>, req: Request) -> Re
     if is_external {
         let artist = state
             .metadata_service
-            .get_artist(provider.as_deref().unwrap_or(""), external_id.as_deref().unwrap_or(""))
+            .get_artist(
+                provider.as_deref().unwrap_or(""),
+                external_id.as_deref().unwrap_or(""),
+            )
             .await;
         let url = artist.and_then(|artist| artist.image_url).unwrap_or_default();
         // The v1 request still gets the artistInfo2 element name.
@@ -74,7 +84,11 @@ pub async fn get_artist_info2(State(state): State<AppState>, req: Request) -> Re
             .into_response();
     }
 
-    match call.proxy.relay_safe("rest/getArtistInfo2", &call.parameters).await {
+    match call
+        .proxy
+        .relay_safe("rest/getArtistInfo2", &call.parameters)
+        .await
+    {
         Some(relay) => call.file(&relay.body, relay.content_type.as_deref()),
         None => builder.create_response(format, "artistInfo2").into_response(),
     }

@@ -745,7 +745,9 @@ impl Stores {
     ) -> Stores {
         let ttl_settings = settings.clone();
         let external_id_registry = registry.unwrap_or_else(|| {
-            Arc::new(ExternalIdRegistry::new(Some(config_dir.join("external-ids.json"))))
+            Arc::new(ExternalIdRegistry::new(Some(
+                config_dir.join("external-ids.json"),
+            )))
         });
         Stores {
             download_history: Arc::new(DownloadHistoryService::new(
@@ -841,7 +843,9 @@ impl MetadataClients {
         let deezer_rate_limiter = Arc::new(DeezerRateLimiter::new());
         let deezer_client = Arc::new(DeezerRateLimitHandler::new(Arc::clone(&deezer_rate_limiter)));
         let deezer_metadata = Arc::new(match deezer_base_url {
-            Some(base) => DeezerMetadataService::with_base_url(Arc::clone(&deezer_client), Arc::clone(settings), base),
+            Some(base) => {
+                DeezerMetadataService::with_base_url(Arc::clone(&deezer_client), Arc::clone(settings), base)
+            }
             None => DeezerMetadataService::new(Arc::clone(&deezer_client), Arc::clone(settings)),
         });
         let acoust_id_rate_limiter = Arc::new(AcoustIdRateLimiter::new());
@@ -1638,10 +1642,9 @@ impl AppState {
         for (key, value) in &overrides.raw_settings {
             store.set_raw(key, Some(value));
         }
-        let config_dir = overrides
-            .config_dir
-            .clone()
-            .unwrap_or_else(|| std::env::temp_dir().join(format!("octo-test-{}", uuid::Uuid::new_v4().simple())));
+        let config_dir = overrides.config_dir.clone().unwrap_or_else(|| {
+            std::env::temp_dir().join(format!("octo-test-{}", uuid::Uuid::new_v4().simple()))
+        });
         let restart_tracker = Arc::new(RestartTracker::new(&store));
         let settings = Arc::new(store);
         let stores = Stores::build_with(&settings, &config_dir, overrides.external_id_registry.clone());

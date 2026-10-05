@@ -49,7 +49,8 @@ pub fn routes() -> RouteSet {
         )
         .subsonic(
             "getInternetRadioStations",
-            get(internet_radio::get_internet_radio_stations).post(internet_radio::get_internet_radio_stations),
+            get(internet_radio::get_internet_radio_stations)
+                .post(internet_radio::get_internet_radio_stations),
         )
         .subsonic(
             "createInternetRadioStation",

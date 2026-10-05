@@ -29,7 +29,9 @@ pub async fn get_playlists(State(state): State<AppState>, req: Request) -> Respo
     let builder = &state.subsonic_response_builder;
     let relay = call.proxy.relay_safe("rest/getPlaylists", &call.parameters).await;
     let relay = match relay {
-        Some(relay) if !relay.body.is_empty() && is_successful_subsonic_response(&relay.body, &format) => relay,
+        Some(relay) if !relay.body.is_empty() && is_successful_subsonic_response(&relay.body, &format) => {
+            relay
+        }
         Some(relay) if !relay.body.is_empty() => {
             return call.file(&relay.body, relay.content_type.as_deref());
         }
@@ -78,11 +80,21 @@ pub async fn get_playlists(State(state): State<AppState>, req: Request) -> Respo
         )
         .collect();
     let merged = if format.eq_ignore_ascii_case("json") {
-        merge_json(&relay.body, "playlists", "playlist", rows.into_iter().map(Value::Object))
-            .map(|body| SubsonicReply::file(body, "application/json"))
+        merge_json(
+            &relay.body,
+            "playlists",
+            "playlist",
+            rows.into_iter().map(Value::Object),
+        )
+        .map(|body| SubsonicReply::file(body, "application/json"))
     } else {
-        merge_xml(&relay.body, "playlists", "playlist", rows.iter().map(field_attributes))
-            .map(|body| SubsonicReply::file(body, "application/xml"))
+        merge_xml(
+            &relay.body,
+            "playlists",
+            "playlist",
+            rows.iter().map(field_attributes),
+        )
+        .map(|body| SubsonicReply::file(body, "application/xml"))
     };
     match merged {
         Some(reply) => reply.into_response(),
@@ -111,7 +123,10 @@ pub(super) fn merge_json(
 ) -> Option<Vec<u8>> {
     let text = std::str::from_utf8(body).ok()?;
     let mut root = Node::parse(text).ok()?;
-    let response = root.as_object_mut()?.get_mut("subsonic-response")?.as_object_mut()?;
+    let response = root
+        .as_object_mut()?
+        .get_mut("subsonic-response")?
+        .as_object_mut()?;
     if !matches!(response.get(container), Some(Node::Object(_))) {
         response.insert(container.to_string(), Node::object());
     }
@@ -246,10 +261,15 @@ async fn get_playlist_inner(state: &AppState, req: Request, aborted: &RequestAbo
             if song.is_local {
                 return song;
             }
-            state.sync_catalog.try_get_song(&username, &song.id).unwrap_or(song)
+            state
+                .sync_catalog
+                .try_get_song(&username, &song.id)
+                .unwrap_or(song)
         })
         .collect();
-    state.radio_queues.register(songs.iter().map(|song| song.id.clone()));
+    state
+        .radio_queues
+        .register(songs.iter().map(|song| song.id.clone()));
     let metadata = Arc::clone(&state.metadata_service);
     let prewarm = songs.clone();
     tokio::spawn(async move { metadata.prewarm_you_tube_ids(&prewarm, 8).await });
@@ -260,11 +280,25 @@ async fn get_playlist_inner(state: &AppState, req: Request, aborted: &RequestAbo
 }
 
 pub async fn mutate_internet_radio_station(State(state): State<AppState>, req: Request) -> Response {
-    mutate(state, req, "id", "updateInternetRadioStation", "Unable to update internet radio station").await
+    mutate(
+        state,
+        req,
+        "id",
+        "updateInternetRadioStation",
+        "Unable to update internet radio station",
+    )
+    .await
 }
 
 pub async fn mutate_playlist(State(state): State<AppState>, req: Request) -> Response {
-    mutate(state, req, "playlistId", "updatePlaylist", "Unable to update playlist").await
+    mutate(
+        state,
+        req,
+        "playlistId",
+        "updatePlaylist",
+        "Unable to update playlist",
+    )
+    .await
 }
 
 /// Refuses Octo's own ids, and relays everything else as `rest/<last path segment>` in the

@@ -56,8 +56,16 @@ pub async fn search3(State(state): State<AppState>, req: Request) -> Result<Resp
     // the relay target, the envelope we answer with, and the empty-query passthrough
     // all have to agree.
     let is_search2 = dotnet::to_lower_invariant(&call.path()).contains("search2");
-    let search_endpoint = if is_search2 { "rest/search2" } else { "rest/search3" };
-    let envelope = if is_search2 { "searchResult2" } else { "searchResult3" };
+    let search_endpoint = if is_search2 {
+        "rest/search2"
+    } else {
+        "rest/search3"
+    };
+    let envelope = if is_search2 {
+        "searchResult2"
+    } else {
+        "searchResult3"
+    };
 
     // Page one builds the discovery rows and remembers what it showed. A later page
     // carries on from that instead of going to Navidrome at the same offset, which
@@ -76,8 +84,15 @@ pub async fn search3(State(state): State<AppState>, req: Request) -> Result<Resp
 
     if !dotnet::is_blank(&clean_query)
         && song_offset > 0
-        && let Some(later_page) =
-            search_later_song_page(&state, &call, &clean_query, song_offset, search_endpoint, envelope).await?
+        && let Some(later_page) = search_later_song_page(
+            &state,
+            &call,
+            &clean_query,
+            song_offset,
+            search_endpoint,
+            envelope,
+        )
+        .await?
     {
         return Ok(later_page);
     }
@@ -329,9 +344,11 @@ async fn search_later_song_page(
     // request's own key, so it is also the credential check this page has not yet had.
     let key = song_order_key(state, call, search_endpoint, clean_query).await?;
     let mapper = model_mapper(state);
-    let mut order = key
-        .as_deref()
-        .and_then(|key| state.search_song_order_cache.get(key, requested_songs, song_offset));
+    let mut order = key.as_deref().and_then(|key| {
+        state
+            .search_song_order_cache
+            .get(key, requested_songs, song_offset)
+    });
     if order.is_none() {
         // Nothing remembered: expired, or Octo restarted since page one. Build the order
         // again as if page one had asked for this page's count. The build is shared with
@@ -447,7 +464,13 @@ async fn search_later_song_page(
             .take(leading_len)
             .cloned()
             .chain(external_songs.iter().map(|song| song.id.clone()))
-            .chain(local_song_ids.iter().skip(leading_len).take(trailing_len).cloned())
+            .chain(
+                local_song_ids
+                    .iter()
+                    .skip(leading_len)
+                    .take(trailing_len)
+                    .cloned(),
+            )
             .collect::<Vec<_>>(),
     );
 
@@ -651,7 +674,8 @@ async fn sync_walk_page(
             .sync_catalog
             .remember(&username, kind, local_total, Arc::clone(&catalog));
 
-        let (slice_songs, slice_albums, slice_artists) = SyncCatalogService::slice(&catalog, kind, start, take);
+        let (slice_songs, slice_albums, slice_artists) =
+            SyncCatalogService::slice(&catalog, kind, start, take);
         if !slice_artists.is_empty() {
             artists = slice_artists;
         }

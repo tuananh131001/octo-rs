@@ -11,8 +11,8 @@ use axum::http::{HeaderMap, HeaderName, HeaderValue, Method, StatusCode, header}
 use axum::response::{IntoResponse, Response};
 use bytes::Bytes;
 use octo_core::common::dotnet;
-use octo_core::json::dom::Node;
 use octo_core::json::datetime::format_utc;
+use octo_core::json::dom::Node;
 use octo_core::models::domain::{Album, Artist, Song};
 use octo_core::models::radio::LastFmRadioStation;
 use octo_core::soulseek::RoutingKind;
@@ -116,7 +116,11 @@ fn has_external_id(state: &AppState, parameters: &Parameters) -> bool {
 /// rest/getSomething -> "something"; best-effort element name for an empty-ok response
 /// (JSON ignores it; XML just needs a well-formed element).
 pub fn element_for(endpoint: &str) -> String {
-    let name = endpoint.split('/').next_back().unwrap_or("response").replace(".view", "");
+    let name = endpoint
+        .split('/')
+        .next_back()
+        .unwrap_or("response")
+        .replace(".view", "");
     let name = if dotnet::starts_with_ignore_case(&name, "get") && dotnet::utf16_len(&name) > 3 {
         let mut rest = name[3..].chars();
         match rest.next() {
@@ -167,7 +171,10 @@ fn written_json(body: Vec<u8>, extra: HeaderMap, content_type: &str) -> Response
     written_body(StatusCode::OK, headers, body)
 }
 
-async fn try_serve_native_radio(state: &AppState, request: &NativeRequest<'_>) -> Result<Option<Response>, AppError> {
+async fn try_serve_native_radio(
+    state: &AppState,
+    request: &NativeRequest<'_>,
+) -> Result<Option<Response>, AppError> {
     const PREFIX: &str = "api/playlist";
     let endpoint = request.endpoint;
     let is_list = endpoint.eq_ignore_ascii_case(PREFIX);
@@ -180,7 +187,11 @@ async fn try_serve_native_radio(state: &AppState, request: &NativeRequest<'_>) -
     } else {
         endpoint[PREFIX.len() + 1..].trim_matches('/').to_string()
     };
-    let id = tail.split('/').find(|part| !part.is_empty()).unwrap_or("").to_string();
+    let id = tail
+        .split('/')
+        .find(|part| !part.is_empty())
+        .unwrap_or("")
+        .to_string();
     let reserved = is_octo_playlist_id(&id);
     let is_get = request.method == Method::GET;
     if reserved && !is_get {
@@ -207,13 +218,23 @@ async fn try_serve_native_radio(state: &AppState, request: &NativeRequest<'_>) -
     // Not caught: a relay failure is the global handler's.
     let raw = request.proxy.relay_raw(relay_endpoint, &relay_parameters).await?;
     if !(200..300).contains(&raw.status) {
-        let mut response = file_reply(&raw.body, Some(raw.content_type.as_deref().unwrap_or("application/json")), "json");
+        let mut response = file_reply(
+            &raw.body,
+            Some(raw.content_type.as_deref().unwrap_or("application/json")),
+            "json",
+        );
         *response.status_mut() = StatusCode::from_u16(raw.status).unwrap_or(StatusCode::BAD_GATEWAY);
         return Ok(Some(response));
     }
     let username = native_username(state, request.parameters, request.headers);
     let stations = playlist_stations(state, &username);
-    let unchanged = || file_reply(&raw.body, Some(raw.content_type.as_deref().unwrap_or("application/json")), "json");
+    let unchanged = || {
+        file_reply(
+            &raw.body,
+            Some(raw.content_type.as_deref().unwrap_or("application/json")),
+            "json",
+        )
+    };
     if tail.is_empty() {
         let Ok(text) = std::str::from_utf8(&raw.body) else {
             return Ok(Some(unchanged()));
@@ -227,7 +248,10 @@ async fn try_serve_native_radio(state: &AppState, request: &NativeRequest<'_>) -
         let end = page_number(request.parameters, "_end").unwrap_or(total as i32);
         let page = Node::Array(page(&rows, start, end));
         queue_refresh_if_stale(state, &username);
-        return Ok(Some(file_with_total(page.to_json_string(false).into_bytes(), total)));
+        return Ok(Some(file_with_total(
+            page.to_json_string(false).into_bytes(),
+            total,
+        )));
     }
 
     let Some(station) = stations.into_iter().find(|station| station.id == id) else {
@@ -239,7 +263,9 @@ async fn try_serve_native_radio(state: &AppState, request: &NativeRequest<'_>) -
     if dotnet::to_lower_invariant(&tail).ends_with("/tracks") {
         let mut songs = materialize_station(state, request.proxy, &station, request.parameters).await;
         state.metadata_service.complete_song_lengths(&mut songs);
-        state.radio_queues.register(songs.iter().map(|song| song.id.clone()));
+        state
+            .radio_queues
+            .register(songs.iter().map(|song| song.id.clone()));
         let metadata = Arc::clone(&state.metadata_service);
         let prewarm = songs.clone();
         tokio::spawn(async move { metadata.prewarm_you_tube_ids(&prewarm, 8).await });
@@ -297,7 +323,10 @@ async fn try_serve_native_external_song(state: &AppState, endpoint: &str) -> Opt
     }
     let song = state
         .metadata_service
-        .get_song(provider.as_deref().unwrap_or(""), external_id.as_deref().unwrap_or(""))
+        .get_song(
+            provider.as_deref().unwrap_or(""),
+            external_id.as_deref().unwrap_or(""),
+        )
         .await?;
 
     // Enrich (Deezer album/year/art) so the detail matches the search-list row exactly;
@@ -309,10 +338,17 @@ async fn try_serve_native_external_song(state: &AppState, endpoint: &str) -> Opt
     // Lazy-resolve the accurate YouTube duration at play. Navidrome-mode clients re-fetch
     // this endpoint when a track starts, so this is where the scrub bar gets the real length
     // for results past the search's top-N (which are already resolved).
-    state.metadata_service.resolve_top_durations(&mut one, false).await;
+    state
+        .metadata_service
+        .resolve_top_durations(&mut one, false)
+        .await;
 
     let body = octo_core::json::to_string(&native_song_object(state, &one[0]));
-    Some(written_json(body.into_bytes(), HeaderMap::new(), "application/json"))
+    Some(written_json(
+        body.into_bytes(),
+        HeaderMap::new(),
+        "application/json",
+    ))
 }
 
 /// The id after `prefix` when it is a leaf (`api/song/{id}` and nothing below it).
@@ -341,14 +377,22 @@ async fn try_inject_native_song_search(state: &AppState, request: &NativeRequest
     // Only a text search carries discovery intent. No title filter = library
     // browse; a non-zero _start = a later page. Both stay passthrough so we
     // never duplicate injected rows across pages or disturb navigation.
-    let term = request.parameters.get("title").map_or("", |t| t.trim()).to_string();
+    let term = request
+        .parameters
+        .get("title")
+        .map_or("", |t| t.trim())
+        .to_string();
     if dotnet::is_blank(&term) || page_number(request.parameters, "_start").is_some_and(|start| start > 0) {
         return None;
     }
 
     // Relay the real query first; we append to whatever the library returned.
     // Upstream trouble lets the normal path surface it.
-    let raw = request.proxy.relay_raw(request.endpoint, request.parameters).await.ok()?;
+    let raw = request
+        .proxy
+        .relay_raw(request.endpoint, request.parameters)
+        .await
+        .ok()?;
     if raw.status != 200 {
         return None;
     }
@@ -405,11 +449,17 @@ fn written_with_upstream_headers(raw: &RawRelayResult, rows: Vec<Node>) -> Respo
         if name.eq_ignore_ascii_case("X-Total-Count") {
             continue;
         }
-        if let (Ok(name), Ok(value)) = (HeaderName::from_bytes(name.as_bytes()), HeaderValue::from_str(value)) {
+        if let (Ok(name), Ok(value)) = (
+            HeaderName::from_bytes(name.as_bytes()),
+            HeaderValue::from_str(value),
+        ) {
             headers.insert(name, value);
         }
     }
-    headers.insert(HeaderName::from_static("x-total-count"), HeaderValue::from(rows.len()));
+    headers.insert(
+        HeaderName::from_static("x-total-count"),
+        HeaderValue::from(rows.len()),
+    );
     let body = Node::Array(rows).to_json_string(false).into_bytes();
     written_json(
         body,
@@ -494,12 +544,20 @@ async fn try_inject_native_album_search(state: &AppState, request: &NativeReques
         return None;
     }
 
-    let term = request.parameters.get("name").map_or("", |t| t.trim()).to_string();
+    let term = request
+        .parameters
+        .get("name")
+        .map_or("", |t| t.trim())
+        .to_string();
     if dotnet::is_blank(&term) || page_number(request.parameters, "_start").is_some_and(|start| start > 0) {
         return None;
     }
 
-    let raw = request.proxy.relay_raw(request.endpoint, request.parameters).await.ok()?;
+    let raw = request
+        .proxy
+        .relay_raw(request.endpoint, request.parameters)
+        .await
+        .ok()?;
     if raw.status != 200 {
         return None;
     }
@@ -578,7 +636,11 @@ async fn try_serve_native_external_album(state: &AppState, endpoint: &str) -> Op
         .get_album(SoulseekMetadataService::PROVIDER_NAME, &id)
         .await?;
     let body = octo_core::json::to_string(&native_album_object(&album, 1));
-    Some(written_json(body.into_bytes(), HeaderMap::new(), "application/json"))
+    Some(written_json(
+        body.into_bytes(),
+        HeaderMap::new(),
+        "application/json",
+    ))
 }
 
 fn routing_kind(state: &AppState, id: &str) -> Option<RoutingKind> {
@@ -609,7 +671,10 @@ async fn try_serve_native_album_songs(state: &AppState, request: &NativeRequest<
         .map(|song| native_song_object(state, song))
         .collect();
     let mut headers = HeaderMap::new();
-    headers.insert(HeaderName::from_static("x-total-count"), HeaderValue::from(album.songs.len()));
+    headers.insert(
+        HeaderName::from_static("x-total-count"),
+        HeaderValue::from(album.songs.len()),
+    );
     let body = octo_core::json::to_string(&Value::Array(rows));
     Some(written_json(body.into_bytes(), headers, "application/json"))
 }
@@ -631,7 +696,11 @@ async fn try_serve_native_external_artist(state: &AppState, endpoint: &str) -> O
     // that request is the one that asks the catalog for the rest.
     let albums = outside_artist_albums(state, &id, &artist.name, true).await;
     let body = octo_core::json::to_string(&native_artist_object(&artist, &albums));
-    Some(written_json(body.into_bytes(), HeaderMap::new(), "application/json"))
+    Some(written_json(
+        body.into_bytes(),
+        HeaderMap::new(),
+        "application/json",
+    ))
 }
 
 /// Native albums by artist: GET /api/album?artist_id={outside artist id}, the list an artist
@@ -648,7 +717,8 @@ async fn try_serve_native_artist_albums(state: &AppState, request: &NativeReques
     if routing.kind != RoutingKind::Artist {
         return None;
     }
-    let albums = outside_artist_albums(state, artist_id, routing.artist.as_deref().unwrap_or(""), false).await;
+    let albums =
+        outside_artist_albums(state, artist_id, routing.artist.as_deref().unwrap_or(""), false).await;
 
     // Feishin asks for a whole discography with _end=-1, so an end that is not past the
     // start means the rest of the list rather than nothing.
@@ -668,7 +738,10 @@ async fn try_serve_native_artist_albums(state: &AppState, request: &NativeReques
         .map(|album| native_album_object(album, 1))
         .collect();
     let mut headers = HeaderMap::new();
-    headers.insert(HeaderName::from_static("x-total-count"), HeaderValue::from(albums.len()));
+    headers.insert(
+        HeaderName::from_static("x-total-count"),
+        HeaderValue::from(albums.len()),
+    );
     let body = octo_core::json::to_string(&Value::Array(rows));
     Some(written_json(body.into_bytes(), headers, "application/json"))
 }
@@ -706,7 +779,10 @@ async fn outside_artist_albums(
 /// flat (older Navidrome) and under "stats" by role (newer Navidrome), since clients read one
 /// or the other. The image URLs are the three getArtistInfo2 gives.
 fn native_artist_object(artist: &Artist, albums: &[Album]) -> Value {
-    let song_count: i64 = albums.iter().map(|album| i64::from(album.song_count.unwrap_or(0))).sum();
+    let song_count: i64 = albums
+        .iter()
+        .map(|album| i64::from(album.song_count.unwrap_or(0)))
+        .sum();
     let stats = || json!({ "albumCount": albums.len(), "songCount": song_count, "size": 0 });
     let mut object = json!({
         "id": artist.id,
@@ -734,7 +810,11 @@ fn native_artist_object(artist: &Artist, albums: &[Album]) -> Value {
 /// model has NO "artist"/"artistId" field — it uses albumArtist/albumArtistId — and
 /// "duration" is seconds as a float.
 pub(crate) fn native_album_object(album: &Album, library_id: i32) -> Value {
-    let duration: i64 = album.songs.iter().map(|song| i64::from(song.duration.unwrap_or(0))).sum();
+    let duration: i64 = album
+        .songs
+        .iter()
+        .map(|song| i64::from(song.duration.unwrap_or(0)))
+        .sum();
     let song_count = if album.songs.is_empty() {
         album.song_count.unwrap_or(0) as usize
     } else {

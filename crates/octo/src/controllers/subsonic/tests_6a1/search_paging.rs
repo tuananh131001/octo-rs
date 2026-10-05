@@ -83,8 +83,7 @@ impl Upstream {
 }
 
 fn ok(body: String, content_type: &str) -> ResponseTemplate {
-    ResponseTemplate::new(200)
-        .set_body_raw(body, format!("{content_type}; charset=utf-8").as_str())
+    ResponseTemplate::new(200).set_body_raw(body, format!("{content_type}; charset=utf-8").as_str())
 }
 
 impl Respond for Upstream {
@@ -164,7 +163,11 @@ impl Respond for Upstream {
             .take(count.max(0) as usize)
             .collect();
         let title = |id: &str| format!("Library Song {}", &id["lib-".len()..]);
-        let envelope = if endpoint == "search2" { "searchResult2" } else { "searchResult3" };
+        let envelope = if endpoint == "search2" {
+            "searchResult2"
+        } else {
+            "searchResult3"
+        };
 
         if xml {
             let ns = "http://subsonic.org/restapi";
@@ -258,7 +261,15 @@ async fn fixture(discovery: bool) -> Fixture {
     }
 }
 
-async fn page(app: &App, offset: i32, count: i32, endpoint: &str, format: &str, user: &str, client: &str) -> Vec<String> {
+async fn page(
+    app: &App,
+    offset: i32,
+    count: i32,
+    endpoint: &str,
+    format: &str,
+    user: &str,
+    client: &str,
+) -> Vec<String> {
     let body = get_string(
         app,
         &format!(
@@ -286,7 +297,11 @@ fn song_ids(body: &str, endpoint: &str, format: &str) -> Vec<String> {
         return ids;
     }
     let document: Value = serde_json::from_str(body).expect("JSON");
-    let envelope = if endpoint == "search2" { "searchResult2" } else { "searchResult3" };
+    let envelope = if endpoint == "search2" {
+        "searchResult2"
+    } else {
+        "searchResult3"
+    };
     document["subsonic-response"][envelope]["song"]
         .as_array()
         .map(|songs| {
@@ -304,7 +319,12 @@ async fn alice(app: &App, offset: i32, count: i32) -> Vec<String> {
 
 #[tokio::test]
 async fn three_pages_show_the_whole_search_once_in_page_ones_order() {
-    for (endpoint, format) in [("search3", "json"), ("search3", "xml"), ("search2", "json"), ("search2", "xml")] {
+    for (endpoint, format) in [
+        ("search3", "json"),
+        ("search3", "xml"),
+        ("search2", "json"),
+        ("search2", "xml"),
+    ] {
         let fixture = fixture(true).await;
         let app = &fixture.app;
         let first = page(app, 0, 20, endpoint, format, "alice", "Test").await;
@@ -316,7 +336,11 @@ async fn three_pages_show_the_whole_search_once_in_page_ones_order() {
         // less the one the library already has.
         let whole = whole_search();
         assert_eq!(first, whole[..19], "{endpoint} {format}");
-        assert_eq!(first.len() + second.len() + third.len(), 19 + 20 + 15, "{endpoint} {format}");
+        assert_eq!(
+            first.len() + second.len() + third.len(),
+            19 + 20 + 15,
+            "{endpoint} {format}"
+        );
         let all: Vec<String> = first.iter().chain(&second).chain(&third).cloned().collect();
         let distinct: std::collections::HashSet<_> = all.iter().collect();
         assert_eq!(distinct.len(), all.len(), "{endpoint} {format}");
@@ -524,8 +548,15 @@ async fn no_identity_neither_reads_nor_writes_the_search_order() {
         is_local: false,
         ..Default::default()
     };
-    cache.set(&key(""), SearchSongOrder::from(Arc::new(vec![planted]), 20, 12, 8, &[]));
-    let anonymous = song_ids(&get_string(&fixture.app, &search(20, 20, "")).await, "search3", "json");
+    cache.set(
+        &key(""),
+        SearchSongOrder::from(Arc::new(vec![planted]), 20, 12, 8, &[]),
+    );
+    let anonymous = song_ids(
+        &get_string(&fixture.app, &search(20, 20, "")).await,
+        "search3",
+        "json",
+    );
     let named = song_ids(
         &get_string(&fixture.app, &search(20, 20, "&u=carol&t=token&s=salt")).await,
         "search3",

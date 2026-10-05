@@ -51,10 +51,10 @@ fn boom() -> &'static str {
     panic!("handler blew up")
 }
 
-/// Routes standing in for controllers that are not ported yet.
+/// Routes standing in for controllers (`testPing` for ping, which the controller now answers).
 fn dummy_routes() -> RouteSet {
     RouteSet::new()
-        .subsonic("ping", get(|| async { "pong" }).post(|| async { "pong" }))
+        .subsonic("testPing", get(|| async { "pong" }).post(|| async { "pong" }))
         .route("/test/panic", get(|| async { boom() }))
         .route(
             "/test/not-configured",
@@ -154,7 +154,7 @@ fn assert_problem_404(r: &Reply, what: &str) {
 
 #[tokio::test]
 async fn cors_a_request_with_origin_gets_allow_origin_and_the_exposed_headers() {
-    let r = get_("/rest/ping", &[("Origin", "http://player.example")]).await;
+    let r = get_("/rest/testPing", &[("Origin", "http://player.example")]).await;
     assert_eq!(r.status, StatusCode::OK);
     assert_eq!(r.header("access-control-allow-origin"), Some("*"));
     assert_eq!(
@@ -163,7 +163,7 @@ async fn cors_a_request_with_origin_gets_allow_origin_and_the_exposed_headers() 
     );
     assert!(r.header("vary").is_none(), "no Vary");
 
-    let r = get_("/rest/ping", &[]).await;
+    let r = get_("/rest/testPing", &[]).await;
     assert!(!r.has_cors(), "no Origin, no CORS headers");
 }
 
@@ -206,7 +206,7 @@ async fn cors_preflight_echoes_the_method_and_headers_with_204() {
 
     let r = send(
         Method::OPTIONS,
-        "/rest/ping",
+        "/rest/testPing",
         &[("Origin", "http://x"), ("Access-Control-Request-Method", "GET")],
     )
     .await;
@@ -690,14 +690,14 @@ async fn everything_else_is_relayed_and_without_a_url_says_so() {
 
 #[tokio::test]
 async fn paths_are_canonicalised_before_routing() {
-    for uri in ["/REST/Ping.VIEW", "/rest/ping/", "/Rest/PING?f=json"] {
+    for uri in ["/REST/TestPing.VIEW", "/rest/testping/", "/Rest/TESTPING?f=json"] {
         let r = get_(uri, &[]).await;
         assert_eq!((r.status, r.text().as_str()), (StatusCode::OK, "pong"), "{uri}");
     }
     // A method the route does not take reaches the catch-all, never a 405; so does HEAD.
     // (No Navidrome URL here, so the relay answers its 200 error envelope.)
     for method in [Method::PUT, Method::DELETE, Method::HEAD] {
-        let r = send(method.clone(), "/rest/ping", &[]).await;
+        let r = send(method.clone(), "/rest/testPing", &[]).await;
         assert_eq!(r.status, StatusCode::OK, "{method}");
         if method != Method::HEAD {
             assert!(

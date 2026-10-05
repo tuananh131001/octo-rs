@@ -46,7 +46,13 @@ impl Reply {
     }
 }
 
-pub(super) async fn send(app: &App, method: Method, uri: &str, headers: &[(&str, &str)], body: Body) -> Reply {
+pub(super) async fn send(
+    app: &App,
+    method: Method,
+    uri: &str,
+    headers: &[(&str, &str)],
+    body: Body,
+) -> Reply {
     let mut request = Request::builder().method(method).uri(uri);
     for (name, value) in headers {
         request = request.header(*name, *value);
@@ -71,7 +77,12 @@ pub(super) async fn get(app: &App, uri: &str) -> Reply {
 
 pub(super) async fn get_string(app: &App, uri: &str) -> String {
     let reply = get(app, uri).await;
-    assert!(reply.status.is_success(), "{uri}: {} {}", reply.status, reply.body);
+    assert!(
+        reply.status.is_success(),
+        "{uri}: {} {}",
+        reply.status,
+        reply.body
+    );
     reply.body
 }
 
