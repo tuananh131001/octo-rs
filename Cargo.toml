@@ -4,9 +4,9 @@ members = ["crates/*"]
 
 [workspace.package]
 # Not the release the dashboard shows: CARGO_PKG_VERSION cannot hold the leading zero of
-# 2026.10.03.2. That comes from the root VERSION file (or OCTO_VERSION at build time), read by
+# 2026.10.04. That comes from the root VERSION file (or OCTO_VERSION at build time), read by
 # crates/octo-core/build.rs.
-version = "2026.10.3"
+version = "2026.10.4"
 edition = "2024"
 rust-version = "1.99"
 license = "GPL-3.0-only"

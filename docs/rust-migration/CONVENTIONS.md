@@ -28,7 +28,7 @@ Files beside the code that the build or the binary reads:
 
 | Path | What | How it is used |
 |---|---|---|
-| `VERSION` | the release (`2026.10.03.2`) | compiled into `octo_core::VERSION` by `crates/octo-core/build.rs`; `OCTO_VERSION` at build time overrides it |
+| `VERSION` | the release (`2026.10.04`) | compiled into `octo_core::VERSION` by `crates/octo-core/build.rs`; `OCTO_VERSION` at build time overrides it |
 | `crates/octo-core/assets/` | the built-in `appsettings.json` and `appsettings.Development.json` | compiled in |
 | `crates/octo-media/assets/cover-design/` | the list-cover design: JSON, Inter fonts, painted backgrounds | compiled in; `Fonts/OFL.txt` ships as `/app/licenses/Inter-OFL.txt` |
 | `crates/octo/wwwroot/admin/` | the admin UI (HTML/JS/CSS, no build step) | served from disk: `/app/wwwroot` in the image, this directory in a debug build |

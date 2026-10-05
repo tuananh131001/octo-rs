@@ -1,5 +1,5 @@
 //! Sets `OCTO_RELEASE_VERSION` for `octo_core::VERSION`: the release this build is, as the
-//! dashboard, the User-Agent and the update check show it (`2026.10.03.2`).
+//! dashboard, the User-Agent and the update check show it (`2026.10.04`).
 //!
 //! `OCTO_VERSION` in the build's environment wins (a CI or Docker build can stamp a release
 //! without editing a file); otherwise the repository's `VERSION` file, which a release bumps
