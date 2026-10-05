@@ -39,8 +39,8 @@ depends on have been merged into `rust-rewrite`. Status: ☐ not started · ◐ 
 | | Task | C# sources | Tests |
 |---|---|---|---|
 | ☑ | 4-A Soulseek client and metadata | `Soulseek/{SoulseekClient,SoulseekLink,SoulseekMetadataService,AlbumFolderPicker,SoulseekStartupValidator}`, `IMusicMetadataService` | SoulseekMetadataService, SoulseekCandidateMatching, SoulseekDenyList, SoulseekOutage, SoulseekResolveRetry, SoulseekTransferPoll |
-| ◐ | 4-B download base and verification | `Common/BaseDownloadService`, `Fingerprint/DownloadVerificationService`, `CoverArt/DownloadCoverResolver`, `Common/AlbumFillIn`, `IDownloadService` | DownloadPlacement, DownloadTagging, DownloadAttribution, AlbumFolder, AlbumFillIn, DownloadVerificationDecision, FailedRelayDetection, RelayedRepeats, CoverChain |
-| ☐ | 4-C Soulseek download service | `Soulseek/SoulseekDownloadService` | ParallelDownload, ParallelLockSplit, SoulseekSlowTransfer, SoulseekIncompleteFolder |
+| ☑ | 4-B download base and verification | `Common/BaseDownloadService`, `Fingerprint/DownloadVerificationService`, `CoverArt/DownloadCoverResolver`, `Common/AlbumFillIn`, `IDownloadService` | DownloadPlacement, DownloadTagging, DownloadAttribution, AlbumFolder, AlbumFillIn, DownloadVerificationDecision, FailedRelayDetection, RelayedRepeats, CoverChain |
+| ◐ | 4-C Soulseek download service | `Soulseek/SoulseekDownloadService` | ParallelDownload, ParallelLockSplit, SoulseekSlowTransfer, SoulseekIncompleteFolder |
 | ☑ | 4-D acquisition orchestration | `Common/{AcquisitionTracker,AcquisitionWorker,AcquisitionActivity,TrackAcquisitionQueue,HeartAcquisitionCoordinator,StarOnArrival,SoulseekHoldResumer,ExternalSearchService,CacheCleanupService}`, `Library/{HeartOwnership,LibraryOwnership,ReplacementHandoff}`, `Local/LocalLibraryService` | AcquisitionTracker, HeartAcquisitionCoordinator, HeartOwnership, StarOnArrival, LibraryOwnership, LocalLibraryService, ExternalSearchService, HonestOutsideSongs, OutsideSongSignIn |
 | ☑ | 4-E Lidarr | `Lidarr/*` | LidarrClient, LidarrHeartProtection, LidarrTrackFetcher |
 
@@ -49,9 +49,9 @@ depends on have been merged into `rust-rewrite`. Status: ☐ not started · ◐ 
 | | Task | C# sources | Tests |
 |---|---|---|---|
 | ☑ | 5-A library actions | `Library/{LibraryActionExecutor,LibraryActionJournal,LibraryActionQuarantine,LibraryActionPlaylistWorker,LibraryActionPlaylistProvisioner,LibraryActionRatingWorker,UpgradeSources}` | LibraryActionKeep, LibraryActionKeepIdentity, LibraryActionOneAtATime, LibraryActionQuarantine, LibraryActionStar, LibraryActionWorker, UpgradeSources, KeptIdentity |
-| ◐ | 5-B queues and sweeps | `Library/{UpgradeQueue,QualityUpgradeWorker,NoticeQueue,NoticePlaylistWorker,LibraryReviewSweepWorker,DuplicateScanWorker}` | UpgradeQueue, QualityUpgrade, NoticeQueue, LibraryReviewSweep, Duplicate |
+| ☑ | 5-B queues and sweeps | `Library/{UpgradeQueue,QualityUpgradeWorker,NoticeQueue,NoticePlaylistWorker,LibraryReviewSweepWorker,DuplicateScanWorker}` | UpgradeQueue, QualityUpgrade, NoticeQueue, LibraryReviewSweep, Duplicate |
 | ☑ | 5-C Last.fm radio | `LastFm/*Radio*`, `IcyMetadataStream`, `Models/Radio/LastFmRadioState`, `Library/GeneratedPlaylistService` | LastFmRadioCore, LastFmRadioSpacing, LastFmRadioTrackResolverMatch, GeneratedPlaylist |
-| ◐ | 5-D genre backfill and cover upgrade | `Metadata/GenreBackfillWorker`, `CoverArt/{CoverUpgrade,AlbumCoverFinder}` | GenreBackfill, GenreBackfillUndo, CoverUpgrade |
+| ☑ | 5-D genre backfill and cover upgrade | `Metadata/GenreBackfillWorker`, `CoverArt/{CoverUpgrade,AlbumCoverFinder}` | GenreBackfill, GenreBackfillUndo, CoverUpgrade |
 | ☑ | 5-E lyrics library | `Lyrics/{LyricsLibraryJob,LyricsLibrarySteps}` | LyricsLibrarySteps |
 | ☑ | 5-F sync catalog and playlists | `Subsonic/{SyncCatalogService,PlaylistSyncService}` | SyncCatalog, ExternalPlayback |
 
@@ -59,6 +59,6 @@ depends on have been merged into `rust-rewrite`. Status: ☐ not started · ◐ 
 
 | | Task | C# sources | Tests |
 |---|---|---|---|
-| ☐ | 6-A Subsonic controller | `Controllers/SubSonicController` (4.4k lines) | AcquisitionEndpoint, LibraryActionEndpoint, LastFmRadioController |
-| ☐ | 6-B admin controllers | `Controllers/{AdminController,CoverUpgradeController,LyricsAdminController,UpdateController}` | AdminContract |
+| ◐ | 6-A Subsonic controller | `Controllers/SubSonicController` (4.4k lines) | AcquisitionEndpoint, LibraryActionEndpoint, LastFmRadioController |
+| ◐ | 6-B admin controllers | `Controllers/{AdminController,CoverUpgradeController,LyricsAdminController,UpdateController}` | AdminContract |
 | ☐ | 6-C parity run, Dockerfile, CI, cutover | Phase 9 | the full corpus |

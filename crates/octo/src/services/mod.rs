@@ -27,4 +27,6 @@ pub mod validation;
 pub mod you_tube;
 
 #[cfg(test)]
+pub(crate) mod test_audio;
+#[cfg(test)]
 pub(crate) mod test_support;

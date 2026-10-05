@@ -286,7 +286,15 @@ impl TagFile {
             }
             Format::Flac => {
                 let mut flac = FlacFile::read_from(&mut reader, parse_options(false))?;
-                file.set_properties(flac.properties().duration(), flac.properties().sample_rate());
+                // TagLib#'s FLAC length needs audio after the metadata (`StreamHeader.Duration` is
+                // zero for a stream length of zero), whatever STREAMINFO claims; lofty reads it
+                // from STREAMINFO alone, and leaves the audio bitrate at zero for no audio.
+                let duration = if flac.properties().audio_bitrate() == 0 {
+                    Duration::ZERO
+                } else {
+                    flac.properties().duration()
+                };
+                file.set_properties(duration, flac.properties().sample_rate());
                 let comments = flac.remove_vorbis_comments();
                 file.xiph = Some(
                     comments

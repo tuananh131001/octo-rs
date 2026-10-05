@@ -1,0 +1,525 @@
+//! Where a download goes: the configured layout, the name it is filed under, a path already
+//! taken, a library action's replacement, the files beside it, and the clean-up behind it. Part
+//! of `BaseDownloadService.cs`.
+
+use std::path::Path;
+use std::sync::LazyLock;
+
+use octo_core::common::{PathHelper, SongIdentity, dotnet};
+use octo_core::fingerprint::VerificationVerdict;
+use octo_core::lyrics::lyrics_text::LyricsText;
+use octo_core::models::domain::Song;
+use octo_core::settings::FolderStructure;
+use octo_media::cover::cover_files;
+use octo_media::tags::KeptIdentityTags;
+use octo_media::tags::tag_writer_extras;
+use regex::Regex;
+use tracing::{debug, error, info, warn};
+
+use super::{BaseDownloadService, FileNotFoundException, RequestedIdentity, file_exists, get_extension};
+use crate::services::library::navidrome_song_path_resolver::get_full_path;
+use crate::services::library::{ReplacementHandoff, ReplacementRejectedException};
+use crate::services::lyrics::lyrics_sidecar_writer::LyricsJob;
+use crate::services::soulseek::soulseek_download_service::INCOMING_FOLDER_NAME;
+
+/// What a download's path is built from.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LayoutChoice {
+    pub folder_artist: String,
+    pub file_artist: String,
+    pub title: String,
+    pub album: String,
+    pub track: Option<i32>,
+}
+
+/// Where a download was placed, and whether its folder is new, which is the only place a
+/// cover.jpg may go without changing an album that was already there.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Placement {
+    pub path: String,
+    pub created_folder: bool,
+}
+
+impl Placement {
+    pub fn new(path: impl Into<String>, created_folder: bool) -> Self {
+        Self {
+            path: path.into(),
+            created_folder,
+        }
+    }
+}
+
+const AUDIO_EXTENSIONS: [&str; 14] = [
+    ".flac", ".mp3", ".m4a", ".aac", ".alac", ".ogg", ".opus", ".wav", ".aiff", ".aif", ".ape", ".wv",
+    ".wma", ".dsf",
+];
+
+pub(super) fn is_audio_file(path: &str) -> bool {
+    let extension = get_extension(path);
+    AUDIO_EXTENSIONS
+        .iter()
+        .any(|known| dotnet::eq_ignore_case(known, extension))
+}
+
+static CREDIT_SEPARATOR: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)^\s*(,|&|\+|/|;|\bx\b|\bvs\.?|\bfeat\.?|\bft\.?|\bfeaturing\b|\bwith\b|\band\b)")
+        .expect("the credit separator pattern is valid")
+});
+
+impl BaseDownloadService {
+    /// Fail a download whose file is not on disk. Everything after the transfer carries on past
+    /// a missing file (placement keeps the path, tagging logs and moves on), which is how a song
+    /// was recorded as downloaded with 0 bytes and never placed (#69). Failing marks the request
+    /// Failed, writes no history, and lets the failure notice and any fallback source run.
+    pub fn ensure_on_disk(path: Option<&str>) -> Result<(), FileNotFoundException> {
+        let path = path.filter(|p| !p.is_empty());
+        // A file that cannot be read is no more use than a missing one.
+        let length = path
+            .filter(|p| file_exists(p))
+            .and_then(|p| std::fs::metadata(p).ok())
+            .map_or(0, |m| m.len());
+        if length > 0 {
+            return Ok(());
+        }
+        Err(FileNotFoundException {
+            message: match path {
+                None => "The download returned no file".to_string(),
+                Some(path) => format!("The download returned {path}, but there is no audio there"),
+            },
+            path: path.map(str::to_string),
+        })
+    }
+
+    /// Ensures a directory exists, creating it and all parent directories if necessary.
+    pub fn ensure_directory_exists(&self, path: &str) -> std::io::Result<()> {
+        if Path::new(path).is_dir() {
+            return Ok(());
+        }
+        match std::fs::create_dir_all(path) {
+            Ok(()) => {
+                debug!("Created directory: {path}");
+                Ok(())
+            }
+            Err(e) => {
+                error!("Failed to create directory: {path}: {e}");
+                Err(e)
+            }
+        }
+    }
+
+    /// Move a finished download into the configured layout, named by [`Self::choose_layout`].
+    ///
+    /// Never overwrites a different file. A path that is already taken is replaced only when it
+    /// provably holds this same song (see `is_same_song`); anything else keeps both. The move
+    /// used to delete whatever sat at the target, which is how "Song (Live)" replaced "Song".
+    /// Returns the landed path when the move fails, so the song is still registered.
+    pub async fn place_in_library(
+        &self,
+        song: &Song,
+        requested: &RequestedIdentity,
+        current_path: &str,
+    ) -> Placement {
+        match self.try_place(song, requested, current_path).await {
+            Ok(placement) => placement,
+            Err(e) => {
+                warn!(
+                    "Could not place {current_path} in the configured layout; leaving it where it landed: {e}"
+                );
+                Placement::new(current_path, false)
+            }
+        }
+    }
+
+    async fn try_place(
+        &self,
+        song: &Song,
+        requested: &RequestedIdentity,
+        current_path: &str,
+    ) -> std::io::Result<Placement> {
+        let download_path = self.download_path();
+        if download_path.is_empty() || !file_exists(current_path) {
+            return Ok(Placement::new(current_path, false));
+        }
+
+        let structure = self.settings.current().subsonic.folder_structure;
+        let mut target = self.layout_target(song, requested, get_extension(current_path));
+
+        if dotnet::eq_ignore_case(&get_full_path(&target), &get_full_path(current_path)) {
+            return Ok(Placement::new(current_path, false));
+        }
+
+        let target_dir = get_directory_name(&target).unwrap_or_default();
+        let folder_had_audio = !target_dir.is_empty()
+            && Path::new(&target_dir).is_dir()
+            && std::fs::read_dir(&target_dir)?
+                .flatten()
+                .filter(|e| e.file_type().is_ok_and(|t| t.is_file()))
+                .any(|e| is_audio_file(&e.file_name().to_string_lossy()));
+
+        if file_exists(&target) {
+            if self.is_same_song(&target, song).await {
+                info!("{target} already holds this song; replacing it with the new download");
+                std::fs::remove_file(&target)?;
+            } else {
+                let unique = PathHelper::resolve_unique_path(&target);
+                info!("{target} already holds a different file; keeping both as {unique}");
+                target = unique;
+            }
+        }
+
+        if !target_dir.is_empty() {
+            std::fs::create_dir_all(&target_dir)?;
+        }
+        move_file(current_path, &target)?;
+        info!("Placed download in {structure:?}: {current_path} -> {target}");
+
+        // Clean up any now-empty folder the file came from (a Soulseek peer's own layout, or the
+        // YouTube staging folder), never walking above the music root.
+        Self::try_remove_empty_parents(get_directory_name(current_path).as_deref(), &download_path);
+        Ok(Placement::new(target, !folder_had_audio))
+    }
+
+    /// Where the configured layout files this song, before any clash is looked at.
+    fn layout_target(&self, song: &Song, requested: &RequestedIdentity, extension: &str) -> String {
+        let current = self.settings.current();
+        let choice = Self::choose_layout(song, requested, current.soulseek.name_from_match);
+        let structure = current.subsonic.folder_structure;
+        // Flat has no folder to scatter, so its file name keeps the whole credit (#49).
+        let artist = if structure == FolderStructure::Flat {
+            &choice.file_artist
+        } else {
+            &choice.folder_artist
+        };
+        PathHelper::build_layout_path(
+            structure,
+            &self.download_path(),
+            if dotnet::is_blank(artist) {
+                "Unknown Artist"
+            } else {
+                artist
+            },
+            &choice.album,
+            &PathHelper::file_title(&choice.title, &choice.file_artist),
+            choice.track,
+            extension,
+        )
+    }
+
+    /// The path the configured layout gives the song in an Organized library, for the album
+    /// folder a single may join.
+    pub(super) fn organized_target(
+        &self,
+        song: &Song,
+        requested: &RequestedIdentity,
+        extension: &str,
+    ) -> String {
+        let choice = Self::choose_layout(song, requested, self.settings.current().soulseek.name_from_match);
+        PathHelper::build_layout_path(
+            FolderStructure::Organized,
+            &self.download_path(),
+            if dotnet::is_blank(&choice.folder_artist) {
+                "Unknown Artist"
+            } else {
+                &choice.folder_artist
+            },
+            &choice.album,
+            &PathHelper::file_title(&choice.title, &choice.file_artist),
+            choice.track,
+            extension,
+        )
+    }
+
+    /// Move a replacement into the incoming dot folder, which Navidrome never scans.
+    pub fn stage_replacement(&self, landed_path: &str) -> anyhow::Result<Placement> {
+        let download_path = self.download_path();
+        let incoming = Path::new(&download_path).join(INCOMING_FOLDER_NAME);
+        std::fs::create_dir_all(&incoming)?;
+        let staged = incoming
+            .join(format!(
+                "replacement-{}{}",
+                uuid::Uuid::new_v4().simple(),
+                get_extension(landed_path)
+            ))
+            .to_string_lossy()
+            .into_owned();
+        move_file(landed_path, &staged)?;
+        Self::try_remove_empty_parents(get_directory_name(landed_path).as_deref(), &download_path);
+        Ok(Placement::new(staged, false))
+    }
+
+    /// Give the staged replacement the original's identity, let the library action judge it,
+    /// then move it to the original's folder and name in one rename (W8). Nothing may scan it
+    /// before its tags are final: Navidrome would file it as a new song for good. A refused one
+    /// is deleted here, where no scan ever saw it.
+    pub async fn reveal_replacement(
+        &self,
+        song: &Song,
+        requested: &RequestedIdentity,
+        staged: &str,
+        handoff: &ReplacementHandoff,
+    ) -> anyhow::Result<Placement> {
+        let revealed = async {
+            KeptIdentityTags::apply(Path::new(staged), &handoff.identity)?;
+            if let Some(problem) = (handoff.before_reveal)(staged.to_string()).await {
+                return Err(ReplacementRejectedException::new(problem).into());
+            }
+
+            let extension = get_extension(staged);
+            let target = handoff.target_for(extension).unwrap_or_else(|| {
+                PathHelper::resolve_unique_path(&self.layout_target(song, requested, extension))
+            });
+            if let Some(dir) = get_directory_name(&target).filter(|d| !d.is_empty()) {
+                std::fs::create_dir_all(dir)?;
+            }
+            move_file(staged, &target)?;
+            handoff.set_revealed_path(&target);
+            if let Some(on_revealed) = &handoff.on_revealed {
+                on_revealed(&target);
+            }
+            info!("Placed the replacement where the original was: {target}");
+            anyhow::Ok(Placement::new(target, false))
+        }
+        .await;
+        if handoff.revealed_path().is_none() && file_exists(staged) {
+            // Swept after a day when this fails too.
+            let _ = std::fs::remove_file(staged);
+        }
+        revealed
+    }
+
+    /// Whether an occupied path holds this same song: both carry the same MusicBrainz recording,
+    /// or, lacking an id on either side, it is a file Octo itself downloaded for the same artist
+    /// and title. Anything short of that is somebody's other file and is never replaced.
+    async fn is_same_song(&self, target: &str, song: &Song) -> bool {
+        let (existing_id, _) = tag_writer_extras::read_identity(Path::new(target));
+        if let (Some(existing), Some(wanted)) = (
+            existing_id.filter(|id| !id.is_empty()),
+            song.music_brainz_recording_id
+                .as_deref()
+                .filter(|id| !id.is_empty()),
+        ) {
+            return dotnet::eq_ignore_case(&existing, wanted);
+        }
+
+        let full = get_full_path(target);
+        let key = SongIdentity::match_key(&song.artist, &song.title);
+        self.local_library.get_mappings().await.iter().any(|mapping| {
+            !mapping.local_path.is_empty()
+                && dotnet::eq_ignore_case(&get_full_path(&mapping.local_path), &full)
+                && SongIdentity::match_key(&mapping.artist, &mapping.title) == key
+        })
+    }
+
+    /// Which name a download is filed under. With NameFromMatch on and a confirmed match, the
+    /// recording's, already applied to the Song. Otherwise the request's, except that a list of
+    /// credits never names a folder and a request with no album takes the album it was tagged
+    /// with, together with that album's track number.
+    pub fn choose_layout(song: &Song, requested: &RequestedIdentity, name_from_match: bool) -> LayoutChoice {
+        let matched = song
+            .verification
+            .as_deref()
+            .filter(|v| v.verdict == VerificationVerdict::Confirmed)
+            .and_then(|v| v.r#match.as_ref());
+
+        if name_from_match && let Some(matched) = matched {
+            return LayoutChoice {
+                folder_artist: matched
+                    .primary_artist()
+                    .map(str::to_string)
+                    .or_else(|| song.primary_artist.clone())
+                    .unwrap_or_else(|| song.artist.clone()),
+                file_artist: song.artist.clone(),
+                title: song.title.clone(),
+                album: song.album.clone(),
+                track: song.track,
+            };
+        }
+
+        let from_request = !requested.album.is_empty();
+        LayoutChoice {
+            folder_artist: Self::primary_credit(
+                &requested.artist,
+                &[
+                    matched.and_then(|m| m.primary_artist()),
+                    song.primary_artist.as_deref(),
+                ],
+            ),
+            file_artist: requested.artist.clone(),
+            title: requested.title.clone(),
+            album: if from_request {
+                requested.album.clone()
+            } else {
+                song.album.clone()
+            },
+            track: if from_request { requested.track } else { song.track },
+        }
+    }
+
+    /// The artist a folder is named after (#49). Splits only on proof: a structured source (the
+    /// MusicBrainz credit, Deezer's main artist) that names either the whole requested string,
+    /// which keeps it whole, or its FIRST credit followed by a separator, which splits there.
+    /// "Earth, Wind & Fire" and "Tyler, The Creator" survive because every structured source
+    /// names them whole. A separator on its own never splits anything.
+    pub fn primary_credit(requested: &str, structured: &[Option<&str>]) -> String {
+        let whole = requested.trim();
+        let candidates: Vec<&str> = structured
+            .iter()
+            .flatten()
+            .filter(|value| !dotnet::is_blank(value))
+            .map(|value| value.trim())
+            .collect();
+
+        if whole.is_empty() {
+            return candidates.first().map(|c| c.to_string()).unwrap_or_default();
+        }
+        if candidates.iter().any(|c| dotnet::eq_ignore_case(c, whole)) {
+            return whole.to_string();
+        }
+
+        for candidate in &candidates {
+            if dotnet::utf16_len(whole) > dotnet::utf16_len(candidate)
+                && dotnet::starts_with_ignore_case(whole, candidate)
+            {
+                // OrdinalIgnoreCase matches one character for one, so the candidate spans as many
+                // characters of the whole as it has itself.
+                let rest: String = whole.chars().skip(candidate.chars().count()).collect();
+                if CREDIT_SEPARATOR.is_match(&rest) {
+                    return candidate.to_string();
+                }
+            }
+        }
+        whole.to_string()
+    }
+
+    /// Walk up from `start_dir` removing empty folders, never past `stop_at`.
+    pub fn try_remove_empty_parents(start_dir: Option<&str>, stop_at: &str) {
+        let Some(start_dir) = start_dir.filter(|d| !d.is_empty()) else {
+            return;
+        };
+        if stop_at.is_empty() {
+            return;
+        }
+        let stop = get_full_path(stop_at).trim_end_matches('/').to_string();
+        let mut current = get_full_path(start_dir).trim_end_matches('/').to_string();
+        // Walk up while we're inside the download path and the directory is empty.
+        while !current.is_empty()
+            && dotnet::utf16_len(&current) > dotnet::utf16_len(&stop)
+            && dotnet::starts_with_ignore_case(&current, &stop)
+            && Path::new(&current).is_dir()
+        {
+            let empty = match std::fs::read_dir(&current) {
+                Ok(mut entries) => entries.next().is_none(),
+                Err(_) => break,
+            };
+            if !empty || std::fs::remove_dir(&current).is_err() {
+                break;
+            }
+            current = get_directory_name(&current).unwrap_or_default();
+        }
+    }
+
+    /// The cached file for a provider and external id (`{provider}_{externalId}.*` anywhere under
+    /// the cache folder), or `None` when there is none.
+    pub fn get_cached_file_path(&self, provider: &str, external_id: &str) -> Option<String> {
+        let prefix = format!("{provider}_{external_id}.");
+        match find_file(Path::new(&self.cache_path), &prefix) {
+            Ok(found) => found,
+            Err(e) => {
+                warn!("Failed to search for cached file: {provider}_{external_id}: {e}");
+                None
+            }
+        }
+    }
+
+    /// Files beside the audio file. Best-effort; never fails a download.
+    ///
+    /// cover.jpg only in the Organized layout and only in a folder this download created.
+    /// Navidrome ranks cover.* above embedded art, so in Flat every download shares one folder,
+    /// in ByArtist one folder holds all of an artist's albums, and in an album folder that was
+    /// already there one new track would change the whole album's cover. The one exception is a
+    /// cover.jpg Octo wrote itself, in the Organized layout: a later track of the same album that
+    /// found a larger cover replaces it, so a soft first track does not set the album's cover for
+    /// good.
+    pub fn write_sidecars(&self, song: &Song, placement: &Placement, cover: Option<&[u8]>) {
+        let current = self.settings.current();
+        if current.metadata.write_cover_file
+            && let Some(cover) = cover.filter(|c| !c.is_empty())
+            && current.subsonic.folder_structure == FolderStructure::Organized
+            && let Some(dir) = get_directory_name(&placement.path).filter(|d| !d.is_empty())
+            && cover_files::should_write(Path::new(&dir), cover, placement.created_folder)
+        {
+            match cover_files::write(Path::new(&dir), cover) {
+                Ok(()) => info!("Wrote cover.jpg beside {}", placement.path),
+                Err(e) => warn!("Could not write cover.jpg beside {}: {e}", placement.path),
+            }
+        }
+
+        // Lyrics are fetched in the background: this runs under the download lock, and a lyrics
+        // service that is slow or shedding load must not hold up the next download (#52).
+        if current.metadata.fetch_lyrics
+            && let Some(lyrics) = &self.services.lyrics
+        {
+            lyrics.try_enqueue(LyricsJob::new(
+                &placement.path,
+                song.primary_artist.clone().unwrap_or_else(|| song.artist.clone()),
+                LyricsText::query_title(&song.title, &song.artist),
+                Some(song.album.clone()),
+                song.duration,
+            ));
+        }
+    }
+}
+
+/// `File.Move`: a rename, or a copy and a delete across file systems. Never over an existing
+/// file.
+pub(super) fn move_file(from: &str, to: &str) -> std::io::Result<()> {
+    if Path::new(to).exists() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::AlreadyExists,
+            format!("The file '{to}' already exists."),
+        ));
+    }
+    match std::fs::rename(from, to) {
+        Ok(()) => Ok(()),
+        Err(e) if e.kind() == std::io::ErrorKind::CrossesDevices => {
+            std::fs::copy(from, to)?;
+            std::fs::remove_file(from)
+        }
+        Err(e) => Err(e),
+    }
+}
+
+/// `Path.GetDirectoryName`: everything before the last separator, `"/"` for a file in the root,
+/// empty for a bare name, and `None` for the root itself or an empty path.
+pub(super) fn get_directory_name(path: &str) -> Option<String> {
+    if path.is_empty() || path == "/" {
+        return None;
+    }
+    match path.rfind('/') {
+        Some(0) => Some("/".to_string()),
+        Some(at) => Some(path[..at].to_string()),
+        None => Some(String::new()),
+    }
+}
+
+/// `Path.GetFileName`.
+pub(super) fn get_file_name(path: &str) -> &str {
+    path.rsplit('/').next().unwrap_or(path)
+}
+
+/// The first file under `dir`, at any depth, whose name starts with `prefix`.
+fn find_file(dir: &Path, prefix: &str) -> std::io::Result<Option<String>> {
+    let mut folders = vec![dir.to_path_buf()];
+    while let Some(folder) = folders.pop() {
+        for entry in std::fs::read_dir(&folder)? {
+            let entry = entry?;
+            let kind = entry.file_type()?;
+            if kind.is_dir() {
+                folders.push(entry.path());
+            } else if entry.file_name().to_string_lossy().starts_with(prefix) {
+                return Ok(Some(entry.path().to_string_lossy().into_owned()));
+            }
+        }
+    }
+    Ok(None)
+}

@@ -169,3 +169,61 @@ impl<S: Subscriber> Layer<S> for CaptureLayer {
         self.lines.lock().push((*event.metadata().level(), visitor.0));
     }
 }
+
+/// Whether ffmpeg is on the PATH, asked once, as `FfmpegFactAttribute` did. A test that needs it
+/// returns early with a printed reason when it is missing.
+pub fn ffmpeg_available() -> bool {
+    static AVAILABLE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *AVAILABLE.get_or_init(|| {
+        std::process::Command::new("ffmpeg")
+            .args(["-hide_banner", "-version"])
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status()
+            .map(|status| status.success())
+            .unwrap_or(false)
+    })
+}
+
+/// Runs `ffmpeg -y -nostdin -hide_banner -v error <arguments>` in `dir`, panicking with ffmpeg's
+/// own error when it fails.
+pub fn run_ffmpeg(dir: &std::path::Path, arguments: &str) {
+    let output = std::process::Command::new("ffmpeg")
+        .args(["-y", "-nostdin", "-hide_banner", "-v", "error"])
+        .args(arguments.split_whitespace())
+        .current_dir(dir)
+        .stdin(std::process::Stdio::null())
+        .output()
+        .expect("ffmpeg starts");
+    assert!(
+        output.status.success(),
+        "ffmpeg {arguments}: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+/// `AudioFixtures.Mp3`: twenty silent MPEG-1 Layer III frames, 128 kbps, 44.1 kHz, the smallest
+/// file the tag writer opens as an MP3.
+pub fn mp3() -> Vec<u8> {
+    const FRAME_LENGTH: usize = 417;
+    let mut bytes = vec![0u8; FRAME_LENGTH * 20];
+    for frame in 0..20 {
+        let offset = frame * FRAME_LENGTH;
+        bytes[offset..offset + 4].copy_from_slice(&[0xFF, 0xFB, 0x90, 0x64]);
+    }
+    bytes
+}
+
+/// `AudioFixtures.Flac`: a FLAC with a STREAMINFO block describing two seconds of 16-bit stereo
+/// and no frames.
+pub fn flac() -> Vec<u8> {
+    let mut bytes = b"fLaC".to_vec();
+    bytes.extend_from_slice(&[0x80, 0x00, 0x00, 0x22]);
+    bytes.extend_from_slice(&[0x10, 0x00, 0x10, 0x00]);
+    bytes.extend_from_slice(&[0, 0, 0, 0, 0, 0]);
+    let (sample_rate, channels_minus_one, bits_minus_one, total_samples) = (44100u64, 1u64, 15u64, 88200u64);
+    let packed = (sample_rate << 44) | (channels_minus_one << 41) | (bits_minus_one << 36) | total_samples;
+    bytes.extend_from_slice(&packed.to_be_bytes());
+    bytes.extend_from_slice(&[0u8; 16]);
+    bytes
+}

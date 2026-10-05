@@ -10,6 +10,11 @@ use tokio_util::sync::CancellationToken;
 
 use super::rejected_peer_registry::RejectedPeerRegistry;
 
+/// `IncomingFolderName`: the dot folder under the music root where downloads are staged before
+/// they are placed, which Navidrome never scans. Here before the service itself (4-C) because
+/// the download base (4-B) stages a library action's replacement in it.
+pub const INCOMING_FOLDER_NAME: &str = ".octo-incoming";
+
 /// Is this candidate still allowed, given what a previous download proved about it?
 ///
 /// Static and separate so the deny-list can be driven in tests without a download
