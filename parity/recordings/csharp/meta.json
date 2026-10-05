@@ -1,0 +1,42 @@
+{
+ "target": "http://127.0.0.1:18480",
+ "host": "127.0.0.1:18480",
+ "image": "octo-csharp:csharp-final",
+ "recordedAt": "2026-10-04T08:08:02Z",
+ "vars": {
+  "song_flac1": "2A1r2OKTiTVuvPfmtePIIe",
+  "song_flac2": "6TOMTUtoEzhnB8tjXmNY5V",
+  "song_flac3": "1REy4tCLzfZLRjFxpQBwVM",
+  "song_flac4": "3cQUCXxV4YyCfbBaBp2UFT",
+  "song_mp3_1": "79UbMHtfpdvxM9dnNYPHLu",
+  "song_mp3_2": "2Xc6Ix4qDl2csRPeaPnwau",
+  "song_mp3_3": "3RGeVWguT715DnjkCJcs99",
+  "song_m4a_1": "7LQvU7JOETUgfLldHu8laT",
+  "song_m4a_2": "3KY9U3kJDrcZF3A5otp8L4",
+  "song_m4a_3": "5otsGv02qpt74TwMlpLAoF",
+  "nd_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG0iOnRydWUsImV4cCI6MTc5MTI3NDA2NSwiaWF0IjoxNzkxMTAxMjY1LCJpc3MiOiJORCIsInN1YiI6ImFkbWluIiwidWlkIjoiM1ZjZ3FkZXRqSVVHd0o5bjBqUnV6TCJ9.AgeYUIcW-7nx3tERdwCm7AxB_674a715HbMdnuK5jM0",
+  "nd_user_id": "3VcgqdetjIUGwJ9n0jRuzL",
+  "nd_salt": "7e18ff",
+  "nd_subtoken": "e670b168ba14724cdf46a64f17e13653",
+  "browse_token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2",
+  "playlist_id": "7dugGRg8TxhmgzzoydGsY9"
+ },
+ "keptVars": {
+  "album_mp3": "3sYt5hQaQpB2FKOkr3RxZT",
+  "album_flac": "5KkmjLAmQA5mvuA6BVtGuD",
+  "album_m4a": "7hVkqYsGKelPO8XiRTyRC8",
+  "artist_mp3": "17qiGGo3gM1YI35DUCa4fC",
+  "artist_flac": "2Rd8htgPSbDGv6lZq1D8WW",
+  "artist_m4a": "2Wu7LNfklbYON0StTcDZwM",
+  "cover_mp3": "al-3sYt5hQaQpB2FKOkr3RxZT_e0d327805ce38bc7",
+  "cover_flac": "al-5KkmjLAmQA5mvuA6BVtGuD_b9d685baa046af1b",
+  "ext_song": "CwoXcVhGn95tWIOvqaFKt6",
+  "ext_song2": "yy5PCYFGn1qhbOho4j6OF1",
+  "ext_album": "wIfqpf1IeFS337TdaMfNC3",
+  "ext_artist": "NdCCz1eNDVR3vKwUWVaAO1",
+  "etag_index": "\"poA4o6qmdzOsdETjSBdw9ZNluURZ66GaB3+8Ch69YBo=\"",
+  "etag_js": "\"nPyF+qaKtLISM5v5Fd6V2+Om3+KxScXvmHjFDmby88g=\""
+ },
+ "requests": 453,
+ "errors": 0
+}

@@ -1,0 +1,52 @@
+duration 0 rate 44100
+apple
+  "©nam" [data(1) "Teardrop"]
+  "©alb" [data(1) "Mezzanine"]
+  "aART" [data(1) "Massive Attack; Tracey Thorn"]
+  "trkn" [data(0) hex 00000003000b0000]
+  "disk" [data(0) hex 0000000100020000]
+  "----" [mean "com.apple.iTunes", name "RELEASEDATE", data(1) "1998-04-20"]
+  "----" [mean "com.apple.iTunes", name "ALBUMVERSION", data(1) "Original"]
+  "----" [mean "com.apple.iTunes", name "MusicBrainz Album Id", data(1) "1D2B6C3E-7A4F-4E1B-9C2D-3F4A5B6C7D8E"]
+  "----" [mean "com.apple.iTunes", name "MusicBrainz Release Track Id", data(1) "{8E7D6C5B-4A3F-4D2C-9B1A-0E9F8D7C6B5A}"]
+  "----" [mean "com.apple.iTunes", name "ALBUMARTISTS", data(1) "Massive Attack", mean "com.apple.iTunes", name "ALBUMARTISTS", data(1) "Tracey Thorn"]
+  "----" [mean "com.apple.iTunes", name "ALBUMARTISTS", data(1) "Massive Attack", mean "com.apple.iTunes", name "ALBUMARTISTS", data(1) "Tracey Thorn"]
+tag
+  title "Teardrop"
+  performers []
+  albumartists ["Massive Attack", "Tracey Thorn"]
+  composers []
+  album "Mezzanine"
+  genres []
+  year 0 track 3/11 disc 1/2 bpm 0
+  copyright null
+  lyrics null
+  isrc null publisher null
+  releaseid "1D2B6C3E-7A4F-4E1B-9C2D-3F4A5B6C7D8E" releasegroupid null
+extras
+  isrc null
+  label null
+  catalognumber null
+  barcode null
+  releasetype null
+  releasestatus null
+  releasecountry null
+  releasetrackid "{8E7D6C5B-4A3F-4D2C-9B1A-0E9F8D7C6B5A}"
+  albumartistid null
+  artistid null
+  acoustid null
+  trackgain null
+  trackpeak null
+  albumgain null
+  albumpeak null
+  albumid "1D2B6C3E-7A4F-4E1B-9C2D-3F4A5B6C7D8E"
+  albumartists "Massive Attack"
+  albumversion "Original"
+  releasedate "1998-04-20"
+  recordingid null compilation False
+facts 0 ".m4a" 44100 "Teardrop" null "Mezzanine" "Massive Attack" null 3 1 [] null null null null "1D2B6C3E-7A4F-4E1B-9C2D-3F4A5B6C7D8E" False True
+barefacts 0 ".m4a" 44100 False
+identity null 0
+album "Mezzanine" "Massive Attack" False
+kept "Teardrop" "Mezzanine" ["Massive Attack", "Tracey Thorn"] ["Massive Attack", "Tracey Thorn"] "Original" "1998-04-20" "1d2b6c3e-7a4f-4e1b-9c2d-3f4a5b6c7d8e" "8e7d6c5b-4a3f-4d2c-9b1a-0e9f8d7c6b5a" 3/11 1/2 False
+pid "8e7d6c5b-4a3f-4d2c-9b1a-0e9f8d7c6b5a|1d2b6c3e-7a4f-4e1b-9c2d-3f4a5b6c7d8e|Massive Attack\u0001Tracey Thorn|Massive Attack\u0001Tracey Thorn|Mezzanine|Original|1998-04-20|Teardrop"

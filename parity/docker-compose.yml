@@ -1,0 +1,161 @@
+# Parity harness: one Octo build under test against a fixture Navidrome and stubs for every
+# upstream. Separate from the root docker-compose.yml. Run it through parity/run.sh, or:
+#
+#   OCTO_IMAGE=octo-csharp:csharp-final PARITY_PORT=18480 \
+#     docker compose -f parity/docker-compose.yml -p parity up -d
+#
+# OCTO_IMAGE   the build under test (the Rust image later, e.g. octo-rust:dev)
+# PARITY_PORT  host port for Octo (default 18480); PARITY_ND_PORT for Navidrome (18453)
+#
+# Two runs can coexist under different project names (-p) and ports.
+#
+# Networking: everything but the gateway sits on `sandbox`, an internal network with no
+# route out, so no request can reach the real Deezer, GitHub, ... The `stubs` service holds
+# network aliases for every hard-coded HTTPS upstream and presents one certificate for all of
+# them, signed by the parity CA (certs/), which Octo trusts as its only root store.
+
+name: parity
+
+networks:
+  sandbox:
+    internal: true
+  edge: {}
+
+volumes:
+  octo-config: {}
+  navidrome-data: {}
+
+services:
+  stubs:
+    image: python:3.13-alpine
+    command: ["python", "-u", "/stubs/stub_server.py"]
+    working_dir: /stubs
+    volumes:
+      - ./stubs:/stubs:ro
+      - ./certs:/certs:ro
+    mem_limit: 128m
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health')"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    networks:
+      sandbox:
+        # Keep in sync with certs/make-certs.sh.
+        aliases:
+          - api.deezer.com
+          - e-cdns-images.dzcdn.net
+          - cdn-images.dzcdn.net
+          - cdns-images.dzcdn.net
+          - itunes.apple.com
+          - is1-ssl.mzstatic.com
+          - musicbrainz.org
+          - coverartarchive.org
+          - api.acoustid.org
+          - acoustid.org
+          - ws.audioscrobbler.com
+          - www.last.fm
+          - lastfm.freetls.fastly.net
+          - lrclib.net
+          - lyrics.kugou.com
+          - mobileservice.kugou.com
+          - music.163.com
+          - api.lyrics.ovh
+          - api.github.com
+          - github.com
+          - api.listenbrainz.org
+          - ntfy.sh
+
+  navidrome:
+    image: deluan/navidrome:0.64.2
+    environment:
+      ND_MUSICFOLDER: /music
+      ND_DATAFOLDER: /data
+      ND_LOGLEVEL: warn
+      ND_SCANNER_SCHEDULE: "0"
+      ND_SCANNER_SCANONSTARTUP: "true"
+      ND_SCANNER_WATCHERWAIT: "0"
+      ND_ENABLEEXTERNALSERVICES: "false"
+      ND_ENABLEINSIGHTSCOLLECTOR: "false"
+      ND_LASTFM_ENABLED: "false"
+      ND_LISTENBRAINZ_ENABLED: "false"
+      ND_DEEZER_ENABLED: "false"
+      ND_AUTOIMPORTPLAYLISTS: "false"
+      ND_PASSWORDENCRYPTIONKEY: parity-fixed-key
+      # The corpus sends wrong passwords on purpose; the brute-force lockout would then
+      # refuse the right ones for a while.
+      ND_AUTHREQUESTLIMIT: "0"
+      # Creates the admin user `admin` on first start (setup.py adds the others).
+      ND_DEVAUTOCREATEADMINPASSWORD: parity-admin
+    volumes:
+      - ./fixtures/music:/music:ro
+      - navidrome-data:/data
+    mem_limit: 384m
+    networks: [sandbox]
+
+  octo:
+    image: ${OCTO_IMAGE:-octo-csharp:csharp-final}
+    depends_on:
+      stubs:
+        condition: service_healthy
+      navidrome:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      TZ: UTC
+      # The parity CA is the only trusted root: honoured by OpenSSL (.NET on Linux) and by
+      # rustls-native-certs / rustls-platform-verifier (Rust).
+      SSL_CERT_FILE: /parity-ca/ca.crt
+      SSL_CERT_DIR: /parity-ca
+      Subsonic__Url: http://navidrome:4533
+      Subsonic__AdminUsername: admin
+      Subsonic__AdminPassword: parity-admin
+      Subsonic__AutoDetectDownloadPath: "true"
+      Subsonic__StorageMode: Stream
+      Subsonic__EnableSearchDiscovery: "true"
+      Subsonic__EnableExternalPlaylists: "false"
+      Subsonic__EnableSyncCatalog: "true"
+      Subsonic__SyncCatalogClients: Symfonium
+      Subsonic__WaitForLosslessOnPlay: "false"
+      Subsonic__DownloadOnPlay: "false"
+      Library__DownloadPath: /music
+      YouTube__ShimUrl: http://stubs:8090
+      Soulseek__BaseUrl: http://stubs:5030
+      Soulseek__Username: slskd
+      Soulseek__Password: slskd
+      Lidarr__BaseUrl: http://stubs:8686
+      Lidarr__ApiKey: parity-lidarr-key
+      # A Last.fm key turns on search discovery (track.search, stubbed). Radio stays off:
+      # stations and mixes are built in the background on timers, and that timing would
+      # leak into getPlaylists. See README "Not covered".
+      LastFm__ApiKey: parity-lastfm-key
+      LastFm__ApiSecret: ""
+      LastFm__EnableRadio: "false"
+      LastFm__EnablePersonalizedStations: "false"
+      LastFm__EnableDiscoveryStations: "false"
+      LastFm__ExposeRadioAsPlaylists: "false"
+      LastFm__ExposeRadioAsStreams: "false"
+      Metadata__FetchLyrics: "true"
+      Metadata__LyricsSources: "song,kugou,lrclib,netease,lyricsovh"
+      GeneratedPlaylists__Enabled: "false"
+      LibraryActions__Enabled: "false"
+      Updates__Check: "false"
+      Notifications__NtfyUrl: ""
+      Notifications__DiscordWebhookUrl: ""
+    volumes:
+      - ./certs/ca.crt:/parity-ca/ca.crt:ro
+      - ./fixtures/music:/music:ro
+      - octo-config:/app/config
+    mem_limit: 768m
+    networks: [sandbox]
+
+  gateway:
+    image: python:3.13-alpine
+    command: ["python", "-u", "/stubs/gateway.py", "8080:octo:8080", "4533:navidrome:4533"]
+    volumes:
+      - ./stubs:/stubs:ro
+    ports:
+      - "127.0.0.1:${PARITY_PORT:-18480}:8080"
+      - "127.0.0.1:${PARITY_ND_PORT:-18453}:4533"
+    mem_limit: 64m
+    networks: [sandbox, edge]

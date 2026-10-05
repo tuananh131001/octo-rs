@@ -1,0 +1,41 @@
+[package]
+name = "octo-media"
+description = "Audio tags, list covers and the ffmpeg/fpcalc tools: everything that reads or writes media bytes."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+# No doc examples; skipping the doctest pass also keeps it off the shared target dir.
+doctest = false
+
+[dependencies]
+octo-core.workspace = true
+anyhow.workspace = true
+async-trait.workspace = true
+cosmic-text.workspace = true
+image.workspace = true
+indexmap.workspace = true
+lofty.workspace = true
+parking_lot.workspace = true
+regex.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tiny-skia.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
+tracing.workspace = true
+unicode-general-category.workspace = true
+unicode-normalization.workspace = true
+unicode-script.workspace = true
+unicode-segmentation.workspace = true
+
+[dev-dependencies]
+sha2.workspace = true
+tempfile.workspace = true
+
+[lints]
+workspace = true

@@ -1,0 +1,740 @@
+//! The assembled pipeline against the facts verified on the running C# image
+//! (endpoints.md §7, plus the static-file probes recorded in known-diffs.md).
+
+use std::time::{Duration, SystemTime};
+
+use axum::body::Body;
+use axum::http::{HeaderMap, Method, Request, StatusCode};
+use axum::response::IntoResponse;
+use axum::routing::get;
+use http_body_util::BodyExt;
+use octo_core::settings::AppSettings;
+use tower::ServiceExt;
+
+use super::*;
+use crate::http::error::{AppError, json_ok};
+use crate::http::static_files::{StaticAsset, StaticRoots};
+
+const CSS: &str = "body { color: #123456; margin: 0 auto; }\n";
+
+/// A fixed modification time, so Last-Modified is known.
+fn modified() -> SystemTime {
+    SystemTime::UNIX_EPOCH + Duration::from_secs(1_790_000_000)
+}
+
+fn assets() -> StaticAssets {
+    let mut a = StaticAssets::default();
+    a.push(StaticAsset::new(
+        "/admin/index.html".into(),
+        "text/html",
+        b"<!doctype html><p>hi</p>".to_vec(),
+        modified(),
+    ));
+    a.push(StaticAsset::new(
+        "/admin/admin.css".into(),
+        "text/css",
+        CSS.repeat(100).into_bytes(),
+        modified(),
+    ));
+    a.push(StaticAsset::new(
+        "/Assets/octo_logo.png".into(),
+        "image/png",
+        vec![0x89, b'P', b'N', b'G', 1, 2, 3],
+        modified(),
+    ));
+    // As the host does once it is listening.
+    a.warm_all();
+    a
+}
+
+fn boom() -> &'static str {
+    panic!("handler blew up")
+}
+
+/// Routes standing in for controllers (`testPing` for ping, which the controller now answers).
+fn dummy_routes() -> RouteSet {
+    RouteSet::new()
+        .subsonic("testPing", get(|| async { "pong" }).post(|| async { "pong" }))
+        .route("/test/panic", get(|| async { boom() }))
+        .route(
+            "/test/not-configured",
+            get(|| async {
+                AppError::NotConfigured("Set SUBSONIC_URL — an absolute URL, isn't it".into()).into_response()
+            }),
+        )
+        .route(
+            "/api/admin/test-dummy",
+            get(|| async { json_ok(&serde_json::json!({"ok": true})) })
+                .post(|| async { json_ok(&serde_json::json!({"saved": true})) }),
+        )
+}
+
+fn app() -> App {
+    let a = assets();
+    build_with(
+        AppState::for_tests(AppSettings::default()),
+        app_routes(&a).merge(dummy_routes()),
+    )
+}
+
+struct Reply {
+    status: StatusCode,
+    headers: HeaderMap,
+    body: Vec<u8>,
+}
+
+impl Reply {
+    fn header(&self, name: &str) -> Option<&str> {
+        self.headers.get(name).and_then(|v| v.to_str().ok())
+    }
+    fn all(&self, name: &str) -> Vec<&str> {
+        self.headers
+            .get_all(name)
+            .iter()
+            .filter_map(|v| v.to_str().ok())
+            .collect()
+    }
+    fn text(&self) -> String {
+        String::from_utf8_lossy(&self.body).into_owned()
+    }
+    fn json(&self) -> serde_json::Value {
+        serde_json::from_slice(&self.body).expect("JSON body")
+    }
+    fn has_cors(&self) -> bool {
+        self.headers
+            .keys()
+            .any(|k| k.as_str().starts_with("access-control-"))
+    }
+}
+
+async fn send_to(app: &App, method: Method, uri: &str, headers: &[(&str, &str)]) -> Reply {
+    let mut req = Request::builder().method(method).uri(uri);
+    for (k, v) in headers {
+        req = req.header(*k, *v);
+    }
+    let res = app
+        .clone()
+        .oneshot(req.body(Body::empty()).expect("request"))
+        .await
+        .expect("infallible");
+    let (parts, body) = res.into_parts();
+    let body = body.collect().await.expect("body").to_bytes().to_vec();
+    Reply {
+        status: parts.status,
+        headers: parts.headers,
+        body,
+    }
+}
+
+async fn send(method: Method, uri: &str, headers: &[(&str, &str)]) -> Reply {
+    send_to(&app(), method, uri, headers).await
+}
+
+async fn get_(uri: &str, headers: &[(&str, &str)]) -> Reply {
+    send(Method::GET, uri, headers).await
+}
+
+fn assert_problem_404(r: &Reply, what: &str) {
+    assert_eq!(r.status, StatusCode::NOT_FOUND, "{what}");
+    assert_eq!(
+        r.header("content-type"),
+        Some("application/problem+json; charset=utf-8"),
+        "{what}"
+    );
+    let body = r.text();
+    assert!(
+        body.starts_with(
+            r#"{"type":"https://tools.ietf.org/html/rfc9110#section-15.5.5","title":"Not Found","status":404,"traceId":"00-"#
+        ),
+        "{what}: {body}"
+    );
+}
+
+// ---- CORS ----
+
+#[tokio::test]
+async fn cors_a_request_with_origin_gets_allow_origin_and_the_exposed_headers() {
+    let r = get_("/rest/testPing", &[("Origin", "http://player.example")]).await;
+    assert_eq!(r.status, StatusCode::OK);
+    assert_eq!(r.header("access-control-allow-origin"), Some("*"));
+    assert_eq!(
+        r.header("access-control-expose-headers"),
+        Some("X-Content-Duration,X-Total-Count,X-Nd-Authorization")
+    );
+    assert!(r.header("vary").is_none(), "no Vary");
+
+    let r = get_("/rest/testPing", &[]).await;
+    assert!(!r.has_cors(), "no Origin, no CORS headers");
+}
+
+#[tokio::test]
+async fn cors_headers_are_added_to_errors_and_static_files_too() {
+    let origin = [("Origin", "http://x")];
+    for uri in [
+        "/favicon.ico",
+        "/admin/admin.css",
+        "/admin",
+        "/test/not-configured",
+    ] {
+        let r = get_(uri, &origin).await;
+        assert_eq!(r.header("access-control-allow-origin"), Some("*"), "{uri}");
+    }
+}
+
+#[tokio::test]
+async fn cors_preflight_echoes_the_method_and_headers_with_204() {
+    let r = send(
+        Method::OPTIONS,
+        "/admin/admin.css",
+        &[
+            ("Origin", "http://x"),
+            ("Access-Control-Request-Method", "PUT"),
+            ("Access-Control-Request-Headers", "X-Foo, Content-Type"),
+        ],
+    )
+    .await;
+    assert_eq!(r.status, StatusCode::NO_CONTENT);
+    assert_eq!(
+        r.header("access-control-allow-headers"),
+        Some("X-Foo,Content-Type")
+    );
+    assert_eq!(r.header("access-control-allow-methods"), Some("PUT"));
+    assert_eq!(r.header("access-control-allow-origin"), Some("*"));
+    assert!(r.header("content-type").is_none());
+    assert!(r.header("access-control-expose-headers").is_none());
+    assert!(r.body.is_empty());
+
+    let r = send(
+        Method::OPTIONS,
+        "/rest/testPing",
+        &[("Origin", "http://x"), ("Access-Control-Request-Method", "GET")],
+    )
+    .await;
+    assert_eq!(r.status, StatusCode::NO_CONTENT);
+    assert!(
+        r.header("access-control-allow-headers").is_none(),
+        "nothing asked, nothing allowed"
+    );
+    assert_eq!(r.header("access-control-allow-methods"), Some("GET"));
+}
+
+#[tokio::test]
+async fn an_options_request_that_is_not_a_preflight_reaches_the_catch_all() {
+    // No Access-Control-Request-Method.
+    let r = send(Method::OPTIONS, "/admin/admin.css", &[("Origin", "http://x")]).await;
+    assert_problem_404(&r, "OPTIONS static");
+    assert_eq!(r.header("access-control-allow-origin"), Some("*"));
+    // No Origin.
+    let r = send(
+        Method::OPTIONS,
+        "/admin/admin.css",
+        &[("Access-Control-Request-Method", "GET")],
+    )
+    .await;
+    assert_problem_404(&r, "OPTIONS without Origin");
+    assert!(!r.has_cors());
+}
+
+// ---- Admin guard ----
+
+#[tokio::test]
+async fn admin_guard_strips_cors_from_admin_reads() {
+    let r = get_("/api/admin/test-dummy", &[("Origin", "http://evil.example")]).await;
+    assert_eq!(r.status, StatusCode::OK);
+    assert_eq!(r.text(), r#"{"ok":true}"#);
+    assert!(!r.has_cors());
+}
+
+#[tokio::test]
+async fn admin_guard_answers_options_with_a_bare_204() {
+    let r = send(
+        Method::OPTIONS,
+        "/api/admin/test-dummy",
+        &[
+            ("Origin", "http://evil.example"),
+            ("Access-Control-Request-Method", "POST"),
+        ],
+    )
+    .await;
+    assert_eq!(r.status, StatusCode::NO_CONTENT);
+    assert!(!r.has_cors());
+    assert!(r.body.is_empty());
+}
+
+#[tokio::test]
+async fn admin_guard_refuses_writes_without_the_header() {
+    let r = send(
+        Method::POST,
+        "/api/admin/test-dummy",
+        &[("Origin", "http://evil.example")],
+    )
+    .await;
+    assert_eq!(r.status, StatusCode::FORBIDDEN);
+    assert_eq!(r.header("content-type"), Some("application/json; charset=utf-8"));
+    assert_eq!(
+        r.text(),
+        r#"{"error":"Admin changes must come from Octo's dashboard. A script can send the X-Octo-Admin header to opt in."}"#
+    );
+    assert!(!r.has_cors());
+
+    let r = send(Method::POST, "/API/Admin/Test-Dummy", &[("X-Octo-Admin", "1")]).await;
+    assert_eq!(r.status, StatusCode::OK);
+    assert_eq!(r.text(), r#"{"saved":true}"#);
+
+    let r = send(
+        Method::DELETE,
+        "/api/admin/nope",
+        &[("X-Octo-Admin", "1"), ("Origin", "http://x")],
+    )
+    .await;
+    assert_problem_404(&r, "unknown admin route");
+    assert!(!r.has_cors());
+}
+
+#[tokio::test]
+async fn head_on_an_admin_get_route_reaches_the_catch_all() {
+    let r = send(Method::HEAD, "/api/admin/test-dummy", &[]).await;
+    assert_eq!(r.status, StatusCode::NOT_FOUND);
+}
+
+// ---- Static files ----
+
+#[tokio::test]
+async fn static_files_carry_the_asp_net_headers() {
+    let a = assets();
+    let css = a.get("/admin/admin.css").expect("css");
+    let r = get_("/admin/admin.css", &[]).await;
+    assert_eq!(r.status, StatusCode::OK);
+    assert_eq!(r.header("content-type"), Some("text/css"));
+    assert_eq!(
+        r.header("content-length"),
+        Some(CSS.len() * 100).map(|n| n.to_string()).as_deref()
+    );
+    assert_eq!(r.all("accept-ranges"), vec!["bytes"]);
+    assert_eq!(r.header("cache-control"), Some("no-cache"));
+    assert_eq!(r.all("etag"), vec![css.etag()]);
+    assert_eq!(r.header("last-modified"), Some("Mon, 21 Sep 2026 14:13:20 GMT"));
+    assert!(r.header("vary").is_none(), "the identity variant has no Vary");
+    assert!(r.header("content-encoding").is_none());
+    assert_eq!(r.body, CSS.repeat(100).into_bytes());
+
+    for (uri, ty) in [
+        ("/admin/index.html", "text/html"),
+        ("/Assets/octo_logo.png", "image/png"),
+    ] {
+        let r = get_(uri, &[]).await;
+        assert_eq!(r.status, StatusCode::OK, "{uri}");
+        assert_eq!(r.header("content-type"), Some(ty), "{uri}");
+    }
+}
+
+#[tokio::test]
+async fn static_etag_is_the_base64_sha256_of_the_body() {
+    use base64::Engine as _;
+    use sha2::Digest as _;
+    let r = get_("/admin/admin.css", &[]).await;
+    let expected = format!(
+        "\"{}\"",
+        base64::engine::general_purpose::STANDARD.encode(sha2::Sha256::digest(&r.body))
+    );
+    assert_eq!(r.header("etag"), Some(expected.as_str()));
+}
+
+#[tokio::test]
+async fn static_if_none_match_gives_304_with_the_same_headers_and_no_body() {
+    let a = assets();
+    let etag = a.get("/admin/admin.css").expect("css").etag().to_string();
+    for inm in [
+        etag.clone(),
+        format!("W/{etag}"),
+        format!("\"zzz\", {etag}"),
+        "*".to_string(),
+    ] {
+        let r = get_("/admin/admin.css", &[("If-None-Match", &inm)]).await;
+        assert_eq!(r.status, StatusCode::NOT_MODIFIED, "{inm}");
+        assert!(r.body.is_empty());
+        assert!(
+            r.header("content-length").is_none(),
+            "{inm}: no Content-Length on a 304"
+        );
+        assert_eq!(r.header("content-type"), Some("text/css"));
+        assert_eq!(r.header("cache-control"), Some("no-cache"));
+        assert_eq!(r.all("etag"), vec![etag.as_str()]);
+        assert!(r.header("last-modified").is_some());
+    }
+    // A non-matching If-None-Match wins over a matching If-Modified-Since.
+    let r = get_(
+        "/admin/admin.css",
+        &[
+            ("If-None-Match", "\"zzz\""),
+            ("If-Modified-Since", "Mon, 21 Sep 2026 14:13:20 GMT"),
+        ],
+    )
+    .await;
+    assert_eq!(r.status, StatusCode::OK);
+}
+
+#[tokio::test]
+async fn static_if_modified_since_compares_dates_and_ignores_the_future() {
+    let cases = [
+        ("Mon, 21 Sep 2026 14:13:20 GMT", StatusCode::NOT_MODIFIED),
+        ("Mon, 21 Sep 2026 14:00:00 GMT", StatusCode::OK),
+        ("Fri, 01 Jan 2100 00:00:00 GMT", StatusCode::OK),
+        ("not a date", StatusCode::OK),
+    ];
+    for (ims, expected) in cases {
+        let r = get_("/admin/admin.css", &[("If-Modified-Since", ims)]).await;
+        assert_eq!(r.status, expected, "{ims}");
+    }
+}
+
+#[tokio::test]
+async fn static_failed_preconditions_give_a_bare_412() {
+    for (name, value) in [
+        ("If-Match", "\"nope\""),
+        ("If-Unmodified-Since", "Sun, 04 Oct 2020 06:00:00 GMT"),
+    ] {
+        let r = get_("/admin/admin.css", &[(name, value)]).await;
+        assert_eq!(r.status, StatusCode::PRECONDITION_FAILED, "{name}");
+        assert_eq!(r.header("content-length"), Some("0"));
+        assert!(r.header("content-type").is_none());
+        assert!(r.header("etag").is_none());
+    }
+    let etag = assets().get("/admin/admin.css").expect("css").etag().to_string();
+    let r = get_("/admin/admin.css", &[("If-Match", &etag)]).await;
+    assert_eq!(r.status, StatusCode::OK);
+}
+
+#[tokio::test]
+async fn static_range_gives_206_with_content_range() {
+    let len = CSS.len() * 100;
+    let r = get_("/admin/admin.css", &[("Range", "bytes=0-9")]).await;
+    assert_eq!(r.status, StatusCode::PARTIAL_CONTENT);
+    assert_eq!(
+        r.header("content-range"),
+        Some(format!("bytes 0-9/{len}").as_str())
+    );
+    assert_eq!(r.header("content-length"), Some("10"));
+    assert_eq!(r.body, CSS.as_bytes()[..10].to_vec());
+    assert_eq!(r.header("content-type"), Some("text/css"));
+    assert!(r.header("etag").is_some());
+
+    let r = get_("/admin/admin.css", &[("Range", "bytes=-5")]).await;
+    assert_eq!(
+        r.header("content-range"),
+        Some(format!("bytes {}-{}/{len}", len - 5, len - 1).as_str())
+    );
+
+    // Several ranges are not supported: the whole file.
+    let r = get_("/admin/admin.css", &[("Range", "bytes=0-1,5-6")]).await;
+    assert_eq!(r.status, StatusCode::OK);
+    assert_eq!(r.body.len(), len);
+
+    // Past the end: 416 with only Content-Range.
+    let r = get_("/admin/admin.css", &[("Range", "bytes=999999-")]).await;
+    assert_eq!(r.status, StatusCode::RANGE_NOT_SATISFIABLE);
+    assert_eq!(r.header("content-range"), Some(format!("bytes */{len}").as_str()));
+    assert_eq!(r.header("content-length"), Some("0"));
+    assert!(r.header("content-type").is_none());
+
+    // If-Range with another ETag: the whole file.
+    let r = get_(
+        "/admin/admin.css",
+        &[("Range", "bytes=0-9"), ("If-Range", "\"nope\"")],
+    )
+    .await;
+    assert_eq!(r.status, StatusCode::OK);
+    let etag = assets().get("/admin/admin.css").expect("css").etag().to_string();
+    let r = get_("/admin/admin.css", &[("Range", "bytes=0-9"), ("If-Range", &etag)]).await;
+    assert_eq!(r.status, StatusCode::PARTIAL_CONTENT);
+}
+
+#[tokio::test]
+async fn static_brotli_and_gzip_variants_follow_accept_encoding() {
+    let a = assets();
+    let css = a.get("/admin/admin.css").expect("css");
+    let br_etag = css
+        .compressed_etag(crate::http::static_files::Encoding::Br)
+        .expect("br");
+    let gz_etag = css
+        .compressed_etag(crate::http::static_files::Encoding::Gzip)
+        .expect("gzip");
+    let weak = format!("W/{}", css.etag());
+
+    let r = get_("/admin/admin.css", &[("Accept-Encoding", "gzip, br")]).await;
+    assert_eq!(r.status, StatusCode::OK);
+    assert_eq!(r.header("content-encoding"), Some("br"));
+    assert_eq!(r.header("vary"), Some("Content-Encoding"));
+    assert_eq!(r.all("etag"), vec![br_etag, weak.as_str()]);
+    assert_eq!(
+        r.header("content-length"),
+        Some(r.body.len().to_string().as_str())
+    );
+    assert!(r.body.len() < CSS.len() * 100);
+
+    let cases = [
+        ("gzip", Some(gz_etag)),
+        ("br;q=0, gzip", Some(gz_etag)),
+        ("gzip;q=0.5, br;q=0.4", Some(gz_etag)),
+        ("gzip;q=1, br;q=1", Some(br_etag)),
+        ("BR", Some(br_etag)),
+        ("*", None),
+        ("identity", None),
+        ("deflate", None),
+    ];
+    for (ae, expected) in cases {
+        let r = get_("/admin/admin.css", &[("Accept-Encoding", ae)]).await;
+        assert_eq!(
+            r.headers
+                .get_all("etag")
+                .iter()
+                .next()
+                .and_then(|v| v.to_str().ok()),
+            Some(expected.unwrap_or(css.etag())),
+            "{ae}"
+        );
+        assert_eq!(r.header("vary").is_some(), expected.is_some(), "{ae}");
+    }
+
+    // The precompressed variant's own ETag is the one If-None-Match is checked against.
+    let r = get_(
+        "/admin/admin.css",
+        &[("Accept-Encoding", "br"), ("If-None-Match", br_etag)],
+    )
+    .await;
+    assert_eq!(r.status, StatusCode::NOT_MODIFIED);
+    assert_eq!(r.header("content-encoding"), Some("br"));
+    let r = get_(
+        "/admin/admin.css",
+        &[("Accept-Encoding", "br"), ("If-None-Match", css.etag())],
+    )
+    .await;
+    assert_eq!(r.status, StatusCode::OK);
+
+    // A range applies to the compressed body.
+    let r = get_(
+        "/admin/admin.css",
+        &[("Accept-Encoding", "br"), ("Range", "bytes=0-9")],
+    )
+    .await;
+    assert_eq!(r.status, StatusCode::PARTIAL_CONTENT);
+    assert_eq!(r.header("content-encoding"), Some("br"));
+    assert!(
+        r.header("content-range")
+            .expect("range")
+            .starts_with("bytes 0-9/")
+    );
+
+    // Images are not precompressed.
+    let r = get_("/Assets/octo_logo.png", &[("Accept-Encoding", "gzip, br")]).await;
+    assert!(r.header("content-encoding").is_none());
+    assert!(r.header("vary").is_none());
+}
+
+#[tokio::test]
+async fn static_head_has_the_headers_and_no_body() {
+    let r = send(Method::HEAD, "/admin/admin.css", &[]).await;
+    assert_eq!(r.status, StatusCode::OK);
+    assert!(r.body.is_empty());
+    assert_eq!(r.header("content-type"), Some("text/css"));
+    assert!(r.header("etag").is_some());
+    assert!(
+        r.header("content-length").is_none(),
+        "ASP.NET sent no Content-Length on HEAD"
+    );
+}
+
+#[tokio::test]
+async fn static_paths_match_ignoring_case_and_a_trailing_slash() {
+    for uri in [
+        "/ADMIN/Admin.CSS",
+        "/admin/admin.css/",
+        "/assets/OCTO_LOGO.png",
+        "/admin/admin.css?v=3",
+    ] {
+        let r = get_(uri, &[]).await;
+        assert_eq!(r.status, StatusCode::OK, "{uri}");
+    }
+}
+
+#[tokio::test]
+async fn static_files_answer_only_get_and_head() {
+    for method in [Method::POST, Method::PUT, Method::DELETE] {
+        let r = send(method.clone(), "/admin/admin.css", &[]).await;
+        assert_problem_404(&r, &format!("{method} static"));
+    }
+}
+
+#[tokio::test]
+async fn the_real_admin_ui_is_served_with_the_c_sharp_etags() {
+    let repo = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let roots = StaticRoots::resolve(None, None, None, Some(&repo));
+    let assets = StaticAssets::load(&roots);
+    assets.warm_all();
+    for url in [
+        "/admin/index.html",
+        "/admin/admin.css",
+        "/admin/admin.js",
+        "/admin/icons.svg",
+        "/Assets/octo_logo.png",
+    ] {
+        assert!(assets.get(url).is_some(), "{url} missing");
+    }
+    // The ETags the C# image sent for the same files (endpoints.md §7 probe).
+    for (url, etag) in [
+        (
+            "/admin/index.html",
+            "\"poA4o6qmdzOsdETjSBdw9ZNluURZ66GaB3+8Ch69YBo=\"",
+        ),
+        (
+            "/admin/admin.css",
+            "\"qGO8Mb+pSFQzFnPtg9ym1bgPFH68cJnaNUnlJgVbn5A=\"",
+        ),
+        (
+            "/Assets/octo_logo.png",
+            "\"KNN70wc7+BPdCgtpEGChPHWCHgn3iTsuDCEXScFLWoQ=\"",
+        ),
+    ] {
+        assert_eq!(assets.get(url).map(|a| a.etag()), Some(etag), "{url}");
+    }
+    let app = build(AppState::for_tests(AppSettings::default()), &assets);
+    for (url, ty) in [
+        ("/admin/index.html", "text/html"),
+        ("/admin/admin.js", "text/javascript"),
+        ("/admin/icons.svg", "image/svg+xml"),
+        ("/Assets/octo_logo.png", "image/png"),
+    ] {
+        let r = send_to(&app, Method::GET, url, &[]).await;
+        assert_eq!(r.status, StatusCode::OK, "{url}");
+        assert_eq!(r.header("content-type"), Some(ty), "{url}");
+    }
+    let r = send_to(
+        &app,
+        Method::GET,
+        "/admin/icons.svg",
+        &[("Accept-Encoding", "br")],
+    )
+    .await;
+    assert_eq!(r.header("content-encoding"), Some("br"));
+}
+
+// ---- /admin, /, the catch-all ----
+
+#[tokio::test]
+async fn admin_redirects_to_the_dashboard_page() {
+    for uri in ["/admin", "/admin/", "/ADMIN/"] {
+        let r = get_(uri, &[]).await;
+        assert_eq!(r.status, StatusCode::FOUND, "{uri}");
+        assert_eq!(r.header("location"), Some("/admin/index.html"));
+        assert_eq!(r.header("content-length"), Some("0"));
+        assert!(r.body.is_empty());
+    }
+    for method in [Method::HEAD, Method::POST] {
+        let r = send(method.clone(), "/admin", &[]).await;
+        assert_eq!(r.status, StatusCode::NOT_FOUND, "{method} /admin");
+    }
+}
+
+#[tokio::test]
+async fn root_is_the_endpoint_required_validation_problem() {
+    let r = get_("/", &[]).await;
+    assert_eq!(r.status, StatusCode::BAD_REQUEST);
+    assert_eq!(
+        r.header("content-type"),
+        Some("application/problem+json; charset=utf-8")
+    );
+    let body = r.text();
+    let prefix = r#"{"type":"https://tools.ietf.org/html/rfc9110#section-15.5.1","title":"One or more validation errors occurred.","status":400,"errors":{"endpoint":["The endpoint field is required."]},"traceId":"00-"#;
+    assert!(body.starts_with(prefix), "{body}");
+    let trace = r.json()["traceId"].as_str().expect("traceId").to_string();
+    let parts: Vec<&str> = trace.split('-').collect();
+    assert_eq!(parts.len(), 4);
+    assert_eq!((parts[1].len(), parts[2].len()), (32, 16));
+}
+
+#[tokio::test]
+async fn octo_owned_paths_are_problem_404s() {
+    for uri in [
+        "/favicon.ico",
+        "/admin/nope.js",
+        "/administrator",
+        "/api/admin/unknown",
+        "/assets/nope.png",
+        "/Assets/nope.png",
+    ] {
+        assert_problem_404(&get_(uri, &[]).await, uri);
+    }
+}
+
+/// endpoints.md §7: with no Navidrome URL configured, a relayed call answers 200 with the
+/// Subsonic error envelope naming the missing setting, in XML unless `f=json`.
+#[tokio::test]
+async fn everything_else_is_relayed_and_without_a_url_says_so() {
+    let r = get_("/rest/getArtists.view?u=a", &[]).await;
+    assert_eq!(r.status, StatusCode::OK);
+    assert_eq!(r.header("content-type"), Some("application/xml"));
+    assert_eq!(
+        r.text(),
+        "<subsonic-response status=\"failed\" version=\"1.16.1\" xmlns=\"http://subsonic.org/restapi\">\n  \
+         <error code=\"0\" message=\"Error connecting to Subsonic server: Octo has no valid Navidrome URL. \
+         Set SUBSONIC_URL (Subsonic__Url) to your Navidrome server, e.g. http://192.168.1.10:4533 — an absolute \
+         URL reachable from the Octo container, not localhost.\" />\n</subsonic-response>"
+    );
+    let r = get_("/rest/getArtists.view?u=a&f=json", &[]).await;
+    assert_eq!(r.header("content-type"), Some("application/json; charset=utf-8"));
+    assert_eq!(
+        r.text(),
+        r#"{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":0,"message":"Error connecting to Subsonic server: Octo has no valid Navidrome URL. Set SUBSONIC_URL (Subsonic__Url) to your Navidrome server, e.g. http://192.168.1.10:4533 \u2014 an absolute URL reachable from the Octo container, not localhost."}}}"#
+    );
+}
+
+#[tokio::test]
+async fn paths_are_canonicalised_before_routing() {
+    for uri in ["/REST/TestPing.VIEW", "/rest/testping/", "/Rest/TESTPING?f=json"] {
+        let r = get_(uri, &[]).await;
+        assert_eq!((r.status, r.text().as_str()), (StatusCode::OK, "pong"), "{uri}");
+    }
+    // A method the route does not take reaches the catch-all, never a 405; so does HEAD.
+    // (No Navidrome URL here, so the relay answers its 200 error envelope.)
+    for method in [Method::PUT, Method::DELETE, Method::HEAD] {
+        let r = send(method.clone(), "/rest/testPing", &[]).await;
+        assert_eq!(r.status, StatusCode::OK, "{method}");
+        if method != Method::HEAD {
+            assert!(
+                r.text().contains("Error connecting to Subsonic server"),
+                "{method}"
+            );
+        }
+    }
+}
+
+// ---- Errors ----
+
+#[tokio::test]
+async fn a_panicking_handler_becomes_the_500_envelope() {
+    let r = get_("/test/panic", &[("Origin", "http://x")]).await;
+    assert_eq!(r.status, StatusCode::INTERNAL_SERVER_ERROR);
+    assert_eq!(r.header("content-type"), Some("application/json; charset=utf-8"));
+    assert_eq!(
+        r.text(),
+        r#"{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":0,"message":"An internal server error occurred"}}}"#
+    );
+    assert_eq!(r.header("cache-control"), Some("no-cache,no-store"));
+    assert_eq!(r.header("expires"), Some("-1"));
+    assert_eq!(r.header("pragma"), Some("no-cache"));
+    assert_eq!(
+        r.header("access-control-allow-origin"),
+        Some("*"),
+        "CORS still applies"
+    );
+}
+
+#[tokio::test]
+async fn exception_envelopes_use_the_relaxed_encoder() {
+    let r = get_("/test/not-configured", &[]).await;
+    assert_eq!(r.status, StatusCode::SERVICE_UNAVAILABLE);
+    assert_eq!(
+        r.text(),
+        r#"{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":0,"message":"Set SUBSONIC_URL — an absolute URL, isn't it"}}}"#
+    );
+}

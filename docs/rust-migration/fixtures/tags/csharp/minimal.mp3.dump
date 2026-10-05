@@ -1,0 +1,46 @@
+duration 0 rate 44100
+id3v2 version 3
+  TIT2 enc 1 ["Song"]
+  TPE1 enc 1 ["Artist"]
+  TPE2 enc 1 ["Artist"]
+  TCON enc 1 ["13"]
+id3v1 title "Song" artist "Artist" album null year 0 comment null track 0 genre "Pop"
+tag
+  title "Song"
+  performers ["Artist"]
+  albumartists ["Artist"]
+  composers []
+  album null
+  genres ["Pop"]
+  year 0 track 0/0 disc 0/0 bpm 0
+  copyright null
+  lyrics null
+  isrc null publisher null
+  releaseid null releasegroupid null
+extras
+  isrc null
+  label null
+  catalognumber null
+  barcode null
+  releasetype null
+  releasestatus null
+  releasecountry null
+  releasetrackid null
+  albumartistid null
+  artistid null
+  acoustid null
+  trackgain null
+  trackpeak null
+  albumgain null
+  albumpeak null
+  albumid null
+  albumartists null
+  albumversion null
+  releasedate null
+  recordingid null compilation False
+facts 0 ".mp3" 44100 "Song" "Artist" null "Artist" null null null [] null null null null null False True
+barefacts 0 ".mp3" 44100 False
+identity null 0
+album null "Artist" False
+kept "Song" null ["Artist"] [] null null null null 0/0 0/0 False
+pid "||Artist|||||Song"

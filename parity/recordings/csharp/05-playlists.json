@@ -1,0 +1,670 @@
+{
+ "group": "subsonic-playlists-radio",
+ "entries": [
+  {
+   "name": "playlists-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getPlaylists?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "146"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 146,
+    "sha256": "279520d0eefe5bb95e59be74b7b5d6534aa940d2fb0fc30d97bc8f3fbf95dacd",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"playlists\":{}}}"
+   }
+  },
+  {
+   "name": "playlists-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getPlaylists.view?u=admin&p=parity-admin&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "198"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 198,
+    "sha256": "15d2dc407cca6f2a357a0f49e9eeb7029d5e687cd5935b8d43a44113d94736fe",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><playlists></playlists></subsonic-response>"
+   }
+  },
+  {
+   "name": "playlists-listener-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getPlaylists?u=listener&p=listener-pass&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "146"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 146,
+    "sha256": "279520d0eefe5bb95e59be74b7b5d6534aa940d2fb0fc30d97bc8f3fbf95dacd",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"playlists\":{}}}"
+   }
+  },
+  {
+   "name": "playlists-badpass-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getPlaylists?u=admin&p=wrong-password&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "194"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 194,
+    "sha256": "26d0cfb90f5ffb7c852fdc26875725a12f467aa83b751e5f07d9d658996ffc9e",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "playlists-badpass-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getPlaylists.view?u=admin&p=wrong-password&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "241"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 241,
+    "sha256": "71b6952e17b857970c775ba1a4e42a7e1ca7f89a056bf489ad30fafa9b2316d8",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"failed\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><error code=\"40\" message=\"Wrong username or password\"></error></subsonic-response>"
+   }
+  },
+  {
+   "name": "playlists-jsonp",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getPlaylists?u=admin&p=parity-admin&v=1.16.1&c=parity&f=jsonp&callback=cb",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "150"
+    ],
+    [
+     "Content-Type",
+     "application/javascript"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "text",
+    "size": 150,
+    "sha256": "5b7bee24c1683754471680e5b9e603fabadeabe0e127ce1a44b1c3618d676a30",
+    "text": "cb({\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"playlists\":{}}})"
+   }
+  },
+  {
+   "name": "playlist-unknown-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getPlaylist?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=doesnotexist000000000x",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "186"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 186,
+    "sha256": "e742bb64a973025210bb6c92f3f5bf685b962ad26e0c3597b0bb12603bccf03b",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":70,\"message\":\"playlist not found\"}}}"
+   }
+  },
+  {
+   "name": "playlist-octo-station-id-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getPlaylist.view?u=admin&p=parity-admin&v=1.16.1&c=parity&id=or00000000000000000000",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "233"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 233,
+    "sha256": "c9dd631f339917c0b3c819738f8074e99d99da3c7c0cf19ee87b2fdd8a853d47",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"failed\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><error code=\"70\" message=\"playlist not found\"></error></subsonic-response>"
+   }
+  },
+  {
+   "name": "playlist-octo-mix-id-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getPlaylist?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=og00000000000000000000",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "186"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 186,
+    "sha256": "e742bb64a973025210bb6c92f3f5bf685b962ad26e0c3597b0bb12603bccf03b",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":70,\"message\":\"playlist not found\"}}}"
+   }
+  },
+  {
+   "name": "create-playlist-octo-id-readonly-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/createPlaylist?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&playlistId=og00000000000000000000&songId=2A1r2OKTiTVuvPfmtePIIe",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 138,
+    "sha256": "177846d6834ee44294d5c683a988e5f52618f000b67693fa98b860cf5c1923ca",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":70,\"message\":\"Octo\\u0027s generated playlists are read-only\"}}}"
+   }
+  },
+  {
+   "name": "update-playlist-octo-id-readonly-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/updatePlaylist.view?u=admin&p=parity-admin&v=1.16.1&c=parity&playlistId=or00000000000000000000",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "182"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 182,
+    "sha256": "610d713f407c41dc65e1f9232d058ed041cb45de17eb7d122c254c45eb043b35",
+    "text": "<subsonic-response status=\"failed\" version=\"1.16.1\" xmlns=\"http://subsonic.org/restapi\">\n  <error code=\"70\" message=\"Octo's generated playlists are read-only\" />\n</subsonic-response>"
+   }
+  },
+  {
+   "name": "delete-playlist-octo-id-readonly-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/deletePlaylist?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=og00000000000000000000",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 138,
+    "sha256": "177846d6834ee44294d5c683a988e5f52618f000b67693fa98b860cf5c1923ca",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":70,\"message\":\"Octo\\u0027s generated playlists are read-only\"}}}"
+   }
+  },
+  {
+   "name": "delete-playlist-unknown-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/deletePlaylist.view?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=doesnotexist000000000x",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "182"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 182,
+    "sha256": "5d55df13b5002a34e70b08c2aa2ddfec5c7c958b03f8f0a4a0b423a0d4c419c7",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":70,\"message\":\"data not found\"}}}"
+   }
+  },
+  {
+   "name": "radio-stations-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getInternetRadioStations?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "158"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 158,
+    "sha256": "0784a91bd7d03c0d83c5af4a44861938a59e1f9582d45b408053ebc9db48ac4f",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"internetRadioStations\":{}}}"
+   }
+  },
+  {
+   "name": "radio-stations-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getInternetRadioStations.view?u=admin&p=parity-admin&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "222"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 222,
+    "sha256": "2a455e2c5ea8bf28aaadc6edce7f7e3f186838c6760622d1b8734342bcc5a9da",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><internetRadioStations></internetRadioStations></subsonic-response>"
+   }
+  },
+  {
+   "name": "radio-stations-badpass-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getInternetRadioStations?u=admin&p=wrong-password&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "194"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 194,
+    "sha256": "26d0cfb90f5ffb7c852fdc26875725a12f467aa83b751e5f07d9d658996ffc9e",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "create-station-octo-id-readonly-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/createInternetRadioStation?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=or00000000000000000000",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 138,
+    "sha256": "177846d6834ee44294d5c683a988e5f52618f000b67693fa98b860cf5c1923ca",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":70,\"message\":\"Octo\\u0027s generated playlists are read-only\"}}}"
+   }
+  },
+  {
+   "name": "delete-station-octo-id-readonly-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/deleteInternetRadioStation.view?u=admin&p=parity-admin&v=1.16.1&c=parity&id=og00000000000000000000",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "182"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 182,
+    "sha256": "610d713f407c41dc65e1f9232d058ed041cb45de17eb7d122c254c45eb043b35",
+    "text": "<subsonic-response status=\"failed\" version=\"1.16.1\" xmlns=\"http://subsonic.org/restapi\">\n  <error code=\"70\" message=\"Octo's generated playlists are read-only\" />\n</subsonic-response>"
+   }
+  },
+  {
+   "name": "update-station-unknown-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/updateInternetRadioStation?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=doesnotexist000000000x&streamUrl=http%3A%2F%2Fexample.invalid%2Fs&name=x",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "131"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 131,
+    "sha256": "85d43876d9f9a3f8956bc569d2873732a589db418e72434aadd839db0bf54ad6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}}"
+   }
+  }
+ ]
+}

@@ -1,0 +1,99 @@
+{
+  "Version": 1,
+  "Users": {
+    "brandon": {
+      "Username": "Brandon",
+      "LastSeenUtc": "2026-10-03T18:40:12.3456789Z",
+      "NewPlaysSinceRefresh": 3,
+      "Plays": [
+        {
+          "SongId": "4Kq3cS0bWq9dHq7y1nZb2e",
+          "Artist": "Bj\u00F6rk",
+          "Title": "J\u00F3ga",
+          "Album": "Homogenic",
+          "Genre": "Electronic",
+          "Duration": 305,
+          "IsLocal": true,
+          "Hearted": true,
+          "LearnedSignal": true,
+          "Source": "scrobble",
+          "PlayedAtUtc": "2026-10-03T18:35:00Z"
+        },
+        {
+          "SongId": "1aB2cD3eF4gH5iJ6kL7mN8",
+          "Artist": "Daft Punk",
+          "Title": "Digital Love",
+          "Album": null,
+          "Genre": null,
+          "Duration": null,
+          "IsLocal": false,
+          "Hearted": false,
+          "LearnedSignal": false,
+          "Source": "radio",
+          "PlayedAtUtc": "2026-10-03T18:20:41.9876543Z"
+        }
+      ],
+      "Stations": [
+        {
+          "Id": "or3hT9kQ2mXv8LpZ1cYw",
+          "Key": "artist:bj\u00F6rk",
+          "Name": "Bj\u00F6rk Radio",
+          "Owner": "Brandon",
+          "Kind": 3,
+          "Personalized": true,
+          "DefinitionVersion": 4,
+          "CreatedUtc": "2026-09-20T07:00:00Z",
+          "ChangedUtc": "2026-10-03T06:00:03.1415926Z",
+          "ValidUntilUtc": "2026-10-04T06:00:03.1415926Z",
+          "Seeds": [
+            "Bj\u00F6rk",
+            "Sigur R\u00F3s"
+          ],
+          "Tracks": [
+            {
+              "Artist": "M\u00FAm",
+              "Title": "Green Grass of Tunnel",
+              "Album": "Finally We Are No One",
+              "Genre": "Electronic",
+              "Duration": 241,
+              "Year": 2002,
+              "Score": 0.8734,
+              "Source": "lastfm-similar",
+              "ResolvedId": "7YzXwVu6TsRq5PoN4mLk3J",
+              "IsLocal": false,
+              "ExternalProvider": "soulseek",
+              "YouTubeId": "dQw4w9WgXcQ"
+            },
+            {
+              "Artist": "Bj\u00F6rk",
+              "Title": "Hyperballad",
+              "Album": "Post",
+              "Genre": null,
+              "Duration": 321,
+              "Year": null,
+              "Score": 1,
+              "Source": "library",
+              "ResolvedId": "9a8b7c6d5e4f3a2b1c0d9e",
+              "IsLocal": true,
+              "ExternalProvider": null,
+              "YouTubeId": null
+            }
+          ]
+        }
+      ],
+      "UnavailableTracks": [
+        {
+          "Key": "portishead|roads",
+          "Artist": "Portishead",
+          "Title": "Roads",
+          "FailedAtUtc": "2026-10-03T17:00:00Z",
+          "RetryAfterUtc": "2026-10-04T17:00:00Z"
+        }
+      ],
+      "LastRefreshAttemptUtc": "2026-10-03T06:00:00.25Z",
+      "LastRefreshSuccessUtc": "2026-10-03T06:00:03.1415926Z",
+      "LastRefreshError": null,
+      "Refreshing": false
+    }
+  }
+}

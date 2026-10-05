@@ -1,0 +1,58 @@
+duration 0 rate 8000
+xiph vendor "ffmpeg"
+  ALBUMARTIST ["AC/DC"]
+  TITLE ["Ágætis byrjun — 東京"]
+  ARTIST ["Sigur Rós"]
+  GENRE ["Rock", "Shoegaze"]
+  TRACKNUMBER ["07"]
+  DISCNUMBER ["2"]
+  DISCTOTAL ["2"]
+  DATE ["1999"]
+  ORIGINALDATE ["1999-06-12"]
+  ORIGINALYEAR ["1999"]
+  LABEL ["Smekkleysa Ünïcode"]
+  MUSICBRAINZ_ARTISTID ["a-1", "a-2"]
+  ARTISTS ["Sigur Rós", "坂本龍一"]
+  MUSICBRAINZ_TRACKID ["rec-peer"]
+  LYRICS ["plain peer lyrics\u000awith ünïcode"]
+flacpicture FrontCover "image/png" "Cover" 0x0x0/0 bytes 98 sha256 630466e7681e0f40
+tag
+  title "Ágætis byrjun — 東京"
+  performers ["Sigur Rós"]
+  albumartists ["AC/DC"]
+  composers []
+  album null
+  genres ["Rock", "Shoegaze"]
+  year 1999 track 7/0 disc 2/2 bpm 0
+  copyright null
+  lyrics "plain peer lyrics\u000awith ünïcode"
+  isrc null publisher null
+  releaseid null releasegroupid null
+  picture FrontCover "image/png" "Cover" bytes 98 sha256 630466e7681e0f40
+extras
+  isrc null
+  label "Smekkleysa Ünïcode"
+  catalognumber null
+  barcode null
+  releasetype null
+  releasestatus null
+  releasecountry null
+  releasetrackid null
+  albumartistid null
+  artistid "a-1"
+  acoustid null
+  trackgain null
+  trackpeak null
+  albumgain null
+  albumpeak null
+  albumid null
+  albumartists null
+  albumversion null
+  releasedate null
+  recordingid "rec-peer" compilation False
+facts 0 ".flac" 8000 "Ágætis byrjun — 東京" "Sigur Rós" null "AC/DC" 1999 7 2 [] null null "Smekkleysa Ünïcode" "rec-peer" null False True
+barefacts 0 ".flac" 8000 False
+identity "rec-peer" 0
+album null "AC/DC" False
+kept "Ágætis byrjun — 東京" null ["AC/DC"] [] null null null null 7/0 2/2 False
+pid "||AC/DC|||||Ágætis byrjun — 東京"

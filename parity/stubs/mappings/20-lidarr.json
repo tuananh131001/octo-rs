@@ -1,0 +1,10 @@
+[
+  {"service": "lidarr", "method": "GET", "path": "/ping", "body": {"status": "OK"}},
+  {"service": "lidarr", "method": "GET", "path": "/api/v1/system/status",
+   "body": {"appName": "Lidarr", "instanceName": "Lidarr", "version": "2.9.6.4552", "isDocker": true}},
+  {"service": "lidarr", "method": "GET", "path": "/api/v1/rootfolder",
+   "body": [{"id": 1, "name": "Music", "path": "/music", "accessible": true, "freeSpace": 1000000000}]},
+  {"service": "lidarr", "method": "GET", "path": "/api/v1/qualityprofile", "body": [{"id": 1, "name": "Lossless"}]},
+  {"service": "lidarr", "method": "GET", "path": "/api/v1/metadataprofile", "body": [{"id": 1, "name": "Standard"}]},
+  {"service": "lidarr", "method": "GET", "pathRegex": "^/api/v1/(album/lookup|album|artist|track|trackFile)$", "body": []}
+]

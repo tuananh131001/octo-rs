@@ -1,0 +1,49 @@
+[package]
+name = "octo-core"
+description = "Octo's settings, models and pure logic: song identity, matching, tagging plans, lyrics text."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+# No doc examples; skipping the doctest pass also keeps it off the shared target dir.
+doctest = false
+
+[dependencies]
+anyhow.workspace = true
+arc-swap.workspace = true
+async-trait.workspace = true
+base64.workspace = true
+chrono.workspace = true
+futures.workspace = true
+hex.workspace = true
+http.workspace = true
+indexmap.workspace = true
+md-5.workspace = true
+notify.workspace = true
+parking_lot.workspace = true
+percent-encoding.workspace = true
+rand.workspace = true
+regex.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_repr.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
+tracing.workspace = true
+unicode-general-category.workspace = true
+unicode-normalization.workspace = true
+url.workspace = true
+uuid.workspace = true
+
+[dev-dependencies]
+insta.workspace = true
+tempfile.workspace = true
+tokio = { workspace = true, features = ["test-util"] }
+
+[lints]
+workspace = true

@@ -1,0 +1,65 @@
+[package]
+name = "octo"
+description = "Octo: a Subsonic proxy that adds Soulseek, YouTube and Last.fm to a Navidrome library."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+default-run = "octo"
+
+[lib]
+# No doc examples; skipping the doctest pass also keeps it off the shared target dir.
+doctest = false
+
+[dependencies]
+octo-core.workspace = true
+octo-media.workspace = true
+octo-subsonic.workspace = true
+anyhow.workspace = true
+arc-swap.workspace = true
+async-trait.workspace = true
+axum.workspace = true
+base64.workspace = true
+bytes.workspace = true
+brotli.workspace = true
+chrono.workspace = true
+flate2.workspace = true
+futures.workspace = true
+hex.workspace = true
+http.workspace = true
+http-body-util.workspace = true
+httpdate.workspace = true
+if-addrs.workspace = true
+lofty.workspace = true
+indexmap.workspace = true
+md-5.workspace = true
+mime_guess.workspace = true
+parking_lot.workspace = true
+percent-encoding.workspace = true
+rand.workspace = true
+regex.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_repr.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tokio-util.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+url.workspace = true
+uuid.workspace = true
+
+[dev-dependencies]
+image.workspace = true
+insta.workspace = true
+tokio = { workspace = true, features = ["test-util"] }
+tempfile.workspace = true
+wiremock.workspace = true
+
+[lints]
+workspace = true

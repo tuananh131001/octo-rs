@@ -28,52 +28,37 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  DOTNET_VERSION: "9.0.x"
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-test:
+  # A dated release must carry its own number in VERSION. Octo reports that number, and
+  # the dashboard's update check compares it with the newest tag, so a tag on a commit
+  # that was not bumped would leave every updated server offering the same update forever.
+  # The check is a step, not a job condition, so that on a branch push this job still
+  # succeeds and the image job, which needs it, still runs.
+  release-version:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      # A dated release must carry its own number in octo.csproj. Octo reports that
-      # number, and the dashboard's update check compares it with the newest tag, so a
-      # tag on a commit that was not bumped would leave every updated server offering
-      # the same update forever.
       - name: Release tag matches the version
         if: startsWith(github.ref, 'refs/tags/') && !startsWith(github.ref_name, 'v')
         run: |
-          version="$(sed -n 's:.*<InformationalVersion>\(.*\)</InformationalVersion>.*:\1:p' octo/octo.csproj | head -n 1)"
+          version="$(sed -n '1{s/[[:space:]]//g;p;q}' VERSION)"
           if [ "$version" != "$GITHUB_REF_NAME" ]; then
-            echo "::error::Tag $GITHUB_REF_NAME, but octo/octo.csproj says $version. Bump InformationalVersion before tagging."
+            echo "::error::Tag $GITHUB_REF_NAME, but VERSION says $version. Bump VERSION before tagging."
             exit 1
           fi
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v6
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      # ffmpeg for the Radio transcoder; Noto CJK and Symbola, as in the
-      # image, so the cover tests can draw names in other scripts.
-      - name: Install Radio transcoder and cover fonts
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-noto-cjk fonts-symbola
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
-
-      - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal
+  # fmt, clippy, the test suite and cargo-deny, as CI runs them (.github/workflows/rust.yml).
+  build-and-test:
+    uses: ./.github/workflows/rust.yml
 
   docker:
-    needs: build-and-test
+    needs: [release-version, build-and-test]
     runs-on: ubuntu-latest
     # No `if` needed: the only triggers left are push and workflow_dispatch, both of
     # which should publish. The old condition also allowed merged pull_request events,

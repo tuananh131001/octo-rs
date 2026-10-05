@@ -1,0 +1,128 @@
+//! Port of `Services/IDownloadService.cs`: the music download service's interface and
+//! `DirectStreamInfo`. The service itself is 4-B's `BaseDownloadService` and 4-C's
+//! `SoulseekDownloadService`.
+//!
+//! The C# methods threw where a download could not be done; here they answer `Err`, and a
+//! caller that branches on the kind downcasts (`ReplacementRejectedException`).
+
+use std::pin::Pin;
+use std::sync::Arc;
+
+use async_trait::async_trait;
+use bytes::Bytes;
+use futures::Stream;
+use octo_core::models::download::DownloadInfo;
+use octo_core::settings::DownloadSource;
+use tokio_util::sync::CancellationToken;
+
+use crate::services::library::ReplacementHandoff;
+
+/// An audio body being read, chunk by chunk (the C# `Stream`). Dropping it closes the upstream
+/// response it reads from.
+pub type AudioStream = Pin<Box<dyn Stream<Item = std::io::Result<Bytes>> + Send>>;
+
+/// Interface for the music download service (Deezspot or other)
+#[async_trait]
+pub trait IDownloadService: Send + Sync {
+    /// Downloads a song from an external provider: the provider (deezer, spotify), the ID on
+    /// the external provider and a cancellation token. The path to the downloaded file.
+    async fn download_song(
+        &self,
+        external_provider: &str,
+        external_id: &str,
+        cancellation_token: &CancellationToken,
+    ) -> anyhow::Result<String>;
+
+    /// Downloads a song and streams the result progressively: a stream of the audio file.
+    async fn download_and_stream(
+        &self,
+        external_provider: &str,
+        external_id: &str,
+        cancellation_token: &CancellationToken,
+    ) -> anyhow::Result<AudioStream>;
+
+    /// Downloads remaining tracks from an album in background (excluding the specified track,
+    /// already downloaded).
+    fn download_remaining_album_tracks_in_background(
+        &self,
+        external_provider: &str,
+        album_external_id: &str,
+        exclude_track_external_id: &str,
+    );
+
+    /// Run one queued acquisition to completion. Called only by the acquisition worker,
+    /// which supplies a token unrelated to any HTTP request — that separation is the whole
+    /// point, since a client giving up must never cancel a transfer slskd will finish.
+    ///
+    /// `requested_by`: the users who asked for this track, for the history entry and the
+    /// notification. Empty when Octo started the acquisition itself or when attribution is
+    /// switched off. `upgrade_search`: search Soulseek the slow, wide way (Better quality,
+    /// weekly upgrade). `replacement`: a library action's replacement, revealed in the
+    /// original's place (W8).
+    #[allow(clippy::too_many_arguments)] // the C# signature, member for member
+    async fn execute_acquisition(
+        &self,
+        external_provider: &str,
+        external_id: &str,
+        trigger_album_download: bool,
+        force_permanent: bool,
+        source_override: Option<DownloadSource>,
+        cancellation_token: &CancellationToken,
+        requested_by: Option<Vec<String>>,
+        upgrade_search: bool,
+        replacement: Option<Arc<ReplacementHandoff>>,
+    ) -> anyhow::Result<String>;
+
+    /// Runs one direct source for every missing track in an album.
+    async fn download_album_with_source(
+        &self,
+        external_provider: &str,
+        album_external_id: &str,
+        source: DownloadSource,
+        suppress_summary: bool,
+        cancellation_token: &CancellationToken,
+        requested_by: Option<Vec<String>>,
+    ) -> anyhow::Result<bool>;
+
+    /// Checks if a song is currently being downloaded
+    fn get_download_status(&self, song_id: &str) -> Option<DownloadInfo>;
+
+    /// A transfer is running or finishing. The library Review sweep waits for none to be.
+    fn has_active_downloads(&self) -> bool {
+        false
+    }
+
+    /// Gets the local path for a song if it has been downloaded already: the provider
+    /// (deezer, qobuz, etc.) and the ID on the external provider. The local file path if it
+    /// exists, `None` otherwise.
+    async fn get_local_path_if_exists(&self, external_provider: &str, external_id: &str) -> Option<String>;
+
+    /// Checks if the service is properly configured and functional
+    async fn is_available(&self) -> bool;
+
+    /// Gets a direct stream from the provider CDN (true streaming, no disk).
+    /// Returns the stream and content type for proxying to client.
+    /// `range_header` if present is the verbatim HTTP Range
+    /// header from the incoming client request — it gets forwarded upstream so
+    /// the response can be a 206 with Content-Range. iOS Subsonic clients
+    /// require Range support for non-FLAC audio or they refuse to play.
+    async fn get_direct_stream(
+        &self,
+        external_provider: &str,
+        external_id: &str,
+        range_header: Option<&str>,
+        cancellation_token: &CancellationToken,
+    ) -> anyhow::Result<Option<DirectStreamInfo>>;
+}
+
+/// Information about a direct stream from a provider CDN.
+pub struct DirectStreamInfo {
+    pub audio_stream: AudioStream,
+    pub content_type: String,
+    pub content_length: Option<u64>,
+    pub quality: Option<String>,
+    /// 200 for full body, 206 for partial content.
+    pub status_code: u16,
+    /// Verbatim Content-Range header to forward to the client (only set when StatusCode == 206).
+    pub content_range: Option<String>,
+}

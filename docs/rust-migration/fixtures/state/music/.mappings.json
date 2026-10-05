@@ -1,0 +1,30 @@
+{
+  "soulseek:7YzXwVu6TsRq5PoN4mLk3J": {
+    "ExternalProvider": "soulseek",
+    "ExternalId": "7YzXwVu6TsRq5PoN4mLk3J",
+    "LocalPath": "/music/Sigur R\u00F3s/\u00C1g\u00E6tis byrjun/02 - Svefn-g-englar.flac",
+    "LocalSubsonicId": null,
+    "Title": "Svefn-g-englar",
+    "Artist": "Sigur R\u00F3s",
+    "Album": "\u00C1g\u00E6tis byrjun",
+    "DownloadedAt": "2026-10-03T14:22:05.1234567Z",
+    "SourcePeer": "vinyl_rips_4u",
+    "SourceFile": "@@abcde\\Music\\Sigur R\u00F3s\\\u00C1g\u00E6tis byrjun\\02 Svefn-g-englar.flac",
+    "MusicBrainzRecordingId": "b1a9c0e2-6f0c-4a52-8d4b-0f3c7e2d1a99",
+    "TranscodedFrom": null
+  },
+  "youtube:dQw4w9WgXcQ": {
+    "ExternalProvider": "youtube",
+    "ExternalId": "dQw4w9WgXcQ",
+    "LocalPath": "/music/Queen/Don\u0027t Stop Me Now/Don\u0027t Stop Me Now.mp3",
+    "LocalSubsonicId": null,
+    "Title": "Don\u0027t Stop Me Now",
+    "Artist": "Queen",
+    "Album": "",
+    "DownloadedAt": "2026-10-02T09:01:44.080721Z",
+    "SourcePeer": null,
+    "SourceFile": null,
+    "MusicBrainzRecordingId": null,
+    "TranscodedFrom": null
+  }
+}

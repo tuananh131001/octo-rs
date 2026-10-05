@@ -1,0 +1,3576 @@
+{
+ "group": "admin",
+ "entries": [
+  {
+   "name": "admin-root-redirect",
+   "request": {
+    "method": "GET",
+    "target": "/admin",
+    "headers": {},
+    "body": null
+   },
+   "status": 302,
+   "reason": "Found",
+   "headers": [
+    [
+     "Content-Length",
+     "0"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Location",
+     "/admin/index.html"
+    ]
+   ],
+   "body": {
+    "kind": "empty",
+    "size": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "name": "admin-root-slash-redirect",
+   "request": {
+    "method": "GET",
+    "target": "/admin/",
+    "headers": {},
+    "body": null
+   },
+   "status": 302,
+   "reason": "Found",
+   "headers": [
+    [
+     "Content-Length",
+     "0"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Location",
+     "/admin/index.html"
+    ]
+   ],
+   "body": {
+    "kind": "empty",
+    "size": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "name": "settings",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/settings",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 4947,
+    "sha256": "dba2e0c4e3a5783923fc0259bce4fdd41b43e8eb87768f5046152f2fb936a653",
+    "text": "{\"Subsonic\":{\"Url\":\"http://navidrome:4533\",\"AdminUsername\":\"admin\",\"AdminPassword\":\"(saved, not shown)\",\"EnableSearchDiscovery\":true,\"WaitForSearchDurations\":true,\"EnableSyncCatalog\":true,\"SyncCatalogClients\":\"Symfonium\",\"SyncCatalogMaxSongs\":1000,\"StorageMode\":\"Stream\",\"DownloadMode\":\"Track\",\"DownloadOnStar\":true,\"DownloadAlbumOnStar\":true,\"RecordRequestedBy\":true,\"StarDownloadsForRequester\":false,\"SkipOwnedSongs\":true,\"WaitForLosslessOnPlay\":false,\"LosslessWaitTimeoutSeconds\":0,\"DownloadOnPlay\":false,\"LidarrAlbumOnPlay\":false,\"DownloadSource\":\"Soulseek\",\"HeartDownloadSources\":[{\"Source\":\"Soulseek\",\"SongEnabled\":true,\"AlbumEnabled\":true},{\"Source\":\"YouTube\",\"SongEnabled\":false,\"AlbumEnabled\":false},{\"Source\":\"Lidarr\",\"SongEnabled\":false,\"AlbumEnabled\":false}],\"AutoDetectDownloadPath\":true,\"LibraryPath\":\"\",\"FolderStructure\":\"Flat\",\"UseLocalStaging\":false,\"ExplicitFilter\":\"All\",\"CacheDurationHours\":1,\"EnableExternalPlaylists\":false,\"PlaylistsDirectory\":\"playlists\"},\"Library\":{\"DownloadPath\":\"/music\"},\"Server\":{\"PublicUrl\":\"\"},\"Updates\":{\"Check\":false,\"Repo\":\"winters27/octo\"},\"Soulseek\":{\"BaseUrl\":\"http://stubs:5030\",\"Username\":\"slskd\",\"Password\":\"slskd\",\"SearchWaitSeconds\":30,\"UpgradeSearchWaitSeconds\":90,\"MinFileSizeBytes\":5242880,\"PreferredExtension\":\"flac\",\"DownloadTimeoutSeconds\":180,\"VerifyDownloads\":false,\"AcoustIdApiKey\":\"\",\"MinMatchScore\":85,\"TagFromMusicBrainz\":false,\"NameFromMatch\":false,\"RejectedPeerTtlDays\":30,\"FingerprintSeconds\":120,\"FingerprintTimeoutSeconds\":30,\"AcoustIdTimeoutSeconds\":10,\"DetectTranscodes\":true,\"TranscodeCheckTimeoutSeconds\":20,\"OutageHoldHours\":6,\"ParallelDownloads\":3,\"AlbumFolders\":true,\"SubmitConfirmedFingerprints\":false,\"AcoustIdUserApiKey\":\"\"},\"Lidarr\":{\"BaseUrl\":\"http://stubs:8686\",\"ApiKey\":\"parity-lidarr-key\",\"RootFolderPath\":\"\",\"QualityProfileId\":0,\"MetadataProfileId\":0,\"CompletionMode\":\"Accepted\",\"ImportTimeoutSeconds\":1800},\"YouTube\":{\"ShimUrl\":\"http://stubs:8090\"},\"LastFm\":{\"ApiKey\":\"parity-lastfm-key\",\"ApiSecret\":\"\",\"ScrobbleExternalPlays\":true,\"ScrobbleLibraryPlays\":true,\"UserSessions\":{},\"EnableRadio\":false,\"RadioTrackCount\":50,\"RadioCacheDurationHours\":24,\"EnablePersonalizedStations\":false,\"EnableYourMix\":true,\"EnableDiscoveryMix\":true,\"ArtistStationCount\":2,\"GenreStationCount\":3,\"EnableDiscoveryStations\":false,\"ExposeRadioAsPlaylists\":false,\"ExposeRadioAsStreams\":false,\"RadioStreamBitrateKbps\":192,\"EnableIcyMetadata\":true,\"StarterPublishTimeoutSeconds\":8,\"RadioLoudnessTargetLufs\":-16,\"HistoryRetentionDays\":90,\"DiscoveryPercent\":35,\"RefreshIntervalHours\":12,\"MinimumPlays\":10,\"DiscoveryStations\":[]},\"LibraryActions\":{\"Enabled\":false,\"PlaylistsEnabled\":true,\"RatingsEnabled\":false,\"PlaylistPrefix\":\"\\uD83D\\uDEE0 \",\"DryRun\":true,\"QuarantineDirectory\":\".octo-trash\",\"QuarantineRetentionDays\":30,\"PollIntervalSeconds\":60,\"MaxActionsPerCycle\":20,\"KeepReplacedOriginals\":true,\"NoticePrefix\":\"\\u25B8 \",\"ReviewEnabled\":false,\"ReviewPlaylistName\":\"Review\",\"ReviewSweepPerHour\":0,\"ReviewSweepOctoDownloads\":false,\"DuplicatesEnabled\":false,\"DuplicatesPlaylistName\":\"Duplicates\",\"DuplicatesScanHours\":24,\"UpgradePerWeek\":0,\"UpgradeSource\":\"Auto\",\"NoticeMaxTracks\":100,\"RatingsScope\":\"Auto\",\"AllowedUsers\":[],\"Actions\":[{\"Action\":\"Delete\",\"Name\":\"Delete\",\"Enabled\":false,\"Rating\":1},{\"Action\":\"WrongSong\",\"Name\":\"Wrong song\",\"Enabled\":false,\"Rating\":2},{\"Action\":\"WrongVersion\",\"Name\":\"Wrong version\",\"Enabled\":false,\"Rating\":3},{\"Action\":\"BetterQuality\",\"Name\":\"Better quality\",\"Enabled\":false,\"Rating\":4},{\"Action\":\"Keep\",\"Name\":\"Keep\",\"Enabled\":false,\"Rating\":5}]},\"Metadata\":{\"Language\":\"en\",\"AlbumFromTitle\":true,\"UseCoverArtArchive\":true,\"ReplaceVideoCovers\":true,\"WriteCoverFile\":true,\"EmbedFullSizeCovers\":false,\"FetchLyrics\":true,\"LyricsSources\":\"song,kugou,lrclib,netease,lyricsovh\",\"PreferWordTimedLyrics\":true,\"WriteLyricsBesideAllSongs\":false,\"SaveLyricsTo\":\"beside\",\"PreferOriginalAlbum\":true,\"YearFromOriginalRelease\":true,\"PreferredCountries\":\"\",\"ReleaseDetailsLookup\":true,\"ReplayGain\":true,\"ReplayGainTimeoutSeconds\":45,\"TagRehearsal\":false},\"GeneratedPlaylists\":{\"Enabled\":false,\"Genres\":true,\"Decades\":true,\"TrackCount\":100,\"MaxPerArtist\":3,\"CreateAt\":20,\"RemoveBelow\":10,\"MaxPlaylists\":20,\"RefreshHours\":24,\"NewShare\":0,\"NewDays\":30,\"NameFormat\":\"{0} Mix\"},\"Genre\":{\"Enabled\":false,\"MaxGenres\":10,\"OnEmpty\":\"Clear\",\"Fallback\":\"None\",\"UnknownLabel\":\"Unknown\",\"Blocklist\":[],\"Mappings\":[],\"BackfillMaxConsecutiveFailures\":25,\"BackfillExtensions\":[]},\"Notifications\":{\"NtfyUrl\":\"\",\"NtfyToken\":\"\",\"DiscordWebhookUrl\":\"\",\"NotifyDownloadStarted\":false,\"NotifyDownloadCompleted\":true,\"NotifyLosslessFallback\":true,\"NotifyDownloadFailed\":true,\"NotifyAlbumCompleted\":true},\"ListenBrainz\":{\"Token\":\"\",\"SubmitExternalPlays\":true,\"UserTokens\":{}},\"_meta\":{\"ConfigFilePath\":\"/app/config/settings.json\",\"RejectedPeerCount\":0,\"ConfigFileExists\":false,\"ConfigFileValid\":true,\"RestartPending\":[],\"SecretPlaceholder\":\"(saved, not shown)\",\"Version\":\"2026.10.03.2\"}}"
+   }
+  },
+  {
+   "name": "settings-with-origin-no-cors",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/settings",
+    "headers": {
+     "Origin": "http://evil.example"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 4947,
+    "sha256": "dba2e0c4e3a5783923fc0259bce4fdd41b43e8eb87768f5046152f2fb936a653",
+    "text": "{\"Subsonic\":{\"Url\":\"http://navidrome:4533\",\"AdminUsername\":\"admin\",\"AdminPassword\":\"(saved, not shown)\",\"EnableSearchDiscovery\":true,\"WaitForSearchDurations\":true,\"EnableSyncCatalog\":true,\"SyncCatalogClients\":\"Symfonium\",\"SyncCatalogMaxSongs\":1000,\"StorageMode\":\"Stream\",\"DownloadMode\":\"Track\",\"DownloadOnStar\":true,\"DownloadAlbumOnStar\":true,\"RecordRequestedBy\":true,\"StarDownloadsForRequester\":false,\"SkipOwnedSongs\":true,\"WaitForLosslessOnPlay\":false,\"LosslessWaitTimeoutSeconds\":0,\"DownloadOnPlay\":false,\"LidarrAlbumOnPlay\":false,\"DownloadSource\":\"Soulseek\",\"HeartDownloadSources\":[{\"Source\":\"Soulseek\",\"SongEnabled\":true,\"AlbumEnabled\":true},{\"Source\":\"YouTube\",\"SongEnabled\":false,\"AlbumEnabled\":false},{\"Source\":\"Lidarr\",\"SongEnabled\":false,\"AlbumEnabled\":false}],\"AutoDetectDownloadPath\":true,\"LibraryPath\":\"\",\"FolderStructure\":\"Flat\",\"UseLocalStaging\":false,\"ExplicitFilter\":\"All\",\"CacheDurationHours\":1,\"EnableExternalPlaylists\":false,\"PlaylistsDirectory\":\"playlists\"},\"Library\":{\"DownloadPath\":\"/music\"},\"Server\":{\"PublicUrl\":\"\"},\"Updates\":{\"Check\":false,\"Repo\":\"winters27/octo\"},\"Soulseek\":{\"BaseUrl\":\"http://stubs:5030\",\"Username\":\"slskd\",\"Password\":\"slskd\",\"SearchWaitSeconds\":30,\"UpgradeSearchWaitSeconds\":90,\"MinFileSizeBytes\":5242880,\"PreferredExtension\":\"flac\",\"DownloadTimeoutSeconds\":180,\"VerifyDownloads\":false,\"AcoustIdApiKey\":\"\",\"MinMatchScore\":85,\"TagFromMusicBrainz\":false,\"NameFromMatch\":false,\"RejectedPeerTtlDays\":30,\"FingerprintSeconds\":120,\"FingerprintTimeoutSeconds\":30,\"AcoustIdTimeoutSeconds\":10,\"DetectTranscodes\":true,\"TranscodeCheckTimeoutSeconds\":20,\"OutageHoldHours\":6,\"ParallelDownloads\":3,\"AlbumFolders\":true,\"SubmitConfirmedFingerprints\":false,\"AcoustIdUserApiKey\":\"\"},\"Lidarr\":{\"BaseUrl\":\"http://stubs:8686\",\"ApiKey\":\"parity-lidarr-key\",\"RootFolderPath\":\"\",\"QualityProfileId\":0,\"MetadataProfileId\":0,\"CompletionMode\":\"Accepted\",\"ImportTimeoutSeconds\":1800},\"YouTube\":{\"ShimUrl\":\"http://stubs:8090\"},\"LastFm\":{\"ApiKey\":\"parity-lastfm-key\",\"ApiSecret\":\"\",\"ScrobbleExternalPlays\":true,\"ScrobbleLibraryPlays\":true,\"UserSessions\":{},\"EnableRadio\":false,\"RadioTrackCount\":50,\"RadioCacheDurationHours\":24,\"EnablePersonalizedStations\":false,\"EnableYourMix\":true,\"EnableDiscoveryMix\":true,\"ArtistStationCount\":2,\"GenreStationCount\":3,\"EnableDiscoveryStations\":false,\"ExposeRadioAsPlaylists\":false,\"ExposeRadioAsStreams\":false,\"RadioStreamBitrateKbps\":192,\"EnableIcyMetadata\":true,\"StarterPublishTimeoutSeconds\":8,\"RadioLoudnessTargetLufs\":-16,\"HistoryRetentionDays\":90,\"DiscoveryPercent\":35,\"RefreshIntervalHours\":12,\"MinimumPlays\":10,\"DiscoveryStations\":[]},\"LibraryActions\":{\"Enabled\":false,\"PlaylistsEnabled\":true,\"RatingsEnabled\":false,\"PlaylistPrefix\":\"\\uD83D\\uDEE0 \",\"DryRun\":true,\"QuarantineDirectory\":\".octo-trash\",\"QuarantineRetentionDays\":30,\"PollIntervalSeconds\":60,\"MaxActionsPerCycle\":20,\"KeepReplacedOriginals\":true,\"NoticePrefix\":\"\\u25B8 \",\"ReviewEnabled\":false,\"ReviewPlaylistName\":\"Review\",\"ReviewSweepPerHour\":0,\"ReviewSweepOctoDownloads\":false,\"DuplicatesEnabled\":false,\"DuplicatesPlaylistName\":\"Duplicates\",\"DuplicatesScanHours\":24,\"UpgradePerWeek\":0,\"UpgradeSource\":\"Auto\",\"NoticeMaxTracks\":100,\"RatingsScope\":\"Auto\",\"AllowedUsers\":[],\"Actions\":[{\"Action\":\"Delete\",\"Name\":\"Delete\",\"Enabled\":false,\"Rating\":1},{\"Action\":\"WrongSong\",\"Name\":\"Wrong song\",\"Enabled\":false,\"Rating\":2},{\"Action\":\"WrongVersion\",\"Name\":\"Wrong version\",\"Enabled\":false,\"Rating\":3},{\"Action\":\"BetterQuality\",\"Name\":\"Better quality\",\"Enabled\":false,\"Rating\":4},{\"Action\":\"Keep\",\"Name\":\"Keep\",\"Enabled\":false,\"Rating\":5}]},\"Metadata\":{\"Language\":\"en\",\"AlbumFromTitle\":true,\"UseCoverArtArchive\":true,\"ReplaceVideoCovers\":true,\"WriteCoverFile\":true,\"EmbedFullSizeCovers\":false,\"FetchLyrics\":true,\"LyricsSources\":\"song,kugou,lrclib,netease,lyricsovh\",\"PreferWordTimedLyrics\":true,\"WriteLyricsBesideAllSongs\":false,\"SaveLyricsTo\":\"beside\",\"PreferOriginalAlbum\":true,\"YearFromOriginalRelease\":true,\"PreferredCountries\":\"\",\"ReleaseDetailsLookup\":true,\"ReplayGain\":true,\"ReplayGainTimeoutSeconds\":45,\"TagRehearsal\":false},\"GeneratedPlaylists\":{\"Enabled\":false,\"Genres\":true,\"Decades\":true,\"TrackCount\":100,\"MaxPerArtist\":3,\"CreateAt\":20,\"RemoveBelow\":10,\"MaxPlaylists\":20,\"RefreshHours\":24,\"NewShare\":0,\"NewDays\":30,\"NameFormat\":\"{0} Mix\"},\"Genre\":{\"Enabled\":false,\"MaxGenres\":10,\"OnEmpty\":\"Clear\",\"Fallback\":\"None\",\"UnknownLabel\":\"Unknown\",\"Blocklist\":[],\"Mappings\":[],\"BackfillMaxConsecutiveFailures\":25,\"BackfillExtensions\":[]},\"Notifications\":{\"NtfyUrl\":\"\",\"NtfyToken\":\"\",\"DiscordWebhookUrl\":\"\",\"NotifyDownloadStarted\":false,\"NotifyDownloadCompleted\":true,\"NotifyLosslessFallback\":true,\"NotifyDownloadFailed\":true,\"NotifyAlbumCompleted\":true},\"ListenBrainz\":{\"Token\":\"\",\"SubmitExternalPlays\":true,\"UserTokens\":{}},\"_meta\":{\"ConfigFilePath\":\"/app/config/settings.json\",\"RejectedPeerCount\":0,\"ConfigFileExists\":false,\"ConfigFileValid\":true,\"RestartPending\":[],\"SecretPlaceholder\":\"(saved, not shown)\",\"Version\":\"2026.10.03.2\"}}"
+   }
+  },
+  {
+   "name": "raw-config",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/raw-config",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "6231"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 6231,
+    "sha256": "081676edad77db79ef4d1dbef4385047365676166f09c0fff6daa7c80754bf89",
+    "text": "{\n  \"Subsonic\": {\n    \"Url\": \"http://navidrome:4533\",\n    \"AdminUsername\": \"admin\",\n    \"AdminPassword\": \"(saved, not shown)\",\n    \"EnableSearchDiscovery\": true,\n    \"WaitForSearchDurations\": true,\n    \"EnableSyncCatalog\": true,\n    \"SyncCatalogClients\": \"Symfonium\",\n    \"SyncCatalogMaxSongs\": 1000,\n    \"StorageMode\": \"Stream\",\n    \"DownloadMode\": \"Track\",\n    \"DownloadOnStar\": true,\n    \"DownloadAlbumOnStar\": true,\n    \"RecordRequestedBy\": true,\n    \"StarDownloadsForRequester\": false,\n    \"SkipOwnedSongs\": true,\n    \"WaitForLosslessOnPlay\": false,\n    \"LosslessWaitTimeoutSeconds\": 0,\n    \"DownloadOnPlay\": false,\n    \"LidarrAlbumOnPlay\": false,\n    \"DownloadSource\": \"Soulseek\",\n    \"HeartDownloadSources\": [\n      {\n        \"Source\": \"Soulseek\",\n        \"SongEnabled\": true,\n        \"AlbumEnabled\": true\n      },\n      {\n        \"Source\": \"YouTube\",\n        \"SongEnabled\": false,\n        \"AlbumEnabled\": false\n      },\n      {\n        \"Source\": \"Lidarr\",\n        \"SongEnabled\": false,\n        \"AlbumEnabled\": false\n      }\n    ],\n    \"AutoDetectDownloadPath\": true,\n    \"LibraryPath\": \"\",\n    \"FolderStructure\": \"Flat\",\n    \"UseLocalStaging\": false,\n    \"ExplicitFilter\": \"All\",\n    \"CacheDurationHours\": 1,\n    \"EnableExternalPlaylists\": false,\n    \"PlaylistsDirectory\": \"playlists\"\n  },\n  \"Library\": {\n    \"DownloadPath\": \"/music\"\n  },\n  \"Server\": {\n    \"PublicUrl\": \"\"\n  },\n  \"Updates\": {\n    \"Check\": false,\n    \"Repo\": \"winters27/octo\"\n  },\n  \"Soulseek\": {\n    \"BaseUrl\": \"http://stubs:5030\",\n    \"Username\": \"slskd\",\n    \"Password\": \"slskd\",\n    \"SearchWaitSeconds\": 30,\n    \"UpgradeSearchWaitSeconds\": 90,\n    \"MinFileSizeBytes\": 5242880,\n    \"PreferredExtension\": \"flac\",\n    \"DownloadTimeoutSeconds\": 180,\n    \"VerifyDownloads\": false,\n    \"AcoustIdApiKey\": \"\",\n    \"MinMatchScore\": 85,\n    \"TagFromMusicBrainz\": false,\n    \"NameFromMatch\": false,\n    \"RejectedPeerTtlDays\": 30,\n    \"FingerprintSeconds\": 120,\n    \"FingerprintTimeoutSeconds\": 30,\n    \"AcoustIdTimeoutSeconds\": 10,\n    \"DetectTranscodes\": true,\n    \"TranscodeCheckTimeoutSeconds\": 20,\n    \"OutageHoldHours\": 6,\n    \"ParallelDownloads\": 3,\n    \"AlbumFolders\": true,\n    \"SubmitConfirmedFingerprints\": false,\n    \"AcoustIdUserApiKey\": \"\"\n  },\n  \"Lidarr\": {\n    \"BaseUrl\": \"http://stubs:8686\",\n    \"ApiKey\": \"parity-lidarr-key\",\n    \"RootFolderPath\": \"\",\n    \"QualityProfileId\": 0,\n    \"MetadataProfileId\": 0,\n    \"CompletionMode\": \"Accepted\",\n    \"ImportTimeoutSeconds\": 1800\n  },\n  \"YouTube\": {\n    \"ShimUrl\": \"http://stubs:8090\"\n  },\n  \"LastFm\": {\n    \"ApiKey\": \"parity-lastfm-key\",\n    \"ApiSecret\": \"\",\n    \"ScrobbleExternalPlays\": true,\n    \"ScrobbleLibraryPlays\": true,\n    \"UserSessions\": {},\n    \"EnableRadio\": false,\n    \"RadioTrackCount\": 50,\n    \"RadioCacheDurationHours\": 24,\n    \"EnablePersonalizedStations\": false,\n    \"EnableYourMix\": true,\n    \"EnableDiscoveryMix\": true,\n    \"ArtistStationCount\": 2,\n    \"GenreStationCount\": 3,\n    \"EnableDiscoveryStations\": false,\n    \"ExposeRadioAsPlaylists\": false,\n    \"ExposeRadioAsStreams\": false,\n    \"RadioStreamBitrateKbps\": 192,\n    \"EnableIcyMetadata\": true,\n    \"StarterPublishTimeoutSeconds\": 8,\n    \"RadioLoudnessTargetLufs\": -16,\n    \"HistoryRetentionDays\": 90,\n    \"DiscoveryPercent\": 35,\n    \"RefreshIntervalHours\": 12,\n    \"MinimumPlays\": 10,\n    \"DiscoveryStations\": []\n  },\n  \"LibraryActions\": {\n    \"Enabled\": false,\n    \"PlaylistsEnabled\": true,\n    \"RatingsEnabled\": false,\n    \"PlaylistPrefix\": \"\\uD83D\\uDEE0 \",\n    \"DryRun\": true,\n    \"QuarantineDirectory\": \".octo-trash\",\n    \"QuarantineRetentionDays\": 30,\n    \"PollIntervalSeconds\": 60,\n    \"MaxActionsPerCycle\": 20,\n    \"KeepReplacedOriginals\": true,\n    \"NoticePrefix\": \"\\u25B8 \",\n    \"ReviewEnabled\": false,\n    \"ReviewPlaylistName\": \"Review\",\n    \"ReviewSweepPerHour\": 0,\n    \"ReviewSweepOctoDownloads\": false,\n    \"DuplicatesEnabled\": false,\n    \"DuplicatesPlaylistName\": \"Duplicates\",\n    \"DuplicatesScanHours\": 24,\n    \"UpgradePerWeek\": 0,\n    \"UpgradeSource\": \"Auto\",\n    \"NoticeMaxTracks\": 100,\n    \"RatingsScope\": \"Auto\",\n    \"AllowedUsers\": [],\n    \"Actions\": [\n      {\n        \"Action\": \"Delete\",\n        \"Name\": \"Delete\",\n        \"Enabled\": false,\n        \"Rating\": 1\n      },\n      {\n        \"Action\": \"WrongSong\",\n        \"Name\": \"Wrong song\",\n        \"Enabled\": false,\n        \"Rating\": 2\n      },\n      {\n        \"Action\": \"WrongVersion\",\n        \"Name\": \"Wrong version\",\n        \"Enabled\": false,\n        \"Rating\": 3\n      },\n      {\n        \"Action\": \"BetterQuality\",\n        \"Name\": \"Better quality\",\n        \"Enabled\": false,\n        \"Rating\": 4\n      },\n      {\n        \"Action\": \"Keep\",\n        \"Name\": \"Keep\",\n        \"Enabled\": false,\n        \"Rating\": 5\n      }\n    ]\n  },\n  \"Metadata\": {\n    \"Language\": \"en\",\n    \"AlbumFromTitle\": true,\n    \"UseCoverArtArchive\": true,\n    \"ReplaceVideoCovers\": true,\n    \"WriteCoverFile\": true,\n    \"EmbedFullSizeCovers\": false,\n    \"FetchLyrics\": true,\n    \"LyricsSources\": \"song,kugou,lrclib,netease,lyricsovh\",\n    \"PreferWordTimedLyrics\": true,\n    \"WriteLyricsBesideAllSongs\": false,\n    \"SaveLyricsTo\": \"beside\",\n    \"PreferOriginalAlbum\": true,\n    \"YearFromOriginalRelease\": true,\n    \"PreferredCountries\": \"\",\n    \"ReleaseDetailsLookup\": true,\n    \"ReplayGain\": true,\n    \"ReplayGainTimeoutSeconds\": 45,\n    \"TagRehearsal\": false\n  },\n  \"GeneratedPlaylists\": {\n    \"Enabled\": false,\n    \"Genres\": true,\n    \"Decades\": true,\n    \"TrackCount\": 100,\n    \"MaxPerArtist\": 3,\n    \"CreateAt\": 20,\n    \"RemoveBelow\": 10,\n    \"MaxPlaylists\": 20,\n    \"RefreshHours\": 24,\n    \"NewShare\": 0,\n    \"NewDays\": 30,\n    \"NameFormat\": \"{0} Mix\"\n  },\n  \"Genre\": {\n    \"Enabled\": false,\n    \"MaxGenres\": 10,\n    \"OnEmpty\": \"Clear\",\n    \"Fallback\": \"None\",\n    \"UnknownLabel\": \"Unknown\",\n    \"Blocklist\": [],\n    \"Mappings\": [],\n    \"BackfillMaxConsecutiveFailures\": 25,\n    \"BackfillExtensions\": []\n  },\n  \"Notifications\": {\n    \"NtfyUrl\": \"\",\n    \"NtfyToken\": \"\",\n    \"DiscordWebhookUrl\": \"\",\n    \"NotifyDownloadStarted\": false,\n    \"NotifyDownloadCompleted\": true,\n    \"NotifyLosslessFallback\": true,\n    \"NotifyDownloadFailed\": true,\n    \"NotifyAlbumCompleted\": true\n  },\n  \"ListenBrainz\": {\n    \"Token\": \"\",\n    \"SubmitExternalPlays\": true,\n    \"UserTokens\": {}\n  }\n}"
+   }
+  },
+  {
+   "name": "config-sources",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/config-sources",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 10617,
+    "sha256": "041dddae098da07d993e620be1d118c2339e33ae09871cd69d41eafd9b30c299",
+    "text": "{\"keys\":[{\"Key\":\"Subsonic:Url\",\"Value\":\"http://navidrome:4533\",\"IsSecret\":false},{\"Key\":\"Subsonic:StorageMode\",\"Value\":\"Stream\",\"IsSecret\":false},{\"Key\":\"Subsonic:DownloadMode\",\"Value\":\"Track\",\"IsSecret\":false},{\"Key\":\"Subsonic:DownloadOnStar\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Subsonic:DownloadAlbumOnStar\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Subsonic:RecordRequestedBy\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Subsonic:StarDownloadsForRequester\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"Subsonic:WaitForLosslessOnPlay\",\"Value\":\"false\",\"IsSecret\":false},{\"Key\":\"Subsonic:LosslessWaitTimeoutSeconds\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Subsonic:DownloadOnPlay\",\"Value\":\"false\",\"IsSecret\":false},{\"Key\":\"Subsonic:LidarrAlbumOnPlay\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"Subsonic:DownloadSource\",\"Value\":\"Soulseek\",\"IsSecret\":false},{\"Key\":\"Subsonic:AutoDetectDownloadPath\",\"Value\":\"true\",\"IsSecret\":false},{\"Key\":\"Subsonic:LibraryPath\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Subsonic:FolderStructure\",\"Value\":\"Flat\",\"IsSecret\":false},{\"Key\":\"Subsonic:UseLocalStaging\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"Subsonic:ExplicitFilter\",\"Value\":\"All\",\"IsSecret\":false},{\"Key\":\"Subsonic:CacheDurationHours\",\"Value\":\"1\",\"IsSecret\":false},{\"Key\":\"Subsonic:EnableExternalPlaylists\",\"Value\":\"false\",\"IsSecret\":false},{\"Key\":\"Subsonic:WaitForSearchDurations\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Subsonic:SkipOwnedSongs\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Subsonic:PlaylistsDirectory\",\"Value\":\"playlists\",\"IsSecret\":false},{\"Key\":\"Library:DownloadPath\",\"Value\":\"/music\",\"IsSecret\":false},{\"Key\":\"Server:PublicUrl\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Updates:Check\",\"Value\":\"false\",\"IsSecret\":false},{\"Key\":\"Updates:Repo\",\"Value\":\"winters27/octo\",\"IsSecret\":false},{\"Key\":\"Soulseek:BaseUrl\",\"Value\":\"http://stubs:5030\",\"IsSecret\":false},{\"Key\":\"Soulseek:Username\",\"Value\":\"slskd\",\"IsSecret\":false},{\"Key\":\"Soulseek:Password\",\"Value\":\"\\u2022\\u2022\\u2022\\u2022\\u2022\",\"IsSecret\":true},{\"Key\":\"Soulseek:SearchWaitSeconds\",\"Value\":\"30\",\"IsSecret\":false},{\"Key\":\"Soulseek:UpgradeSearchWaitSeconds\",\"Value\":\"90\",\"IsSecret\":false},{\"Key\":\"Soulseek:MinFileSizeBytes\",\"Value\":\"5242880\",\"IsSecret\":false},{\"Key\":\"Soulseek:PreferredExtension\",\"Value\":\"flac\",\"IsSecret\":false},{\"Key\":\"Soulseek:DownloadTimeoutSeconds\",\"Value\":\"180\",\"IsSecret\":false},{\"Key\":\"Soulseek:RejectedPeerTtlDays\",\"Value\":\"30\",\"IsSecret\":false},{\"Key\":\"Soulseek:FingerprintSeconds\",\"Value\":\"120\",\"IsSecret\":false},{\"Key\":\"Soulseek:FingerprintTimeoutSeconds\",\"Value\":\"30\",\"IsSecret\":false},{\"Key\":\"Soulseek:AcoustIdTimeoutSeconds\",\"Value\":\"10\",\"IsSecret\":false},{\"Key\":\"Soulseek:DetectTranscodes\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Soulseek:TranscodeCheckTimeoutSeconds\",\"Value\":\"20\",\"IsSecret\":false},{\"Key\":\"Soulseek:OutageHoldHours\",\"Value\":\"6\",\"IsSecret\":false},{\"Key\":\"Soulseek:ParallelDownloads\",\"Value\":\"3\",\"IsSecret\":false},{\"Key\":\"Soulseek:AlbumFolders\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Genre:BackfillMaxConsecutiveFailures\",\"Value\":\"25\",\"IsSecret\":false},{\"Key\":\"Genre:BackfillExtensions\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"LibraryActions:Enabled\",\"Value\":\"false\",\"IsSecret\":false},{\"Key\":\"LibraryActions:PlaylistsEnabled\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"LibraryActions:RatingsEnabled\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"LibraryActions:PlaylistPrefix\",\"Value\":\"\\uD83D\\uDEE0 \",\"IsSecret\":false},{\"Key\":\"LibraryActions:DryRun\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"LibraryActions:QuarantineDirectory\",\"Value\":\".octo-trash\",\"IsSecret\":false},{\"Key\":\"LibraryActions:QuarantineRetentionDays\",\"Value\":\"30\",\"IsSecret\":false},{\"Key\":\"LibraryActions:PollIntervalSeconds\",\"Value\":\"60\",\"IsSecret\":false},{\"Key\":\"LibraryActions:MaxActionsPerCycle\",\"Value\":\"20\",\"IsSecret\":false},{\"Key\":\"LibraryActions:KeepReplacedOriginals\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"LibraryActions:Actions\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"LibraryActions:AllowedUsers\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"LibraryActions:NoticePrefix\",\"Value\":\"\\u25B8 \",\"IsSecret\":false},{\"Key\":\"LibraryActions:ReviewEnabled\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"LibraryActions:ReviewPlaylistName\",\"Value\":\"Review\",\"IsSecret\":false},{\"Key\":\"LibraryActions:NoticeMaxTracks\",\"Value\":\"100\",\"IsSecret\":false},{\"Key\":\"LibraryActions:RatingsScope\",\"Value\":\"Auto\",\"IsSecret\":false},{\"Key\":\"LibraryActions:DuplicatesEnabled\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"LibraryActions:DuplicatesPlaylistName\",\"Value\":\"Duplicates\",\"IsSecret\":false},{\"Key\":\"LibraryActions:DuplicatesScanHours\",\"Value\":\"24\",\"IsSecret\":false},{\"Key\":\"LibraryActions:UpgradePerWeek\",\"Value\":\"0\",\"IsSecret\":false},{\"Key\":\"LibraryActions:UpgradeSource\",\"Value\":\"Auto\",\"IsSecret\":false},{\"Key\":\"LibraryActions:ReviewSweepPerHour\",\"Value\":\"0\",\"IsSecret\":false},{\"Key\":\"LibraryActions:ReviewSweepOctoDownloads\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"Soulseek:SubmitConfirmedFingerprints\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"Soulseek:AcoustIdUserApiKey\",\"Value\":\"\",\"IsSecret\":true},{\"Key\":\"Genre:Enabled\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"Genre:MaxGenres\",\"Value\":\"10\",\"IsSecret\":false},{\"Key\":\"Genre:OnEmpty\",\"Value\":\"Clear\",\"IsSecret\":false},{\"Key\":\"Genre:Fallback\",\"Value\":\"None\",\"IsSecret\":false},{\"Key\":\"Genre:UnknownLabel\",\"Value\":\"Unknown\",\"IsSecret\":false},{\"Key\":\"Genre:Mappings\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Genre:Blocklist\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Soulseek:VerifyDownloads\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"Soulseek:AcoustIdApiKey\",\"Value\":\"\",\"IsSecret\":true},{\"Key\":\"Soulseek:MinMatchScore\",\"Value\":\"85\",\"IsSecret\":false},{\"Key\":\"Soulseek:TagFromMusicBrainz\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"Soulseek:NameFromMatch\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"Lidarr:BaseUrl\",\"Value\":\"http://stubs:8686\",\"IsSecret\":false},{\"Key\":\"Lidarr:ApiKey\",\"Value\":\"\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\",\"IsSecret\":true},{\"Key\":\"Lidarr:RootFolderPath\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Lidarr:QualityProfileId\",\"Value\":\"0\",\"IsSecret\":false},{\"Key\":\"Lidarr:MetadataProfileId\",\"Value\":\"0\",\"IsSecret\":false},{\"Key\":\"Lidarr:CompletionMode\",\"Value\":\"Accepted\",\"IsSecret\":false},{\"Key\":\"Lidarr:ImportTimeoutSeconds\",\"Value\":\"1800\",\"IsSecret\":false},{\"Key\":\"YouTube:ShimUrl\",\"Value\":\"http://stubs:8090\",\"IsSecret\":false},{\"Key\":\"LastFm:ApiKey\",\"Value\":\"\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\\u2022\",\"IsSecret\":true},{\"Key\":\"LastFm:ApiSecret\",\"Value\":\"\",\"IsSecret\":true},{\"Key\":\"LastFm:ScrobbleExternalPlays\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"LastFm:ScrobbleLibraryPlays\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"LastFm:EnableRadio\",\"Value\":\"false\",\"IsSecret\":false},{\"Key\":\"LastFm:RadioTrackCount\",\"Value\":\"50\",\"IsSecret\":false},{\"Key\":\"LastFm:RadioCacheDurationHours\",\"Value\":\"24\",\"IsSecret\":false},{\"Key\":\"LastFm:StarterPublishTimeoutSeconds\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"LastFm:RadioLoudnessTargetLufs\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"LastFm:EnablePersonalizedStations\",\"Value\":\"false\",\"IsSecret\":false},{\"Key\":\"LastFm:EnableYourMix\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"LastFm:EnableDiscoveryMix\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"LastFm:ArtistStationCount\",\"Value\":\"2\",\"IsSecret\":false},{\"Key\":\"LastFm:GenreStationCount\",\"Value\":\"3\",\"IsSecret\":false},{\"Key\":\"LastFm:EnableDiscoveryStations\",\"Value\":\"false\",\"IsSecret\":false},{\"Key\":\"LastFm:HistoryRetentionDays\",\"Value\":\"90\",\"IsSecret\":false},{\"Key\":\"LastFm:DiscoveryPercent\",\"Value\":\"35\",\"IsSecret\":false},{\"Key\":\"LastFm:RefreshIntervalHours\",\"Value\":\"12\",\"IsSecret\":false},{\"Key\":\"LastFm:MinimumPlays\",\"Value\":\"10\",\"IsSecret\":false},{\"Key\":\"LastFm:DiscoveryStations\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Metadata:Language\",\"Value\":\"en\",\"IsSecret\":false},{\"Key\":\"Metadata:AlbumFromTitle\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Metadata:UseCoverArtArchive\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Metadata:ReplaceVideoCovers\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Metadata:WriteCoverFile\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Metadata:EmbedFullSizeCovers\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"Metadata:FetchLyrics\",\"Value\":\"true\",\"IsSecret\":false},{\"Key\":\"Metadata:LyricsSources\",\"Value\":\"song,kugou,lrclib,netease,lyricsovh\",\"IsSecret\":false},{\"Key\":\"Metadata:PreferWordTimedLyrics\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Metadata:WriteLyricsBesideAllSongs\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"Metadata:SaveLyricsTo\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Metadata:PreferOriginalAlbum\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Metadata:YearFromOriginalRelease\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Metadata:PreferredCountries\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Metadata:ReleaseDetailsLookup\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Metadata:ReplayGain\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Metadata:ReplayGainTimeoutSeconds\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Metadata:TagRehearsal\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"GeneratedPlaylists:Enabled\",\"Value\":\"false\",\"IsSecret\":false},{\"Key\":\"GeneratedPlaylists:Genres\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"GeneratedPlaylists:Decades\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"GeneratedPlaylists:TrackCount\",\"Value\":\"100\",\"IsSecret\":false},{\"Key\":\"GeneratedPlaylists:MaxPerArtist\",\"Value\":\"3\",\"IsSecret\":false},{\"Key\":\"GeneratedPlaylists:CreateAt\",\"Value\":\"20\",\"IsSecret\":false},{\"Key\":\"GeneratedPlaylists:RemoveBelow\",\"Value\":\"10\",\"IsSecret\":false},{\"Key\":\"GeneratedPlaylists:MaxPlaylists\",\"Value\":\"20\",\"IsSecret\":false},{\"Key\":\"GeneratedPlaylists:RefreshHours\",\"Value\":\"24\",\"IsSecret\":false},{\"Key\":\"GeneratedPlaylists:NewShare\",\"Value\":\"0\",\"IsSecret\":false},{\"Key\":\"GeneratedPlaylists:NewDays\",\"Value\":\"30\",\"IsSecret\":false},{\"Key\":\"GeneratedPlaylists:NameFormat\",\"Value\":\"{0} Mix\",\"IsSecret\":false},{\"Key\":\"Notifications:NtfyUrl\",\"Value\":\"\",\"IsSecret\":false},{\"Key\":\"Notifications:NtfyToken\",\"Value\":\"\",\"IsSecret\":true},{\"Key\":\"Notifications:DiscordWebhookUrl\",\"Value\":\"\",\"IsSecret\":true},{\"Key\":\"Notifications:NotifyDownloadStarted\",\"Value\":\"False\",\"IsSecret\":false},{\"Key\":\"Notifications:NotifyDownloadCompleted\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Notifications:NotifyLosslessFallback\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Notifications:NotifyDownloadFailed\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"Notifications:NotifyAlbumCompleted\",\"Value\":\"True\",\"IsSecret\":false},{\"Key\":\"ListenBrainz:Token\",\"Value\":\"\",\"IsSecret\":true},{\"Key\":\"ListenBrainz:SubmitExternalPlays\",\"Value\":\"\",\"IsSecret\":false}],\"configFile\":\"/app/config/settings.json\"}"
+   }
+  },
+  {
+   "name": "status",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/status",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 576,
+    "sha256": "645250bf514bf8f175024b28ca622b79074fdaaf16678c8a4fc323b6f217249a",
+    "text": "{\"octo\":{\"ok\":true,\"detail\":\"Octo is responding\",\"warning\":false,\"configured\":true},\"services\":{\"navidrome\":{\"ok\":true,\"detail\":\"HTTP 200 from http://navidrome:4533\",\"warning\":false,\"configured\":true},\"slskd\":{\"ok\":true,\"detail\":\"logged in to Soulseek as parity\",\"warning\":false,\"configured\":true},\"lidarr\":{\"ok\":true,\"detail\":\"reachable\",\"warning\":false,\"configured\":true},\"ytDlpShim\":{\"ok\":true,\"detail\":\"HTTP 200\",\"warning\":false,\"configured\":true},\"lastfm\":{\"ok\":true,\"detail\":\"HTTP 200\",\"warning\":false,\"configured\":true}},\"time\":\"2026-10-04T08:07:57.6351733\\u002B00:00\"}"
+   }
+  },
+  {
+   "name": "library-status",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/library-status",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 279,
+    "sha256": "658d821c5b331201dccdf2787e149b37232d48a06cfe8901b1a324b935ae03b2",
+    "text": "{\"autoDetect\":true,\"pinnedLibraryPath\":\"\",\"navidromeReports\":\"/music\",\"visibleToOcto\":true,\"configuredFallback\":\"/music\",\"effectiveDownloadPath\":\"/music\",\"writable\":false,\"rescanAuthenticated\":true,\"libraries\":[{\"id\":\"1\",\"name\":\"Music Library\",\"folder\":\"/music\",\"visible\":true}]}"
+   }
+  },
+  {
+   "name": "lidarr-options",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lidarr/options",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 137,
+    "sha256": "d214cdc9598ec86076deb84a2294dc7437ee4c395f4809b1dcc8c1cd4c9643d3",
+    "text": "{\"rootFolders\":[{\"id\":1,\"path\":\"/music\"}],\"qualityProfiles\":[{\"id\":1,\"name\":\"Lossless\"}],\"metadataProfiles\":[{\"id\":1,\"name\":\"Standard\"}]}"
+   }
+  },
+  {
+   "name": "lastfm-radio",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lastfm/radio",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 264,
+    "sha256": "8315588d702570b0077a3e0d5660aeed095361bbaa83f6e98a93b4b9a595b78e",
+    "text": "{\"enabled\":false,\"hasApiKey\":true,\"personalizedEnabled\":false,\"discoveryEnabled\":false,\"playlistsEnabled\":false,\"streamsEnabled\":false,\"streamBitrateKbps\":192,\"icyMetadataEnabled\":true,\"minimumPlays\":10,\"selectedUser\":null,\"users\":[],\"learning\":null,\"stations\":[]}"
+   }
+  },
+  {
+   "name": "lastfm-radio-user",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lastfm/radio?user=admin",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 430,
+    "sha256": "0d58bbfca22822cb4170766e09080434535bf14231d08198e3840ed43d456c18",
+    "text": "{\"enabled\":false,\"hasApiKey\":true,\"personalizedEnabled\":false,\"discoveryEnabled\":false,\"playlistsEnabled\":false,\"streamsEnabled\":false,\"streamBitrateKbps\":192,\"icyMetadataEnabled\":true,\"minimumPlays\":10,\"selectedUser\":\"admin\",\"users\":[],\"learning\":{\"plays\":0,\"needed\":10,\"source\":\"waiting for completed scrobbles\",\"refreshing\":false,\"lastRefreshAttemptUtc\":null,\"lastRefreshSuccessUtc\":null,\"lastRefreshError\":null},\"stations\":[]}"
+   }
+  },
+  {
+   "name": "lastfm-scrobble",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lastfm/scrobble",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 102,
+    "sha256": "4b19dd89ca5d7bfe4e69561efd87fb4e293364b74a79440dc886d90f24f5da17",
+    "text": "{\"available\":true,\"hasApiKey\":true,\"hasApiSecret\":false,\"enabled\":true,\"libraryPlays\":true,\"users\":[]}"
+   }
+  },
+  {
+   "name": "listenbrainz-validate-empty",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/listenbrainz/validate",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 66,
+    "sha256": "c017b2769af9ab7ea7834dd555614aef364f84b0789b6fb27294d9499573f3db",
+    "text": "{\"configured\":false,\"valid\":false,\"detail\":\"No token configured.\"}"
+   }
+  },
+  {
+   "name": "listenbrainz-validate-token",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/listenbrainz/validate?user=admin&token=not-a-token",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 103,
+    "sha256": "e1f0e3e9d9aa7c676927be20e432f355490790cc4ee5ea738b3c9f1a45560b67",
+    "text": "{\"configured\":true,\"valid\":false,\"userName\":null,\"detail\":\"ListenBrainz says this token is not valid.\"}"
+   }
+  },
+  {
+   "name": "downloads",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/downloads",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 16,
+    "sha256": "9d13232469d0bc6fd7e9becb067998e38a7d39e5e1d2332de6a7b1c8b2aeb3c3",
+    "text": "{\"downloads\":[]}"
+   }
+  },
+  {
+   "name": "acquisitions",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/acquisitions",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 19,
+    "sha256": "a5d335798a3427cd54e5687d535aca4c88b8cf7ba11f97ba62522b95966a435c",
+    "text": "{\"acquisitions\":[]}"
+   }
+  },
+  {
+   "name": "review-sweep",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/review-sweep",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 191,
+    "sha256": "de353cdcf0416cf646d6d034390b2bb6fec5dfdc4c20af573159d5837c165624",
+    "text": "{\"state\":\"Off\",\"reason\":null,\"paused\":false,\"position\":0,\"total\":0,\"pass\":1,\"found\":0,\"open\":0,\"fine\":0,\"undecodable\":0,\"keeper\":null,\"perHour\":0,\"lastCheckedUtc\":null,\"passFinishedUtc\":null}"
+   }
+  },
+  {
+   "name": "quality-upgrade",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/quality-upgrade",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 91,
+    "sha256": "9acd43503dad8564ff8113480670f7502d2bb00d7226029da5cad58991f2fa84",
+    "text": "{\"perWeek\":0,\"off\":\"Off.\",\"lastRunUtc\":null,\"lastOutcome\":null,\"nextDueUtc\":null,\"tried\":0}"
+   }
+  },
+  {
+   "name": "genre-presets",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/genre/presets",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 7963,
+    "sha256": "1bc563b810c58a2a25a456ec23c47fd0c47eff73f708f44f1e1579c9f05c9ec1",
+    "text": "{\"broad\":[{\"Id\":\"e7575dd6a3ed6042ec3f6649\",\"Pattern\":\"trap latino\",\"Genre\":\"Latin\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"b26bba4106cc2bf734c2b60a\",\"Pattern\":\"latin trap\",\"Genre\":\"Latin\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"e9a543e87eb2973f06820a9d\",\"Pattern\":\"reggaeton\",\"Genre\":\"Latin\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"e5b519bce011585b16f1495d\",\"Pattern\":\"musica mexicana\",\"Genre\":\"Latin\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"5b5b5398f0d0dd10931e1aa3\",\"Pattern\":\"regional mexican\",\"Genre\":\"Latin\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"48c35caca726812cce89ecfd\",\"Pattern\":\"salsa\",\"Genre\":\"Latin\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"442483ce7b80b6d22035652c\",\"Pattern\":\"bachata\",\"Genre\":\"Latin\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"2dde50c690f5f415ea18561c\",\"Pattern\":\"cumbia\",\"Genre\":\"Latin\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"cfaaa167d4caaca3bfc8e1f8\",\"Pattern\":\"latin\",\"Genre\":\"Latin\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"be793c371a1d4821745421c1\",\"Pattern\":\"drum and bass\",\"Genre\":\"Electronic\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"ebfb0fd18a7d16f640f93552\",\"Pattern\":\"drum & bass\",\"Genre\":\"Electronic\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"a85e90796819d79c63375335\",\"Pattern\":\"dance-pop\",\"Genre\":\"Pop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"b7e9970fd566426f02046f10\",\"Pattern\":\"dance pop\",\"Genre\":\"Pop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"848c84d8557bd28ca304aa0d\",\"Pattern\":\"k-pop\",\"Genre\":\"Pop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"e014c05e7485c25051089920\",\"Pattern\":\"j-pop\",\"Genre\":\"Pop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"cb8b4c2c2f803183b7c4f387\",\"Pattern\":\"synthpop\",\"Genre\":\"Pop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"ce62522fa1500b5baafdd812\",\"Pattern\":\"indie pop\",\"Genre\":\"Pop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"9e33f8fc3a981df31f496012\",\"Pattern\":\"pop rap\",\"Genre\":\"Hip-Hop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"4b61459d05048c298cdd70bf\",\"Pattern\":\"hip hop\",\"Genre\":\"Hip-Hop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"65539bb1e0479d82f2327f24\",\"Pattern\":\"hip-hop\",\"Genre\":\"Hip-Hop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"b645bfd439bf70e1980bb24e\",\"Pattern\":\"trap\",\"Genre\":\"Hip-Hop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"59ebefb5bd4736e5536ae9bf\",\"Pattern\":\"drill\",\"Genre\":\"Hip-Hop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"0b627c8367b62b8c33db828f\",\"Pattern\":\"grime\",\"Genre\":\"Hip-Hop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"f106b0475ddb7232b2f06ad2\",\"Pattern\":\"phonk\",\"Genre\":\"Hip-Hop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"35f4f907a2455838bc113bd8\",\"Pattern\":\"rap\",\"Genre\":\"Hip-Hop\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"f913d3ecbf1e2dae6a06187e\",\"Pattern\":\"r&b\",\"Genre\":\"R&B\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"d2f57095c6bd60269c2de6ae\",\"Pattern\":\"rnb\",\"Genre\":\"R&B\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"e0b277ccdcaa0ce734434597\",\"Pattern\":\"rhythm and blues\",\"Genre\":\"R&B\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"ffe253452bbc9f38fee66930\",\"Pattern\":\"neo-soul\",\"Genre\":\"R&B\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"3f8e0e837f7c3e114799c387\",\"Pattern\":\"soul\",\"Genre\":\"R&B\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"c821b8f2596eaedfb1f582b5\",\"Pattern\":\"funk\",\"Genre\":\"R&B\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"c6c5c5ea6f1ca78590cb09d6\",\"Pattern\":\"motown\",\"Genre\":\"R&B\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"43cc560be15075ea5ae454f6\",\"Pattern\":\"house\",\"Genre\":\"Dance\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"69d5f16d565903d56df22127\",\"Pattern\":\"techno\",\"Genre\":\"Dance\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"fe8ed5a255ef110c2b452d9f\",\"Pattern\":\"trance\",\"Genre\":\"Dance\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"2e96c3618977c3d027e05dff\",\"Pattern\":\"edm\",\"Genre\":\"Dance\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"507e9b86be1b9f7623f572d4\",\"Pattern\":\"dubstep\",\"Genre\":\"Dance\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"a5991e515213d71f46a9bbb2\",\"Pattern\":\"garage\",\"Genre\":\"Dance\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"6b67ad80262256fb05d2936d\",\"Pattern\":\"disco\",\"Genre\":\"Dance\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"960aa43da18f968b92c696d6\",\"Pattern\":\"electronica\",\"Genre\":\"Electronic\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"e771c7200e2c5fdd8b5b692b\",\"Pattern\":\"electro\",\"Genre\":\"Electronic\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"8827f16ab24591d9774311c8\",\"Pattern\":\"ambient\",\"Genre\":\"Electronic\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"eae88950880181cbdb9c7a2c\",\"Pattern\":\"idm\",\"Genre\":\"Electronic\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"893efd4fa69c4dd294c84d68\",\"Pattern\":\"downtempo\",\"Genre\":\"Electronic\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"13de7c37c4ff566808bc19ae\",\"Pattern\":\"synthwave\",\"Genre\":\"Electronic\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"39bbff6c0fb37568edf01b46\",\"Pattern\":\"electronic\",\"Genre\":\"Electronic\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"c4d93c786da4e76721f70ed1\",\"Pattern\":\"metal\",\"Genre\":\"Metal\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"d3c6f467acfa362e877bfd58\",\"Pattern\":\"hardcore\",\"Genre\":\"Metal\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"374a44e1d1aae8ac15fef717\",\"Pattern\":\"grindcore\",\"Genre\":\"Metal\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"08b104c167844bcf5fc84d9d\",\"Pattern\":\"doom\",\"Genre\":\"Metal\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"54af50ebd12e12702f2aa708\",\"Pattern\":\"punk\",\"Genre\":\"Rock\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"99b05ddc78ff388ab7832e3b\",\"Pattern\":\"grunge\",\"Genre\":\"Rock\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"5e36e1a17686119ca3a9e05c\",\"Pattern\":\"emo\",\"Genre\":\"Rock\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"7d25d252b819d5ddbc3862b4\",\"Pattern\":\"shoegaze\",\"Genre\":\"Rock\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"4a5032fee1820884b14d7566\",\"Pattern\":\"indie rock\",\"Genre\":\"Rock\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"c206ac6987d8338c7058ad69\",\"Pattern\":\"alternative\",\"Genre\":\"Rock\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"8da51e3f92ffcb403e84efdd\",\"Pattern\":\"rock\",\"Genre\":\"Rock\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"4878bcb96d171c1fb5ffc4f1\",\"Pattern\":\"country\",\"Genre\":\"Country\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"5041f809facdae930e1d2ab6\",\"Pattern\":\"americana\",\"Genre\":\"Country\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"95f7294a0b2d4a33262d5a39\",\"Pattern\":\"bluegrass\",\"Genre\":\"Country\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"ba3815855a14307290622d2a\",\"Pattern\":\"blues\",\"Genre\":\"Blues\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"2b9ced3e84356979a9d081b0\",\"Pattern\":\"jazz\",\"Genre\":\"Jazz\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"4669f1ced33deb1d285e5d0e\",\"Pattern\":\"bebop\",\"Genre\":\"Jazz\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"be130f32d3e6d2f72ff8bbef\",\"Pattern\":\"swing\",\"Genre\":\"Jazz\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"36a949cfcb6cc612e5aa3f08\",\"Pattern\":\"classical\",\"Genre\":\"Classical\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"e66bbdf8d87520813d648187\",\"Pattern\":\"baroque\",\"Genre\":\"Classical\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"9446264b3132bb99b09abe2b\",\"Pattern\":\"orchestral\",\"Genre\":\"Classical\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"30130485e6aa6c0666661904\",\"Pattern\":\"opera\",\"Genre\":\"Classical\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"a79558842603476062340cd3\",\"Pattern\":\"folk\",\"Genre\":\"Folk\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"46fc8af591683f74babafe2f\",\"Pattern\":\"singer-songwriter\",\"Genre\":\"Folk\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"1226363700cba5c36ea20fbf\",\"Pattern\":\"acoustic\",\"Genre\":\"Folk\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"d89329dd61fd3800c2a490ee\",\"Pattern\":\"reggae\",\"Genre\":\"Reggae\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"26da5864c878dd0648e7b0e9\",\"Pattern\":\"dancehall\",\"Genre\":\"Reggae\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"f18ce2ac30b49762ecc0fc14\",\"Pattern\":\"ska\",\"Genre\":\"Reggae\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"0665983bad90e0d103246273\",\"Pattern\":\"dub\",\"Genre\":\"Reggae\",\"Match\":\"Contains\",\"Enabled\":true},{\"Id\":\"6137b3d14d0834b723abddb2\",\"Pattern\":\"pop\",\"Genre\":\"Pop\",\"Match\":\"Contains\",\"Enabled\":true}]}"
+   }
+  },
+  {
+   "name": "update",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/update",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 441,
+    "sha256": "43c9bf35cbe43e16756cd7f9724c5296195a87eff7b9000470fc2f18040576ea",
+    "text": "{\"enabled\":false,\"repo\":\"winters27/octo\",\"running\":\"2026.10.03.2\",\"latest\":null,\"newer\":[],\"updateAvailable\":false,\"standing\":\"unknown\",\"checkedUtc\":null,\"error\":null,\"helper\":{\"installed\":false},\"pending\":false,\"pendingId\":null,\"unanswered\":null,\"run\":null,\"command\":\"git fetch --tags && git checkout --detach <release> && docker compose build && docker compose up -d\",\"imageCommand\":\"docker compose pull octo && docker compose up -d octo\"}"
+   }
+  },
+  {
+   "name": "browse-session-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/browse/session",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 18,
+    "sha256": "60483fbb3c01c4080583563e215e3ca4ab5ce4ff74f47cf36eadedd152572d2f",
+    "text": "{\"signedIn\":false}"
+   }
+  },
+  {
+   "name": "guard-options",
+   "request": {
+    "method": "OPTIONS",
+    "target": "/api/admin/settings",
+    "headers": {},
+    "body": null
+   },
+   "status": 204,
+   "reason": "No Content",
+   "headers": [
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "empty",
+    "size": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "name": "guard-options-preflight",
+   "request": {
+    "method": "OPTIONS",
+    "target": "/api/admin/settings",
+    "headers": {
+     "Origin": "http://evil.example",
+     "Access-Control-Request-Method": "POST",
+     "Access-Control-Request-Headers": "content-type,x-octo-admin"
+    },
+    "body": null
+   },
+   "status": 204,
+   "reason": "No Content",
+   "headers": [
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "empty",
+    "size": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "name": "guard-post-no-header",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/settings",
+    "headers": {
+     "Content-Type": "application/json"
+    },
+    "body": "{\"Server\": {\"PublicUrl\": \"x\"}}"
+   },
+   "status": 403,
+   "reason": "Forbidden",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 111,
+    "sha256": "99d80610964aa60ad899f6a54cdca95b1f48c7d254f3bdbd1d9eaea3ca7603b8",
+    "text": "{\"error\":\"Admin changes must come from Octo's dashboard. A script can send the X-Octo-Admin header to opt in.\"}"
+   }
+  },
+  {
+   "name": "guard-put-no-header",
+   "request": {
+    "method": "PUT",
+    "target": "/api/admin/raw-config",
+    "headers": {
+     "Content-Type": "application/json"
+    },
+    "body": "{}"
+   },
+   "status": 403,
+   "reason": "Forbidden",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 111,
+    "sha256": "99d80610964aa60ad899f6a54cdca95b1f48c7d254f3bdbd1d9eaea3ca7603b8",
+    "text": "{\"error\":\"Admin changes must come from Octo's dashboard. A script can send the X-Octo-Admin header to opt in.\"}"
+   }
+  },
+  {
+   "name": "guard-delete-no-header",
+   "request": {
+    "method": "DELETE",
+    "target": "/api/admin/lastfm/radio/history?user=admin",
+    "headers": {},
+    "body": null
+   },
+   "status": 403,
+   "reason": "Forbidden",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 111,
+    "sha256": "99d80610964aa60ad899f6a54cdca95b1f48c7d254f3bdbd1d9eaea3ca7603b8",
+    "text": "{\"error\":\"Admin changes must come from Octo's dashboard. A script can send the X-Octo-Admin header to opt in.\"}"
+   }
+  },
+  {
+   "name": "guard-post-no-header-with-origin",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/restart",
+    "headers": {
+     "Origin": "http://evil.example"
+    },
+    "body": null
+   },
+   "status": 403,
+   "reason": "Forbidden",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 111,
+    "sha256": "99d80610964aa60ad899f6a54cdca95b1f48c7d254f3bdbd1d9eaea3ca7603b8",
+    "text": "{\"error\":\"Admin changes must come from Octo's dashboard. A script can send the X-Octo-Admin header to opt in.\"}"
+   }
+  },
+  {
+   "name": "guard-post-unknown-path-no-header",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/nothing-here",
+    "headers": {},
+    "body": null
+   },
+   "status": 403,
+   "reason": "Forbidden",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 111,
+    "sha256": "99d80610964aa60ad899f6a54cdca95b1f48c7d254f3bdbd1d9eaea3ca7603b8",
+    "text": "{\"error\":\"Admin changes must come from Octo's dashboard. A script can send the X-Octo-Admin header to opt in.\"}"
+   }
+  },
+  {
+   "name": "guard-post-unknown-path-with-header",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/nothing-here",
+    "headers": {
+     "X-Octo-Admin": "1"
+    },
+    "body": null
+   },
+   "status": 404,
+   "reason": "Not Found",
+   "headers": [
+    [
+     "Content-Type",
+     "application/problem+json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 162,
+    "sha256": "449ba01bd255beb30f66ac6f1e608b25023b84d75e90760f3e3279d7977ac950",
+    "text": "{\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.5\",\"title\":\"Not Found\",\"status\":404,\"traceId\":\"00-3c0d3f2c425b0db61ccaa40b82ba7411-d22ffd747c4bf97d-00\"}"
+   }
+  },
+  {
+   "name": "session-browse-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/browse?path=%2Fmusic",
+    "headers": {},
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 36,
+    "sha256": "4ae45d38432103cb9c54b0cb598047aef8ca857cc7aab25b85e256942252af1e",
+    "text": "{\"error\":\"Browse session required.\"}"
+   }
+  },
+  {
+   "name": "session-library-actions-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/library-actions",
+    "headers": {},
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "session-notices-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/notices",
+    "headers": {},
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "session-lossy-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lossy",
+    "headers": {},
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:56 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "session-upgrades-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/upgrades",
+    "headers": {},
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "session-genre-backfill-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/genre/backfill",
+    "headers": {},
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "session-covers-upgrade-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/covers/upgrade",
+    "headers": {},
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "session-cover-thumb-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/covers/upgrade/thumb/5KkmjLAmQA5mvuA6BVtGuD",
+    "headers": {},
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "session-lyrics-library-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lyrics/library",
+    "headers": {},
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "session-lyrics-songs-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lyrics/songs?q=polar",
+    "headers": {},
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "session-lyrics-candidates-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lyrics/candidates?id=6TOMTUtoEzhnB8tjXmNY5V",
+    "headers": {},
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "session-lyrics-choices-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lyrics/choices",
+    "headers": {},
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "session-library-resolve-none",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/library/resolve?id=2A1r2OKTiTVuvPfmtePIIe",
+    "headers": {},
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "session-tags-preview-none",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/tags/preview",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"artist\": \"Zephyr Echo\", \"title\": \"Glass Harbor\"}"
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "session-bogus-header-token",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/library-actions",
+    "headers": {
+     "X-Octo-Browse-Token": "not-a-session"
+    },
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "5f918f43083cb31a77ad376a316ad096cc0d8140b14e1ff38613c6f9b20da7f6",
+    "text": "{\"error\":\"Sign in with your Navidrome admin account first.\"}"
+   }
+  },
+  {
+   "name": "browse-auth-wrong-password",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/browse/auth",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"username\": \"admin\", \"password\": \"nope\"}"
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 49,
+    "sha256": "4ced8c3527faf04e552c8ce329bea662dfe305e1d374528b0219c666e007c486",
+    "text": "{\"error\":\"Navidrome rejected those credentials.\"}"
+   }
+  },
+  {
+   "name": "browse-auth-blank",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/browse/auth",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"username\": \"\", \"password\": \"\"}"
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 47,
+    "sha256": "9a110dbb6c9bd86319765ee089b4e74cdb47c424e36b31ad8decd814065bb8e8",
+    "text": "{\"error\":\"Username and password are required.\"}"
+   }
+  },
+  {
+   "name": "browse-auth-not-admin",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/browse/auth",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"username\": \"listener\", \"password\": \"listener-pass\"}"
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 50,
+    "sha256": "7fca73939e89326e2cf443fcb43e5cb72873f76a8e6f762dcfaf083dcd351ef0",
+    "text": "{\"error\":\"That account is not a Navidrome admin.\"}"
+   }
+  },
+  {
+   "name": "browse-auth-empty-body",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/browse/auth",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": null
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/problem+json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 285,
+    "sha256": "d407c7846f8387716e9cf2d4d09483fd32a885787f5f6cf98b47c275f76f0a8c",
+    "text": "{\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\"title\":\"One or more validation errors occurred.\",\"status\":400,\"errors\":{\"\":[\"A non-empty request body is required.\"],\"req\":[\"The req field is required.\"]},\"traceId\":\"00-8a49141797c1b087a59a7a6b894f64ea-5873a1319196dc5a-00\"}"
+   }
+  },
+  {
+   "name": "browse-auth-admin",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/browse/auth",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"Username\": \"admin\", \"Password\": \"parity-admin\"}"
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Set-Cookie",
+     "octo_browse=D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2; max-age=7776000; path=/api/admin; samesite=strict; httponly"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 26,
+    "sha256": "ad7762a8b316f0497ac766a7f016ee52d97209d9db13a26038e9b194e9efd4d6",
+    "text": "{\"ok\":true,\"user\":\"admin\"}"
+   }
+  },
+  {
+   "name": "browse-session-cookie",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/browse/session",
+    "headers": {
+     "Cookie": "octo_browse=D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Set-Cookie",
+     "octo_browse=D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2; max-age=7776000; path=/api/admin; samesite=strict; httponly"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 32,
+    "sha256": "c20bb3733acc3fce55cab45f6de5e369898256942cfcfcf436bda68b0eab46b6",
+    "text": "{\"signedIn\":true,\"user\":\"admin\"}"
+   }
+  },
+  {
+   "name": "browse-session-header-only",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/browse/session",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 18,
+    "sha256": "60483fbb3c01c4080583563e215e3ca4ab5ce4ff74f47cf36eadedd152572d2f",
+    "text": "{\"signedIn\":false}"
+   }
+  },
+  {
+   "name": "browse-music-root",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/browse?path=%2Fmusic",
+    "headers": {
+     "Cookie": "octo_browse=D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Set-Cookie",
+     "octo_browse=D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2; max-age=7776000; path=/api/admin; samesite=strict; httponly"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 366,
+    "sha256": "b27602cebe84f9879c6c4fdc9a8dbbc6dce2ee2490edcb9b28b5c6ae433bff64",
+    "text": "{\"path\":\"/music\",\"parent\":\"/\",\"separator\":\"/\",\"writable\":false,\"exists\":true,\"entries\":[{\"name\":\"Aurora Vale\",\"path\":\"/music/Aurora Vale\",\"writable\":false},{\"name\":\"Bjørn Ålund\",\"path\":\"/music/Bjørn Ålund\",\"writable\":false},{\"name\":\"宇多田テスト\",\"path\":\"/music/宇多田テスト\",\"writable\":false}],\"truncated\":false,\"audioFiles\":0,\"containerised\":false}"
+   }
+  },
+  {
+   "name": "browse-album-dir-header",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/browse?path=%2Fmusic%2FAurora%20Vale%2FNorthern%20Lights%20%282020%29",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 197,
+    "sha256": "9058a275bbe9be1fecf4c0a582d9a70cd536040401562c77ce9fe7f19a1bce72",
+    "text": "{\"path\":\"/music/Aurora Vale/Northern Lights (2020)\",\"parent\":\"/music/Aurora Vale\",\"separator\":\"/\",\"writable\":false,\"exists\":true,\"entries\":[],\"truncated\":false,\"audioFiles\":4,\"containerised\":false}"
+   }
+  },
+  {
+   "name": "browse-stale-cookie-hides-header",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/browse?path=%2Fmusic",
+    "headers": {
+     "Cookie": "octo_browse=stale",
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 401,
+   "reason": "Unauthorized",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 36,
+    "sha256": "4ae45d38432103cb9c54b0cb598047aef8ca857cc7aab25b85e256942252af1e",
+    "text": "{\"error\":\"Browse session required.\"}"
+   }
+  },
+  {
+   "name": "library-actions",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/library-actions",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 120,
+    "sha256": "f84b90d79db0c674c224fa911588e78680add20849884a9a0454fcb23c1b1290",
+    "text": "{\"enabled\":false,\"dryRun\":true,\"hasAdminIdentity\":true,\"allowedUsers\":[],\"quarantine\":\"/music/.octo-trash\",\"entries\":[]}"
+   }
+  },
+  {
+   "name": "notices",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/notices",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 35,
+    "sha256": "6395b40a715ed4ee577a7efe021d9514e1a7d7d02a47963b60b15b3244db5ddd",
+    "text": "{\"entries\":[],\"duplicateScan\":null}"
+   }
+  },
+  {
+   "name": "lossy",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lossy",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 2094,
+    "sha256": "beb3e8a2f832f82eee6ae0ad6936d0938ed75f1f6c387a7b0a21392e7c526719",
+    "text": "{\"total\":6,\"songs\":[{\"id\":\"2Xc6Ix4qDl2csRPeaPnwau\",\"title\":\"Ljós í myrkri\",\"artist\":\"Bjørn Ålund\",\"album\":\"Ágætis Prófun\",\"suffix\":\"mp3\",\"bitRate\":32,\"size\":8443,\"path\":\"Bjørn Ålund/Ágætis Prófun (2018)/02 - Ljós í myrkri.mp3\",\"fromYouTube\":false,\"attemptKey\":\"Bjørn Ålund/Ágætis Prófun (2018)/02 - Ljós í myrkri.mp3|8443\",\"lastTried\":null,\"job\":null},{\"id\":\"3KY9U3kJDrcZF3A5otp8L4\",\"title\":\"桜の歌\",\"artist\":\"宇多田テスト\",\"album\":\"初恋テスト\",\"suffix\":\"m4a\",\"bitRate\":33,\"size\":9643,\"path\":\"宇多田テスト/初恋テスト (2021)/02 - 桜の歌.m4a\",\"fromYouTube\":false,\"attemptKey\":\"宇多田テスト/初恋テスト (2021)/02 - 桜の歌.m4a|9643\",\"lastTried\":null,\"job\":null},{\"id\":\"3RGeVWguT715DnjkCJcs99\",\"title\":\"Þögn\",\"artist\":\"Bjørn Ålund\",\"album\":\"Ágætis Prófun\",\"suffix\":\"mp3\",\"bitRate\":32,\"size\":12404,\"path\":\"Bjørn Ålund/Ágætis Prófun (2018)/03 - Þögn.mp3\",\"fromYouTube\":false,\"attemptKey\":\"Bjørn Ålund/Ágætis Prófun (2018)/03 - Þögn.mp3|12404\",\"lastTried\":null,\"job\":null},{\"id\":\"5otsGv02qpt74TwMlpLAoF\",\"title\":\"Ñandú (Remix)\",\"artist\":\"宇多田テスト\",\"album\":\"初恋テスト\",\"suffix\":\"m4a\",\"bitRate\":33,\"size\":9643,\"path\":\"宇多田テスト/初恋テスト (2021)/03 - Ñandú (Remix).m4a\",\"fromYouTube\":false,\"attemptKey\":\"宇多田テスト/初恋テスト (2021)/03 - Ñandú (Remix).m4a|9643\",\"lastTried\":null,\"job\":null},{\"id\":\"79UbMHtfpdvxM9dnNYPHLu\",\"title\":\"Hjarta\",\"artist\":\"Bjørn Ålund\",\"album\":\"Ágætis Prófun\",\"suffix\":\"mp3\",\"bitRate\":32,\"size\":12404,\"path\":\"Bjørn Ålund/Ágætis Prófun (2018)/01 - Hjarta.mp3\",\"fromYouTube\":false,\"attemptKey\":\"Bjørn Ålund/Ágætis Prófun (2018)/01 - Hjarta.mp3|12404\",\"lastTried\":null,\"job\":null},{\"id\":\"7LQvU7JOETUgfLldHu8laT\",\"title\":\"First Love\",\"artist\":\"宇多田テスト\",\"album\":\"初恋テスト\",\"suffix\":\"m4a\",\"bitRate\":33,\"size\":13749,\"path\":\"宇多田テスト/初恋テスト (2021)/01 - First Love.m4a\",\"fromYouTube\":false,\"attemptKey\":\"宇多田テスト/初恋テスト (2021)/01 - First Love.m4a|13749\",\"lastTried\":null,\"job\":null}]}"
+   }
+  },
+  {
+   "name": "upgrades",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/upgrades",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 329,
+    "sha256": "5f48983418cdeca47db542f08149b2e72eef9e4fb38c1b74d8a4b037a14c16da",
+    "text": "{\"jobs\":[],\"parallel\":1,\"source\":\"Soulseek\",\"sourceReady\":true,\"plan\":[\"Soulseek\"],\"why\":\"One at a time until slskd has put a download in its own folder.\",\"soulseek\":{\"ok\":true,\"warning\":false,\"detail\":\"logged in to Soulseek as parity\"},\"gate\":{\"user\":\"admin\",\"enabled\":false,\"allowed\":false,\"dryRun\":true,\"betterQuality\":false}}"
+   }
+  },
+  {
+   "name": "genre-backfill",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/genre/backfill",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 308,
+    "sha256": "806a5e8a7683626ae76cb7221389a381a0009863c219f1e68022f9db8dcb6f2f",
+    "text": "{\"runId\":\"\",\"status\":\"Idle\",\"scope\":\"OctoDownloads\",\"dryRun\":true,\"startedUtc\":null,\"finishedUtc\":null,\"total\":0,\"processed\":0,\"changed\":0,\"cleared\":0,\"skipped\":0,\"failed\":0,\"lastPath\":null,\"reason\":null,\"errors\":[],\"preview\":[],\"canResume\":false,\"canUndo\":false,\"settingsChanged\":false,\"musicPath\":\"/music\"}"
+   }
+  },
+  {
+   "name": "covers-upgrade",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/covers/upgrade",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 461,
+    "sha256": "78930987a8e6a812dbb0b761910a452fe3c3e06d1b7f49f9d3fea013858893e4",
+    "text": "{\"runId\":\"\",\"status\":\"Idle\",\"scope\":\"OctoDownloads\",\"mode\":\"Scan\",\"dryRun\":true,\"smallerThan\":1000,\"picked\":null,\"soft\":0,\"folderCovers\":true,\"fullSize\":false,\"undo\":false,\"startedUtc\":null,\"finishedUtc\":null,\"total\":0,\"processed\":0,\"upgraded\":0,\"kept\":0,\"files\":0,\"failed\":0,\"lastFolder\":null,\"reason\":null,\"songsTotal\":0,\"songsRead\":0,\"albumsTotal\":0,\"albumsDone\":0,\"errors\":[],\"preview\":[],\"canResume\":false,\"busy\":false,\"canUndo\":false,\"musicPath\":\"/music\"}"
+   }
+  },
+  {
+   "name": "cover-thumb-navidrome",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/covers/upgrade/thumb/5KkmjLAmQA5mvuA6BVtGuD",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 404,
+   "reason": "Not Found",
+   "headers": [
+    [
+     "Content-Type",
+     "application/problem+json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Cache-Control",
+     "private, max-age=300"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 162,
+    "sha256": "cf93a5e761ed9548987ad8698aa6f942b1e55b8c1a8b3941fb333ef0bb397d64",
+    "text": "{\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.5\",\"title\":\"Not Found\",\"status\":404,\"traceId\":\"00-8db67a3e5765a470570792cbf895ba6c-018e149ceae1019d-00\"}"
+   }
+  },
+  {
+   "name": "cover-thumb-found-missing",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/covers/upgrade/thumb/5KkmjLAmQA5mvuA6BVtGuD?found=true",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 404,
+   "reason": "Not Found",
+   "headers": [
+    [
+     "Content-Type",
+     "application/problem+json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Cache-Control",
+     "private, max-age=300"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 162,
+    "sha256": "354f002c590c631c8d6d1672707c6e98f11e692a6f1e8f9112cd8ad508e7b370",
+    "text": "{\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.5\",\"title\":\"Not Found\",\"status\":404,\"traceId\":\"00-79e542b5f0880e793ea5284e0ad660a4-cee607349858d516-00\"}"
+   }
+  },
+  {
+   "name": "cover-thumb-bad-bool",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/covers/upgrade/thumb/5KkmjLAmQA5mvuA6BVtGuD?found=maybe",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/problem+json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 247,
+    "sha256": "422f2815a6b6c2c0e8ddec2b3a8e2a9e21f74e6781615becd28db0d5eb4d7b00",
+    "text": "{\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\"title\":\"One or more validation errors occurred.\",\"status\":400,\"errors\":{\"found\":[\"The value 'maybe' is not valid.\"]},\"traceId\":\"00-f8ddddd37e77c4c8eb396bbc27097334-6b9f093d2f6ed9c2-00\"}"
+   }
+  },
+  {
+   "name": "lyrics-library-busy-collision",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lyrics/library",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Cache-Control",
+     "no-cache,no-store"
+    ],
+    [
+     "Expires",
+     "-1"
+    ],
+    [
+     "Pragma",
+     "no-cache"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 112,
+    "sha256": "34bd98a91e242d8972e690f4aabe5de8e49b0c67a3ad76d58f4c18d52aa69526",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":10,\"message\":\"Operation not valid\"}}}"
+   }
+  },
+  {
+   "name": "lyrics-songs",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lyrics/songs?q=polar",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 143,
+    "sha256": "b2f39fefcb9982e2730d101ce91b6ebb23c19fa48bb084ba5c5fcc506d411602",
+    "text": "{\"songs\":[{\"id\":\"6TOMTUtoEzhnB8tjXmNY5V\",\"title\":\"Polar Night\",\"artist\":\"Aurora Vale\",\"album\":\"Northern Lights\",\"duration\":3,\"choice\":\"auto\"}]}"
+   }
+  },
+  {
+   "name": "lyrics-songs-blank",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lyrics/songs?q=",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 12,
+    "sha256": "b4cc7c8a0867b44249b18a2041cc392aa9a282dbf89f6ee9fcaf2cfa4453e744",
+    "text": "{\"songs\":[]}"
+   }
+  },
+  {
+   "name": "lyrics-candidates",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lyrics/candidates?id=6TOMTUtoEzhnB8tjXmNY5V",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 360,
+    "sha256": "3a6cb26242c1898f1fe506e6950edb3213e1484f79f315935b91254339b91e2e",
+    "text": "{\"id\":\"6TOMTUtoEzhnB8tjXmNY5V\",\"path\":null,\"artist\":\"Aurora Vale\",\"title\":\"Polar Night\",\"album\":\"Northern Lights\",\"duration\":3,\"choice\":\"auto\",\"candidates\":[{\"id\":\"lrclib:9001\",\"source\":\"lrclib\",\"title\":\"Polar Night\",\"artist\":\"Aurora Vale\",\"album\":\"Northern Lights\",\"durationSeconds\":3,\"kind\":\"line\",\"sameSong\":true,\"preview\":[\"Long dark sky\",\"Stars above\"]}]}"
+   }
+  },
+  {
+   "name": "lyrics-candidates-unknown",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lyrics/candidates?id=doesnotexist000000000x",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 404,
+   "reason": "Not Found",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 42,
+    "sha256": "699648719032b90daf6991e101871b0c5701dc367de4be3c33e82fd602acdbee",
+    "text": "{\"error\":\"Octo could not find that song.\"}"
+   }
+  },
+  {
+   "name": "lyrics-choices",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/lyrics/choices",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 14,
+    "sha256": "d4a534e3d5ab43de5b09ee16dedc6eec035cf179b072195f128d15ac87be79f0",
+    "text": "{\"choices\":[]}"
+   }
+  },
+  {
+   "name": "library-resolve",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/library/resolve?id=2A1r2OKTiTVuvPfmtePIIe",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 279,
+    "sha256": "521931de85f62deac81355fa21e301da7edba7d5d3d83d4412e849d8d578acd9",
+    "text": "{\"id\":\"2A1r2OKTiTVuvPfmtePIIe\",\"resolved\":true,\"musicRoot\":\"/music\",\"hasAdminIdentity\":true,\"path\":\"/music/Aurora Vale/Northern Lights (2020)/01 - Café del Mar.flac\",\"source\":\"NativeApi\",\"sizeBytes\":24984,\"artist\":\"Aurora Vale\",\"title\":\"Café del Mar\",\"album\":\"Northern Lights\"}"
+   }
+  },
+  {
+   "name": "library-resolve-missing-id",
+   "request": {
+    "method": "GET",
+    "target": "/api/admin/library/resolve",
+    "headers": {
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2"
+    },
+    "body": null
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 46,
+    "sha256": "4fbd073981d6e597921a3ca23b996962c780586958adb34e924f6cb2dcd2ce88",
+    "text": "{\"error\":\"Pass the Navidrome song id as ?id=\"}"
+   }
+  },
+  {
+   "name": "tags-preview-artist-title",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/tags/preview",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"artist\": \"Zephyr Echo\", \"title\": \"Glass Harbor\"}"
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 1104,
+    "sha256": "1334e777e04b347cd65aeb1051725fe4087c162456378577a20d78a31ae1dbb4",
+    "text": "{\"confidence\":\"Strong\",\"distance\":0.05,\"releaseTitle\":\"Glass Harbor\",\"releaseId\":null,\"source\":\"Catalog\",\"releaseDate\":\"2019-05-01\",\"candidates\":[{\"source\":\"Catalog\",\"title\":\"Glass Harbor\",\"album\":\"Glass Harbor\",\"type\":\"album\",\"date\":\"2019-05-01\",\"distance\":0.05,\"biggestPenalties\":[\"source 0.25\"]}],\"fields\":{\"album\":{\"value\":\"Glass Harbor\",\"source\":\"Catalog\"},\"albumArtist\":{\"value\":\"Zephyr Echo\",\"source\":\"Catalog\"},\"track\":{\"value\":\"1\",\"source\":\"Catalog\"},\"year\":{\"value\":\"2019\",\"source\":\"Catalog\"},\"originalDate\":{\"value\":\"2019-05-01\",\"source\":\"Catalog\"},\"releaseDate\":{\"value\":\"2019-05-01\",\"source\":\"Catalog\"},\"label\":{\"value\":\"Parity Records\",\"source\":\"Catalog\"},\"barcode\":{\"value\":\"0000000002001\",\"source\":\"Catalog\"},\"releaseType\":{\"value\":\"album\",\"source\":\"Catalog\"},\"isrc\":{\"value\":\"QZPAR1900001\",\"source\":\"Catalog\"}},\"notes\":[\"matched by name alone: no file, so no fingerprint and no loudness\",\"the music database did not answer the search\"],\"stageSeconds\":{\"catalog\":0.09,\"database\":0.05,\"identify\":0.15},\"rehearsed\":false,\"detailsPrefetchHit\":false,\"integratedLufs\":null,\"truePeakDbfs\":null}"
+   }
+  },
+  {
+   "name": "tags-preview-missing-title",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/tags/preview",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"artist\": \"Zephyr Echo\"}"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 74,
+    "sha256": "a758396801a119009f82293405e9e2c431b6e2c2dc1d6affbf15863e636cc756",
+    "text": "{\"error\":\"Give a path inside the music folder, or an artist and a title.\"}"
+   }
+  },
+  {
+   "name": "tags-preview-path-traversal",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/tags/preview",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"path\": \"/music/../etc/passwd\"}"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:57 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 60,
+    "sha256": "153c18410102bada4f379d15cd197620c10578e98dd3b5c68c7e2450c557fc67",
+    "text": "{\"error\":\"The path must be a file inside the music folder.\"}"
+   }
+  },
+  {
+   "name": "tags-preview-real-file",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/tags/preview",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"path\": \"/music/Aurora Vale/Northern Lights (2020)/02 - Polar Night.flac\"}"
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 771,
+    "sha256": "9d1a70110b4b2b393a05ac9d58e924ef25eff222b46045a19455cc598d2ce99d",
+    "text": "{\"confidence\":\"Medium\",\"distance\":0.143,\"releaseTitle\":\"Northern Lights\",\"releaseId\":null,\"source\":\"FileTags\",\"releaseDate\":\"2020\",\"candidates\":[{\"source\":\"FileTags\",\"title\":\"Polar Night\",\"album\":\"Northern Lights\",\"type\":null,\"date\":\"2020\",\"distance\":0.143,\"biggestPenalties\":[\"type 0.50\",\"source 0.50\"]}],\"fields\":{\"replayGain\":{\"value\":\"+3.70 dB, peak 0.088105\",\"source\":\"Measured\"}},\"notes\":[\"download verification is off or has no key, so the fingerprint service was not asked\",\"the music database did not answer the search\",\"the album-level tags were not taken from 'Northern Lights' 2020: Medium from FileTags\"],\"stageSeconds\":{\"catalog\":0.05,\"database\":0.96,\"identify\":1.01},\"rehearsed\":false,\"detailsPrefetchHit\":false,\"integratedLufs\":-21.7,\"truePeakDbfs\":-21.1}"
+   }
+  },
+  {
+   "name": "settings-post-empty-body",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/settings",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": null
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 22,
+    "sha256": "4e39b9b3f7eeeef7d9a4667975a70da43360b7b86f18200ac3074667349756bf",
+    "text": "{\"error\":\"empty body\"}"
+   }
+  },
+  {
+   "name": "settings-post-invalid-json",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/settings",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{not json"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 125,
+    "sha256": "c665ae187c5e543e914410f541ad6ec4c808ecbfc5c5ea7761da64919819c8b3",
+    "text": "{\"error\":\"invalid JSON: 'n' is an invalid start of a property name. Expected a '\\\"'. LineNumber: 0 | BytePositionInLine: 1.\"}"
+   }
+  },
+  {
+   "name": "settings-post-placeholder-plus-text",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/settings",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"Subsonic\": {\"AdminPassword\": \"(saved, not shown)x\"}}"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 84,
+    "sha256": "ad966330737e0dc151d8980a4b6e1f837b6d144007dbef479708adff9f5100f4",
+    "text": "{\"error\":\"Retype the whole admin password; it was added to the hidden placeholder.\"}"
+   }
+  },
+  {
+   "name": "settings-post-libraryactions-no-users",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/settings",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"LibraryActions\": {\"Enabled\": true, \"AllowedUsers\": []}}"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 87,
+    "sha256": "0020013ad4e5714598a565c6409e378955cc6084fc67999caf23a1f3cef09f0a",
+    "text": "{\"error\":\"Library actions need at least one allowed user. An empty list means nobody.\"}"
+   }
+  },
+  {
+   "name": "raw-config-put-array",
+   "request": {
+    "method": "PUT",
+    "target": "/api/admin/raw-config",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "[]"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 53,
+    "sha256": "1907af4adaf9a4f8c8a501e36f6bd6d58282d8562cd5ac21ccf84f1732c1351c",
+    "text": "{\"error\":\"invalid JSON: top level must be an object\"}"
+   }
+  },
+  {
+   "name": "raw-config-put-empty",
+   "request": {
+    "method": "PUT",
+    "target": "/api/admin/raw-config",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": null
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 22,
+    "sha256": "4e39b9b3f7eeeef7d9a4667975a70da43360b7b86f18200ac3074667349756bf",
+    "text": "{\"error\":\"empty body\"}"
+   }
+  },
+  {
+   "name": "lidarr-test-saved",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/lidarr/test",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{}"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 59,
+    "sha256": "19680811e218d6b49db28ec1563d594f8c6aebfddc3f3c975e79b813f4888ddf",
+    "text": "{\"ok\":false,\"error\":\"Lidarr URL and API key are required.\"}"
+   }
+  },
+  {
+   "name": "lidarr-test-unreachable",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/lidarr/test",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"baseUrl\": \"http://stubs:9\", \"apiKey\": \"x\"}"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 51,
+    "sha256": "3407502a811e696ec2886dbeb4571906976a4d276cc78c7112d32cdf00a87ee1",
+    "text": "{\"ok\":false,\"error\":\"Connection refused (stubs:9)\"}"
+   }
+  },
+  {
+   "name": "lastfm-check",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/lastfm/check",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{}"
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 111,
+    "sha256": "8721824378309b3e281746bfe7b83a8eee039e8c5058c7c9bc3fdd7fef4bfdee",
+    "text": "{\"key\":\"unreachable\",\"secret\":\"missing\",\"message\":\"Last.fm error 6: The track you supplied could not be found\"}"
+   }
+  },
+  {
+   "name": "lastfm-connect-unavailable",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/lastfm/scrobble/connect",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"user\": \"admin\"}"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 61,
+    "sha256": "d95c72ea40bba1a753514e51236c0f07ee3db098b5a57e4591fca800b3e49895",
+    "text": "{\"error\":\"Save the Last.fm API key and shared secret first.\"}"
+   }
+  },
+  {
+   "name": "lastfm-radio-refresh-no-user",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/lastfm/radio/refresh",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{}"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 46,
+    "sha256": "567c3c5ea7f5f15ebfe2d0522895c7f663c6c67dd71bafac8d8f7aa12571e5d4",
+    "text": "{\"error\":\"A known Navidrome user is required\"}"
+   }
+  },
+  {
+   "name": "lastfm-radio-history-no-user",
+   "request": {
+    "method": "DELETE",
+    "target": "/api/admin/lastfm/radio/history",
+    "headers": {
+     "X-Octo-Admin": "1"
+    },
+    "body": null
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/problem+json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 242,
+    "sha256": "397ff9d179c6ced394fbc8f22f1616a6d185f46c41e98b6d89b6a7c7bd097ffc",
+    "text": "{\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\"title\":\"One or more validation errors occurred.\",\"status\":400,\"errors\":{\"user\":[\"The user field is required.\"]},\"traceId\":\"00-0cc8799f4ccde2b7105a923400b2202d-7156cb289b7392fc-00\"}"
+   }
+  },
+  {
+   "name": "listenbrainz-validate-post",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/listenbrainz/validate",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"token\": \"not-a-token\"}"
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:58 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 103,
+    "sha256": "e1f0e3e9d9aa7c676927be20e432f355490790cc4ee5ea738b3c9f1a45560b67",
+    "text": "{\"configured\":true,\"valid\":false,\"userName\":null,\"detail\":\"ListenBrainz says this token is not valid.\"}"
+   }
+  },
+  {
+   "name": "lyrics-review-dismiss-no-path",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/lyrics/review/dismiss",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2",
+     "Content-Type": "application/json"
+    },
+    "body": "{}"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/problem+json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:59 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 242,
+    "sha256": "685f6fd15c7564eb89567a7ad2323624cdf4723292cd795350852372d7d2dfe1",
+    "text": "{\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\"title\":\"One or more validation errors occurred.\",\"status\":400,\"errors\":{\"Path\":[\"The Path field is required.\"]},\"traceId\":\"00-68bb7c240e6f7ad2f2dff487d107fc40-be546f36a98b3f21-00\"}"
+   }
+  },
+  {
+   "name": "lyrics-choice-no-candidate",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/lyrics/choice",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"id\": \"6TOMTUtoEzhnB8tjXmNY5V\"}"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/problem+json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:59 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 252,
+    "sha256": "72b8caa1d23b0993915ee35b422f2d7acac4b43704d5664632d20a616bb29e55",
+    "text": "{\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\"title\":\"One or more validation errors occurred.\",\"status\":400,\"errors\":{\"Candidate\":[\"The Candidate field is required.\"]},\"traceId\":\"00-b37982c59639079e978ff85692b1eaae-cad1dae92823760b-00\"}"
+   }
+  },
+  {
+   "name": "covers-upgrade-no-albums",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/covers/upgrade",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"albums\": []}"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:59 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 36,
+    "sha256": "882d975f357401d1e9d7e152542b62872050b1738c4da90554d6f93082450c6b",
+    "text": "{\"error\":\"Pick at least one album.\"}"
+   }
+  },
+  {
+   "name": "lyrics-library-preview-no-picks",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/lyrics/library",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"mode\": \"Preview\", \"picked\": []}"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:59 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 35,
+    "sha256": "07d551f4a72e0916946e04bee986f8ae44ed89db49403e71ebc308efb9ae1492",
+    "text": "{\"error\":\"Pick at least one song.\"}"
+   }
+  },
+  {
+   "name": "genre-backfill-off",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/genre/backfill",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"dryRun\": true}"
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:59 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 77,
+    "sha256": "bfb2fad7082598fa3efad5bdc28cc4ca425553f2270cf484f7feb9d2f665cacf",
+    "text": "{\"error\":\"Turn genre normalization on first, or a run would change nothing.\"}"
+   }
+  },
+  {
+   "name": "upgrades-post-no-songs",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/upgrades",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "X-Octo-Browse-Token": "D47684740D98B317E2C4EA1DF00BFBD438357C0C06B5A6E7801F981BB723BCD2",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"songs\": []}"
+   },
+   "status": 403,
+   "reason": "Forbidden",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:59 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 101,
+    "sha256": "e9611921dfac1146980f9960781571f59dddefa77c61b40960b9f328fd1fcfff",
+    "text": "{\"error\":\"admin is not on the library actions allowed list, so Octo will not change files for them.\"}"
+   }
+  },
+  {
+   "name": "duplicates-scan-off",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/duplicates/scan",
+    "headers": {
+     "X-Octo-Admin": "1"
+    },
+    "body": null
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:59 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 70,
+    "sha256": "eb51d24c0bfdd364c09d3a254a9122d6f609357e8b73609744e7f75baeaefafd",
+    "text": "{\"error\":\"Turn on library actions and the Duplicates playlist first.\"}"
+   }
+  },
+  {
+   "name": "review-sweep-start-off",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/review-sweep/start",
+    "headers": {
+     "X-Octo-Admin": "1"
+    },
+    "body": null
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:59 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 95,
+    "sha256": "1d63fe9dd40fee8711172343312f5956db8168c102dc856e86bcbcee9cbffe40",
+    "text": "{\"error\":\"Turn on library actions and Review, and set how many songs an hour to check, first.\"}"
+   }
+  },
+  {
+   "name": "update-post-disabled",
+   "request": {
+    "method": "POST",
+    "target": "/api/admin/update",
+    "headers": {
+     "X-Octo-Admin": "1",
+     "Content-Type": "application/json"
+    },
+    "body": "{\"tag\": \"2099.01.01.1\"}"
+   },
+   "status": 409,
+   "reason": "Conflict",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:59 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 81,
+    "sha256": "c386c7269901fba46aa7b07a9767f59dc39e60abfe4a9ce3474e108725f2ff82",
+    "text": "{\"error\":\"Update checks are off, so Octo does not know which release is newest.\"}"
+   }
+  }
+ ]
+}

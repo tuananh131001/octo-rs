@@ -1,6 +1,6 @@
 # Dashboard icons
 
-`make_sprite.py` builds `octo/wwwroot/admin/icons.svg` from two sources.
+`make_sprite.py` builds `crates/octo/wwwroot/admin/icons.svg` from two sources.
 
 ## Phosphor
 

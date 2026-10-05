@@ -1,0 +1,22 @@
+{
+  "group": "subsonic-octo-extensions",
+  "description": "endpoints.md 3.8: getAcquisitions, getLibraryActions, getUpgrades and libraryAction (always JSON, ping-gated). Library actions are off in the parity config, so every libraryAction answer is a refusal or a skip and nothing is queued.",
+  "defaults": {"auth": "p"},
+  "requests": [
+    {"name": "acquisitions-json", "path": "/rest/getAcquisitions", "f": "json"},
+    {"name": "acquisitions-xml-still-json", "path": "/rest/getAcquisitions.view"},
+    {"name": "acquisitions-badpass", "path": "/rest/getAcquisitions", "auth": "bad"},
+    {"name": "acquisitions-noauth", "path": "/rest/getAcquisitions", "auth": "none"},
+    {"name": "acquisitions-apikey", "path": "/rest/getAcquisitions", "auth": "apikey"},
+    {"name": "library-actions-json", "path": "/rest/getLibraryActions", "f": "json"},
+    {"name": "library-actions-badpass", "path": "/rest/getLibraryActions.view", "auth": "bad"},
+    {"name": "upgrades-json", "path": "/rest/getUpgrades", "f": "json"},
+    {"name": "upgrades-listener", "path": "/rest/getUpgrades.view", "auth": "listener"},
+    {"name": "library-action-missing", "path": "/rest/libraryAction", "f": "json"},
+    {"name": "library-action-unknown", "path": "/rest/libraryAction", "query": [["id", "{{song_flac1}}"], ["action", "explode"]]},
+    {"name": "library-action-remove-off", "path": "/rest/libraryAction.view", "query": [["id", "{{song_flac1}}"], ["action", "remove"]]},
+    {"name": "library-action-upgrade-off", "path": "/rest/libraryAction", "query": [["id", "{{song_mp3_1}}"], ["action", "UPGRADE"]]},
+    {"name": "library-action-remove-no-user", "path": "/rest/libraryAction", "auth": "apikey", "query": [["id", "{{song_flac1}}"], ["action", "remove"]]},
+    {"name": "library-action-badpass", "path": "/rest/libraryAction", "auth": "bad", "query": [["id", "{{song_flac1}}"], ["action", "remove"]]}
+  ]
+}

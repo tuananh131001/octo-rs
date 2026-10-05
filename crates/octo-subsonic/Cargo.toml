@@ -1,0 +1,35 @@
+[package]
+name = "octo-subsonic"
+description = "The Subsonic wire format: response shapes in XML and JSON, request parsing, model mapping."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lib]
+# No doc examples; skipping the doctest pass also keeps it off the shared target dir.
+doctest = false
+
+[dependencies]
+octo-core.workspace = true
+anyhow.workspace = true
+axum.workspace = true
+chrono.workspace = true
+hex.workspace = true
+indexmap.workspace = true
+md-5.workspace = true
+percent-encoding.workspace = true
+quick-xml.workspace = true
+rand.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+insta.workspace = true
+
+[lints]
+workspace = true

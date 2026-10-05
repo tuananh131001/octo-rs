@@ -1,0 +1,1563 @@
+{
+ "group": "subsonic-system-auth",
+ "entries": [
+  {
+   "name": "ping-xml-view",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view?u=admin&p=parity-admin&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "175"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 175,
+    "sha256": "99e38ae2b6e48b3d0d8357104ae512ac68dfcb46e4db688c3ceed1d03ace7a33",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"></subsonic-response>"
+   }
+  },
+  {
+   "name": "ping-xml-plain",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping?u=admin&p=parity-admin&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "175"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 175,
+    "sha256": "99e38ae2b6e48b3d0d8357104ae512ac68dfcb46e4db688c3ceed1d03ace7a33",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"></subsonic-response>"
+   }
+  },
+  {
+   "name": "ping-json-view",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "131"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 131,
+    "sha256": "85d43876d9f9a3f8956bc569d2873732a589db418e72434aadd839db0bf54ad6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}}"
+   }
+  },
+  {
+   "name": "ping-json-plain",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "131"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 131,
+    "sha256": "85d43876d9f9a3f8956bc569d2873732a589db418e72434aadd839db0bf54ad6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}}"
+   }
+  },
+  {
+   "name": "ping-json-token",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view?u=admin&t=f814d6b5741770df28aad305f6ec2725&s=c0ffee42&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "131"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 131,
+    "sha256": "85d43876d9f9a3f8956bc569d2873732a589db418e72434aadd839db0bf54ad6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}}"
+   }
+  },
+  {
+   "name": "ping-xml-token",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view?u=admin&t=f814d6b5741770df28aad305f6ec2725&s=c0ffee42&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "175"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 175,
+    "sha256": "99e38ae2b6e48b3d0d8357104ae512ac68dfcb46e4db688c3ceed1d03ace7a33",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"></subsonic-response>"
+   }
+  },
+  {
+   "name": "ping-json-enc",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view?u=admin&p=enc%3A7061726974792d61646d696e&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "131"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 131,
+    "sha256": "85d43876d9f9a3f8956bc569d2873732a589db418e72434aadd839db0bf54ad6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}}"
+   }
+  },
+  {
+   "name": "ping-json-listener",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view?u=listener&p=listener-pass&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "131"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 131,
+    "sha256": "85d43876d9f9a3f8956bc569d2873732a589db418e72434aadd839db0bf54ad6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}}"
+   }
+  },
+  {
+   "name": "ping-json-badpass",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view?u=admin&p=wrong-password&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "194"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 194,
+    "sha256": "26d0cfb90f5ffb7c852fdc26875725a12f467aa83b751e5f07d9d658996ffc9e",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "ping-xml-badpass",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view?u=admin&p=wrong-password&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "241"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 241,
+    "sha256": "71b6952e17b857970c775ba1a4e42a7e1ca7f89a056bf489ad30fafa9b2316d8",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"failed\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><error code=\"40\" message=\"Wrong username or password\"></error></subsonic-response>"
+   }
+  },
+  {
+   "name": "ping-json-apikey",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view?apiKey=parity-not-a-real-key&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "190"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 190,
+    "sha256": "6fa748897c397fa9a64ad6b5b887ab5b4f222ec233989616d3d6c36702f55ced",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":10,\"message\":\"missing parameter: 'u'\"}}}"
+   }
+  },
+  {
+   "name": "ping-json-u-only",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view?u=admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "194"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 194,
+    "sha256": "26d0cfb90f5ffb7c852fdc26875725a12f467aa83b751e5f07d9d658996ffc9e",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "ping-xml-noauth",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "245"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 245,
+    "sha256": "59ddb7f20e118ecbfa0f2f047228216ff1bc87e47355aa698293d30179774c67",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"failed\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><error code=\"10\" message=\"missing parameter: &#39;u&#39;\"></error></subsonic-response>"
+   }
+  },
+  {
+   "name": "ping-json-noauth",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping?f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "190"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 190,
+    "sha256": "6fa748897c397fa9a64ad6b5b887ab5b4f222ec233989616d3d6c36702f55ced",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":10,\"message\":\"missing parameter: 'u'\"}}}"
+   }
+  },
+  {
+   "name": "ping-jsonp",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view?u=admin&p=parity-admin&v=1.16.1&c=parity&f=jsonp&callback=cb",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "135"
+    ],
+    [
+     "Content-Type",
+     "application/javascript"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "text",
+    "size": 135,
+    "sha256": "339664938d151e4b3b5c9bc059bb82d774cbec714670ac0fa3a4d33917ff47f8",
+    "text": "cb({\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}})"
+   }
+  },
+  {
+   "name": "ping-f-uppercase-value",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view?u=admin&p=parity-admin&v=1.16.1&c=parity&f=JSON",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "175"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 175,
+    "sha256": "99e38ae2b6e48b3d0d8357104ae512ac68dfcb46e4db688c3ceed1d03ace7a33",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"></subsonic-response>"
+   }
+  },
+  {
+   "name": "ping-F-uppercase-key",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping.view?u=admin&p=parity-admin&v=1.16.1&c=parity&F=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "175"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 175,
+    "sha256": "99e38ae2b6e48b3d0d8357104ae512ac68dfcb46e4db688c3ceed1d03ace7a33",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"></subsonic-response>"
+   }
+  },
+  {
+   "name": "ping-case-insensitive",
+   "request": {
+    "method": "GET",
+    "target": "/REST/Ping.VIEW?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "131"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 131,
+    "sha256": "85d43876d9f9a3f8956bc569d2873732a589db418e72434aadd839db0bf54ad6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}}"
+   }
+  },
+  {
+   "name": "ping-trailing-slash",
+   "request": {
+    "method": "GET",
+    "target": "/rest/ping/?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "131"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 131,
+    "sha256": "85d43876d9f9a3f8956bc569d2873732a589db418e72434aadd839db0bf54ad6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}}"
+   }
+  },
+  {
+   "name": "ping-post-form",
+   "request": {
+    "method": "POST",
+    "target": "/rest/ping.view",
+    "headers": {
+     "Content-Type": "application/x-www-form-urlencoded"
+    },
+    "body": "u=admin&p=parity-admin&v=1.16.1&c=parity&f=json"
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "131"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 131,
+    "sha256": "85d43876d9f9a3f8956bc569d2873732a589db418e72434aadd839db0bf54ad6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}}"
+   }
+  },
+  {
+   "name": "ping-post-form-overrides-query",
+   "request": {
+    "method": "POST",
+    "target": "/rest/ping.view?u=admin&p=wrong-password&v=1.16.1&c=parity&f=xml",
+    "headers": {
+     "Content-Type": "application/x-www-form-urlencoded"
+    },
+    "body": "p=parity-admin&f=json"
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "131"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 131,
+    "sha256": "85d43876d9f9a3f8956bc569d2873732a589db418e72434aadd839db0bf54ad6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}}"
+   }
+  },
+  {
+   "name": "ping-post-json-body",
+   "request": {
+    "method": "POST",
+    "target": "/rest/ping",
+    "headers": {
+     "Content-Type": "application/json"
+    },
+    "body": "{\"u\": \"admin\", \"p\": \"parity-admin\", \"v\": \"1.16.1\", \"c\": \"parity\", \"f\": \"json\"}"
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "131"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 131,
+    "sha256": "85d43876d9f9a3f8956bc569d2873732a589db418e72434aadd839db0bf54ad6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}}"
+   }
+  },
+  {
+   "name": "ping-put-falls-to-catchall",
+   "request": {
+    "method": "PUT",
+    "target": "/rest/ping?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 131,
+    "sha256": "85d43876d9f9a3f8956bc569d2873732a589db418e72434aadd839db0bf54ad6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}}"
+   }
+  },
+  {
+   "name": "ping-head-falls-to-catchall",
+   "request": {
+    "method": "HEAD",
+    "target": "/rest/ping?u=admin&p=parity-admin&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "empty",
+    "size": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "name": "ping-options-not-preflight",
+   "request": {
+    "method": "OPTIONS",
+    "target": "/rest/ping?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 131,
+    "sha256": "85d43876d9f9a3f8956bc569d2873732a589db418e72434aadd839db0bf54ad6",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true}}"
+   }
+  },
+  {
+   "name": "extensions-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getOpenSubsonicExtensions?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "520"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 520,
+    "sha256": "2595a53cabf31ecb083c0bec459dadb031d0342d174799fe803cb9fa10329bff",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"openSubsonicExtensions\":[{\"name\":\"transcodeOffset\",\"versions\":[1]},{\"name\":\"formPost\",\"versions\":[1]},{\"name\":\"songLyrics\",\"versions\":[1,2]},{\"name\":\"indexBasedQueue\",\"versions\":[1]},{\"name\":\"transcoding\",\"versions\":[1]},{\"name\":\"playbackReport\",\"versions\":[1]},{\"name\":\"topSongsByArtistId\",\"versions\":[1]},{\"name\":\"octoAcquisitions\",\"versions\":[1]},{\"name\":\"octoLyrics\",\"versions\":[1]}]}}"
+   }
+  },
+  {
+   "name": "extensions-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getOpenSubsonicExtensions.view?u=admin&p=parity-admin&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "1130"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 1130,
+    "sha256": "f3710e4e593d923e79a22772d7f210948feddc883efc2a910c413e0b03b1af50",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\">\n  <openSubsonicExtensions name=\"transcodeOffset\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"formPost\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"songLyrics\">\n    <versions>1</versions>\n    <versions>2</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"indexBasedQueue\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"transcoding\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"playbackReport\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"topSongsByArtistId\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"octoAcquisitions\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"octoLyrics\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n</subsonic-response>"
+   }
+  },
+  {
+   "name": "extensions-json-noauth",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getOpenSubsonicExtensions.view?f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "520"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 520,
+    "sha256": "2595a53cabf31ecb083c0bec459dadb031d0342d174799fe803cb9fa10329bff",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"openSubsonicExtensions\":[{\"name\":\"transcodeOffset\",\"versions\":[1]},{\"name\":\"formPost\",\"versions\":[1]},{\"name\":\"songLyrics\",\"versions\":[1,2]},{\"name\":\"indexBasedQueue\",\"versions\":[1]},{\"name\":\"transcoding\",\"versions\":[1]},{\"name\":\"playbackReport\",\"versions\":[1]},{\"name\":\"topSongsByArtistId\",\"versions\":[1]},{\"name\":\"octoAcquisitions\",\"versions\":[1]},{\"name\":\"octoLyrics\",\"versions\":[1]}]}}"
+   }
+  },
+  {
+   "name": "extensions-xml-badpass",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getOpenSubsonicExtensions?u=admin&p=wrong-password&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "1130"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 1130,
+    "sha256": "f3710e4e593d923e79a22772d7f210948feddc883efc2a910c413e0b03b1af50",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\">\n  <openSubsonicExtensions name=\"transcodeOffset\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"formPost\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"songLyrics\">\n    <versions>1</versions>\n    <versions>2</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"indexBasedQueue\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"transcoding\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"playbackReport\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"topSongsByArtistId\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"octoAcquisitions\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n  <openSubsonicExtensions name=\"octoLyrics\">\n    <versions>1</versions>\n  </openSubsonicExtensions>\n</subsonic-response>"
+   }
+  },
+  {
+   "name": "extensions-f-JSON",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getOpenSubsonicExtensions?u=admin&p=parity-admin&v=1.16.1&c=parity&f=JSON",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "841"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 841,
+    "sha256": "60fa95eaedcc762cdc481b01668826c3fd8023ea8afb58bd4fc3fba54c406f63",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><openSubsonicExtensions name=\"transcodeOffset\"><versions>1</versions></openSubsonicExtensions><openSubsonicExtensions name=\"formPost\"><versions>1</versions></openSubsonicExtensions><openSubsonicExtensions name=\"songLyrics\"><versions>1</versions><versions>2</versions></openSubsonicExtensions><openSubsonicExtensions name=\"indexBasedQueue\"><versions>1</versions></openSubsonicExtensions><openSubsonicExtensions name=\"transcoding\"><versions>1</versions></openSubsonicExtensions><openSubsonicExtensions name=\"playbackReport\"><versions>1</versions></openSubsonicExtensions><openSubsonicExtensions name=\"topSongsByArtistId\"><versions>1</versions></openSubsonicExtensions></subsonic-response>"
+   }
+  },
+  {
+   "name": "jukebox-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/jukeboxControl.view?u=admin&p=parity-admin&v=1.16.1&c=parity&action=status",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "165"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 165,
+    "sha256": "f0eac98741febeea1205d985c68c15040024d1c8099259134bb146134427f9a3",
+    "text": "<subsonic-response status=\"failed\" version=\"1.16.1\" xmlns=\"http://subsonic.org/restapi\">\n  <error code=\"0\" message=\"Jukebox is not supported\" />\n</subsonic-response>"
+   }
+  },
+  {
+   "name": "jukebox-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/jukeboxControl?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&action=get",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 116,
+    "sha256": "7ed4a0339dd4d51323a5c0874d21ff7cf6d82772363fb69baf4d6e51c5f577da",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":0,\"message\":\"Jukebox is not supported\"}}}"
+   }
+  },
+  {
+   "name": "jukebox-noauth-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/jukeboxControl?f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 116,
+    "sha256": "7ed4a0339dd4d51323a5c0874d21ff7cf6d82772363fb69baf4d6e51c5f577da",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":0,\"message\":\"Jukebox is not supported\"}}}"
+   }
+  },
+  {
+   "name": "license-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLicense.view?u=admin&p=parity-admin&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 207,
+    "sha256": "730772f7bb80ee3cd52781335a67ca9028f28df707544bb5803272e6d5fc7d3f",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><license valid=\"true\"></license></subsonic-response>"
+   }
+  },
+  {
+   "name": "license-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getLicense?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 156,
+    "sha256": "b9c203c62d195e84a1180deece4107fc62159d5c75c5ff995c993f805f09153f",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"license\":{\"valid\":true}}}"
+   }
+  },
+  {
+   "name": "music-folders-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getMusicFolders?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 196,
+    "sha256": "9b05bb2e4f4f6fcf3ff4d116e030f53021283d0861f45563260cd1487eaa51c9",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"musicFolders\":{\"musicFolder\":[{\"id\":1,\"name\":\"Music Library\"}]}}}"
+   }
+  },
+  {
+   "name": "music-folders-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getMusicFolders.view?u=admin&p=parity-admin&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 259,
+    "sha256": "19b62b74fc8ea36ca6ea694178a9088f02950e06aeb51723d1a55a3d09ae1dd2",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><musicFolders><musicFolder id=\"1\" name=\"Music Library\"></musicFolder></musicFolders></subsonic-response>"
+   }
+  },
+  {
+   "name": "user-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getUser?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&username=admin",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 438,
+    "sha256": "eed1e7c5661a86b3e29365dcd89c9157ae525104ccc75cc99073f33173dfb6e2",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"user\":{\"username\":\"admin\",\"scrobblingEnabled\":true,\"adminRole\":true,\"settingsRole\":false,\"downloadRole\":true,\"uploadRole\":false,\"playlistRole\":false,\"coverArtRole\":true,\"commentRole\":false,\"podcastRole\":false,\"streamRole\":true,\"jukeboxRole\":false,\"shareRole\":true,\"videoConversionRole\":false,\"folder\":[1]}}}"
+   }
+  },
+  {
+   "name": "users-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getUsers.view?u=admin&p=parity-admin&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 504,
+    "sha256": "c66d53f236550a73cccd3ee60202ec8e0b5c9dbf7a7a6f7c95e9d15232069367",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><users><user username=\"admin\" scrobblingEnabled=\"true\" adminRole=\"true\" settingsRole=\"false\" downloadRole=\"true\" uploadRole=\"false\" playlistRole=\"false\" coverArtRole=\"true\" commentRole=\"false\" podcastRole=\"false\" streamRole=\"true\" jukeboxRole=\"false\" shareRole=\"true\" videoConversionRole=\"false\"><folder>1</folder></user></users></subsonic-response>"
+   }
+  },
+  {
+   "name": "scan-status-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getScanStatus?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 276,
+    "sha256": "a8353eeb2bef4aa18918b427a25b99952a46ed1e57064098b8ea8ec6b52b4129",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"scanStatus\":{\"scanning\":false,\"count\":10,\"folderCount\":3,\"lastScan\":\"2026-10-04T08:07:33.892178755Z\",\"scanType\":\"full\",\"elapsedTime\":892178755}}}"
+   }
+  },
+  {
+   "name": "genres-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getGenres?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 302,
+    "sha256": "35297209867e3c466ac89fcda6f07c3c30378989563566044a52353e994021ab",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"genres\":{\"genre\":[{\"value\":\"Electronic\",\"songCount\":4,\"albumCount\":1},{\"value\":\"J-Pop\",\"songCount\":3,\"albumCount\":1},{\"value\":\"Post-Rock\",\"songCount\":3,\"albumCount\":1}]}}}"
+   }
+  },
+  {
+   "name": "genres-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getGenres.view?u=admin&p=parity-admin&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 348,
+    "sha256": "c8a1d7b229e3c03011fce2af82111c9b599d70273df0c8bbde6f5996398ad7d9",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"ok\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><genres><genre songCount=\"4\" albumCount=\"1\">Electronic</genre><genre songCount=\"3\" albumCount=\"1\">J-Pop</genre><genre songCount=\"3\" albumCount=\"1\">Post-Rock</genre></genres></subsonic-response>"
+   }
+  },
+  {
+   "name": "token-info-apikey",
+   "request": {
+    "method": "GET",
+    "target": "/rest/tokenInfo?apiKey=parity-not-a-real-key&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 404,
+   "reason": "Not Found",
+   "headers": [
+    [
+     "Content-Type",
+     "text/plain; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:44 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "text",
+    "size": 19,
+    "sha256": "b16e15764b8bc06c5c3f9f19bc8b99fa48e7894aa5a6ccdad65da49bbf564793",
+    "text": "404 page not found\n"
+   }
+  }
+ ]
+}

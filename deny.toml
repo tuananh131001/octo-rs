@@ -1,0 +1,48 @@
+# cargo-deny: what the dependency tree may hold. CI runs `cargo deny check` through
+# .github/workflows/rust.yml; locally, `cargo install cargo-deny --locked` and run the same.
+
+[graph]
+# Octo ships only as a Linux image, for amd64 and arm64. Leaving the other platforms out keeps
+# their crates (windows-sys and friends) from adding licences and duplicates nobody builds.
+targets = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"]
+all-features = true
+
+[advisories]
+# The RustSec database. CI reports advisories without failing on them (see rust.yml); act on
+# them by updating the dependency, or, when it does not apply, by an `ignore` entry with a reason.
+ignore = [
+    # Both are unmaintained, not vulnerable, and come in only through the crates PLAN chose.
+    { id = "RUSTSEC-2024-0436", reason = "paste: a compile-time macro helper inside lofty (tags); goes when lofty drops it" },
+    { id = "RUSTSEC-2026-0192", reason = "ttf-parser: read by fontdb under cosmic-text (cover text); goes when cosmic-text moves to skrifa" },
+]
+
+[licenses]
+# Every licence in the tree today, all permissive. A new dependency under anything else (a
+# copyleft licence above all) fails the check until it is looked at and added here.
+allow = [
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "CC0-1.0",
+    "ISC",
+    "MIT",
+    "Unicode-3.0",
+    "Zlib",
+]
+confidence-threshold = 0.93
+# Octo's own crates are publish = false and covered by the repository's LICENSE, not checked here.
+private = { ignore = true }
+
+[bans]
+# Several versions of one crate come in through different dependents (windows-sys, hashbrown,
+# getrandom and the like); worth knowing, not worth failing a build over.
+multiple-versions = "warn"
+# Octo's own crates depend on each other by path, which cargo-deny counts as a wildcard.
+wildcards = "deny"
+allow-wildcard-paths = true
+
+[sources]
+# Everything comes from crates.io; a git or other-registry dependency must be added on purpose.
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

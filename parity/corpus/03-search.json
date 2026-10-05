@@ -1,0 +1,33 @@
+{
+  "group": "subsonic-search",
+  "description": "endpoints.md 3.3: search3/search2 local-only, mixed local + discovery, discovery-only, type-ahead probes, later song pages, empty query relay, the Symfonium sync walk, quoted queries and auth failures. Discovery rows come from the Last.fm and Deezer stubs (stubs/mappings/40-discovery.json).",
+  "defaults": {"auth": "p"},
+  "requests": [
+    {"name": "s3-local-only-json", "path": "/rest/search3", "f": "json", "query": [["query", "polar"]]},
+    {"name": "s3-local-only-xml", "path": "/rest/search3.view", "query": [["query", "polar"]]},
+    {"name": "s3-mixed-json", "path": "/rest/search3", "f": "json", "query": [["query", "aurora"]]},
+    {"name": "s3-mixed-xml", "path": "/rest/search3.view", "query": [["query", "aurora"]]},
+    {"name": "s3-discovery-only-xml", "path": "/rest/search3", "query": [["query", "zephyr"]]},
+    {"name": "s3-discovery-only-json-repeat", "path": "/rest/search3.view", "f": "json", "query": [["query", "zephyr"]]},
+    {"name": "s3-cjk-json", "path": "/rest/search3", "f": "json", "query": [["query", "宇多田"]]},
+    {"name": "s3-diacritics-json", "path": "/rest/search3", "f": "json", "query": [["query", "Þögn"]]},
+    {"name": "s3-quoted-json", "path": "/rest/search3", "f": "json", "query": [["query", "\"Polar Night\""]]},
+    {"name": "s3-typeahead-json", "path": "/rest/search3", "f": "json", "query": [["query", "zep"], ["songCount", "5"], ["albumCount", "3"], ["artistCount", "3"]]},
+    {"name": "s3-songs-only-json", "path": "/rest/search3", "f": "json", "query": [["query", "zephyr"], ["songCount", "10"], ["albumCount", "0"], ["artistCount", "0"]]},
+    {"name": "s3-albums-only-json", "path": "/rest/search3", "f": "json", "query": [["query", "zephyr"], ["songCount", "0"], ["albumCount", "10"], ["artistCount", "0"]]},
+    {"name": "s3-album-offset-json", "path": "/rest/search3", "f": "json", "query": [["query", "zephyr"], ["albumOffset", "5"], ["artistOffset", "5"]]},
+    {"name": "s3-song-page2-json", "path": "/rest/search3", "f": "json", "query": [["query", "zephyr"], ["songCount", "2"], ["songOffset", "2"]]},
+    {"name": "s3-empty-query-json", "path": "/rest/search3", "f": "json", "query": [["query", ""], ["songCount", "100"], ["albumCount", "10"], ["artistCount", "10"]], "unordered": true},
+    {"name": "s3-empty-query-xml", "path": "/rest/search3.view", "query": [["query", "\"\""], ["songCount", "20"]], "unordered": true},
+    {"name": "s3-sync-walk-json", "path": "/rest/search3", "client": "Symfonium", "f": "json", "query": [["query", ""], ["songCount", "500"], ["albumCount", "500"], ["artistCount", "500"]], "unordered": true},
+    {"name": "s3-music-folder-json", "path": "/rest/search3", "f": "json", "query": [["query", "polar"], ["musicFolderId", "1"]]},
+    {"name": "s3-badpass-json", "path": "/rest/search3", "auth": "bad", "f": "json", "query": [["query", "zephyr"]]},
+    {"name": "s3-badpass-xml", "path": "/rest/search3", "auth": "bad", "query": [["query", "polar"]]},
+    {"name": "s3-jsonp", "path": "/rest/search3", "f": "jsonp", "query": [["query", "polar"], ["callback", "cb"]]},
+    {"name": "s3-post-form-json", "method": "POST", "path": "/rest/search3.view", "auth": "none",
+     "body": {"form": [["u", "admin"], ["p", "parity-admin"], ["v", "1.16.1"], ["c", "parity"], ["f", "json"], ["query", "midnight"]]}},
+    {"name": "s2-local-json", "path": "/rest/search2", "f": "json", "query": [["query", "polar"]]},
+    {"name": "s2-mixed-xml", "path": "/rest/search2.view", "query": [["query", "aurora"]]},
+    {"name": "s2-discovery-json", "path": "/rest/search2", "f": "json", "query": [["query", "zephyr"]]}
+  ]
+}

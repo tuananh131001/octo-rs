@@ -1,0 +1,13 @@
+{
+  "ignoreKeys": [],
+  "unorderedKeys": ["roles"],
+  "rules": [
+    {
+      "name": "static-last-modified-is-build-time",
+      "requests": "10-static-cors/*",
+      "where": "header:last-modified",
+      "regex": "^.*$",
+      "replace": "BUILD-TIME"
+    }
+  ]
+}

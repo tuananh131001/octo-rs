@@ -1,4 +1,4 @@
-"""Builds octo/wwwroot/admin/icons.svg, the dashboard's one icon sprite.
+"""Builds crates/octo/wwwroot/admin/icons.svg, the dashboard's one icon sprite.
 
 Phosphor glyphs come from the @phosphor-icons/core package on npm, the same version the Octo
 apps use, checked against its published sha512. Brand marks come from brands/, one cleaned file
@@ -26,7 +26,7 @@ PHOSPHOR_URL = f'https://registry.npmjs.org/@phosphor-icons/core/-/core-{PHOSPHO
 PHOSPHOR_SHA512 = 'v4ARvrip4qBCImOE5rmPUylOEK4iiED9ZyKjcvzuezqMaiRASCHKcRIuvvxL/twvLpkfnEODCOJp5dM4eZilxQ=='
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE.parent.parent / 'octo' / 'wwwroot' / 'admin' / 'icons.svg'
+OUT = HERE.parent.parent / 'crates' / 'octo' / 'wwwroot' / 'admin' / 'icons.svg'
 
 
 def phosphor_tarball() -> tarfile.TarFile:

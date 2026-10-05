@@ -1,0 +1,1577 @@
+{
+ "group": "subsonic-media",
+ "entries": [
+  {
+   "name": "stream-local-flac",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream?u=admin&p=parity-admin&v=1.16.1&c=parity&id=2A1r2OKTiTVuvPfmtePIIe",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "24984"
+    ],
+    [
+     "Content-Type",
+     "audio/flac"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Accept-Ranges",
+     "bytes"
+    ],
+    [
+     "Last-Modified",
+     "Wed, 01 Jan 2020 20:04:05 GMT"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 24984,
+    "sha256": "c3548cf76b7a672f180eda6ee07d7031a5d4c57e6a3dd432089fa4084b1f3bbd",
+    "head": "ZkxhQwAAACIEAAQAAABZAAGcBWIg8AAA"
+   }
+  },
+  {
+   "name": "stream-local-flac-range",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream.view?u=admin&p=parity-admin&v=1.16.1&c=parity&id=2A1r2OKTiTVuvPfmtePIIe",
+    "headers": {
+     "Range": "bytes=0-99"
+    },
+    "body": null
+   },
+   "status": 206,
+   "reason": "Partial Content",
+   "headers": [
+    [
+     "Content-Length",
+     "100"
+    ],
+    [
+     "Content-Type",
+     "audio/flac"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Accept-Ranges",
+     "bytes"
+    ],
+    [
+     "Content-Range",
+     "bytes 0-99/24984"
+    ],
+    [
+     "Last-Modified",
+     "Wed, 01 Jan 2020 20:04:05 GMT"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 100,
+    "sha256": "58d4cfe4f939d0bfd45523b4c738114e71cd43767057bb1930cf21fc30dd12f0",
+    "head": "ZkxhQwAAACIEAAQAAABZAAGcBWIg8AAA"
+   }
+  },
+  {
+   "name": "stream-local-flac-range-tail",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream?u=admin&p=parity-admin&v=1.16.1&c=parity&id=6TOMTUtoEzhnB8tjXmNY5V",
+    "headers": {
+     "Range": "bytes=1000-"
+    },
+    "body": null
+   },
+   "status": 206,
+   "reason": "Partial Content",
+   "headers": [
+    [
+     "Content-Length",
+     "32513"
+    ],
+    [
+     "Content-Type",
+     "audio/flac"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Accept-Ranges",
+     "bytes"
+    ],
+    [
+     "Content-Range",
+     "bytes 1000-33512/33513"
+    ],
+    [
+     "Last-Modified",
+     "Wed, 01 Jan 2020 20:04:05 GMT"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 32513,
+    "sha256": "b98432624394c6f681dfcfaddafb97798b8f34588c56b7b915b56cca7acf43dc",
+    "head": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+   }
+  },
+  {
+   "name": "stream-local-mp3",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream.view?u=admin&p=parity-admin&v=1.16.1&c=parity&id=79UbMHtfpdvxM9dnNYPHLu",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "12404"
+    ],
+    [
+     "Content-Type",
+     "audio/mpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Accept-Ranges",
+     "bytes"
+    ],
+    [
+     "Last-Modified",
+     "Wed, 01 Jan 2020 20:04:05 GMT"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 12404,
+    "sha256": "ffc6c6c9ae4537d780fe1b6db37f774fa9100005ccd1b5821cf2d138dce40ebd",
+    "head": "SUQzBAAAAAABKVRQRTEAAAAPAAADQmrD"
+   }
+  },
+  {
+   "name": "stream-local-m4a-range",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream?u=admin&p=parity-admin&v=1.16.1&c=parity&id=7LQvU7JOETUgfLldHu8laT",
+    "headers": {
+     "Range": "bytes=0-15"
+    },
+    "body": null
+   },
+   "status": 206,
+   "reason": "Partial Content",
+   "headers": [
+    [
+     "Content-Length",
+     "16"
+    ],
+    [
+     "Content-Type",
+     "audio/mp4"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Accept-Ranges",
+     "bytes"
+    ],
+    [
+     "Content-Range",
+     "bytes 0-15/13749"
+    ],
+    [
+     "Last-Modified",
+     "Wed, 01 Jan 2020 20:04:05 GMT"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 16,
+    "sha256": "b6d20b17c70579f006b4fed62d26b028b4f7d8bbdd2159940538c31210b2812f",
+    "head": "AAAAHGZ0eXBNNEEgAAACAA=="
+   }
+  },
+  {
+   "name": "stream-local-badpass",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream?u=admin&p=wrong-password&v=1.16.1&c=parity&id=2A1r2OKTiTVuvPfmtePIIe",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "241"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 241,
+    "sha256": "71b6952e17b857970c775ba1a4e42a7e1ca7f89a056bf489ad30fafa9b2316d8",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"failed\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><error code=\"40\" message=\"Wrong username or password\"></error></subsonic-response>"
+   }
+  },
+  {
+   "name": "stream-local-badpass-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream?u=admin&p=wrong-password&v=1.16.1&c=parity&f=json&id=2A1r2OKTiTVuvPfmtePIIe",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "194"
+    ],
+    [
+     "Content-Type",
+     "application/json"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 194,
+    "sha256": "26d0cfb90f5ffb7c852fdc26875725a12f467aa83b751e5f07d9d658996ffc9e",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"type\":\"navidrome\",\"serverVersion\":\"0.64.2 (10114574)\",\"openSubsonic\":true,\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "stream-unknown-id",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream?u=admin&p=parity-admin&v=1.16.1&c=parity&id=doesnotexist000000000x",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "229"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 229,
+    "sha256": "bf0cf7a7ed59b299c275063d11d4b562d80345529d6182f4ce94b0e9051ebc4e",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"failed\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><error code=\"70\" message=\"data not found\"></error></subsonic-response>"
+   }
+  },
+  {
+   "name": "stream-missing-id",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream?u=admin&p=parity-admin&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 32,
+    "sha256": "8aff78a89fda0d2bdac876347d444f04cf2bb99ab3d398a75fbe10f4ac100d86",
+    "text": "{\"error\":\"Missing id parameter\"}"
+   }
+  },
+  {
+   "name": "stream-missing-id-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream.view?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json",
+    "headers": {},
+    "body": null
+   },
+   "status": 400,
+   "reason": "Bad Request",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 32,
+    "sha256": "8aff78a89fda0d2bdac876347d444f04cf2bb99ab3d398a75fbe10f4ac100d86",
+    "text": "{\"error\":\"Missing id parameter\"}"
+   }
+  },
+  {
+   "name": "stream-external",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream?u=admin&p=parity-admin&v=1.16.1&c=parity&id=CwoXcVhGn95tWIOvqaFKt6",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "12245"
+    ],
+    [
+     "Content-Type",
+     "audio/mpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Accept-Ranges",
+     "bytes"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 12245,
+    "sha256": "d87f2d98e4efafb54e76bb9b42aa22f892e8d8b4b6c2e7cda20f5b816e31c0f4",
+    "head": "SUQzBAAAAAAACgAAAAAAAAAAAAD/80DE"
+   }
+  },
+  {
+   "name": "stream-external-range",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream?u=admin&p=parity-admin&v=1.16.1&c=parity&id=CwoXcVhGn95tWIOvqaFKt6",
+    "headers": {
+     "Range": "bytes=100-199"
+    },
+    "body": null
+   },
+   "status": 206,
+   "reason": "Partial Content",
+   "headers": [
+    [
+     "Content-Length",
+     "100"
+    ],
+    [
+     "Content-Type",
+     "audio/mpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Accept-Ranges",
+     "bytes"
+    ],
+    [
+     "Content-Range",
+     "bytes 100-199/12245"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 100,
+    "sha256": "f51fbd678b4ce286d4ebf85b7d26b9c37e068db3d2287f80ce2d477a3f814a59",
+    "head": "wICAIAgGAfB98CAh39BAFUgACgUDAUDA"
+   }
+  },
+  {
+   "name": "stream-external-badpass",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream?u=admin&p=wrong-password&v=1.16.1&c=parity&id=CwoXcVhGn95tWIOvqaFKt6",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "168"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 168,
+    "sha256": "c9cf0edc2184f02e6620c7385414bb567bf35104dce51065fe27104782bed269",
+    "text": "<subsonic-response status=\"failed\" version=\"1.16.1\" xmlns=\"http://subsonic.org/restapi\">\n  <error code=\"40\" message=\"Wrong username or password\" />\n</subsonic-response>"
+   }
+  },
+  {
+   "name": "stream-external-badpass-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/stream.view?u=admin&p=wrong-password&v=1.16.1&c=parity&f=json&id=CwoXcVhGn95tWIOvqaFKt6",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 119,
+    "sha256": "4273be2480b5cbcd6424e5cc7bebd9c4c13ee0ec5c46a94c7942b9c7570a5c4b",
+    "text": "{\"subsonic-response\":{\"status\":\"failed\",\"version\":\"1.16.1\",\"error\":{\"code\":40,\"message\":\"Wrong username or password\"}}}"
+   }
+  },
+  {
+   "name": "stream-head-local-catchall",
+   "request": {
+    "method": "HEAD",
+    "target": "/rest/stream?u=admin&p=parity-admin&v=1.16.1&c=parity&id=2Xc6Ix4qDl2csRPeaPnwau",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "audio/mpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Accept-Ranges",
+     "bytes"
+    ],
+    [
+     "Last-Modified",
+     "Wed, 01 Jan 2020 20:04:05 GMT"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "empty",
+    "size": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "name": "stream-head-external-catchall",
+   "request": {
+    "method": "HEAD",
+    "target": "/rest/stream?u=admin&p=parity-admin&v=1.16.1&c=parity&id=CwoXcVhGn95tWIOvqaFKt6",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "118"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "empty",
+    "size": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "name": "download-local-catchall",
+   "request": {
+    "method": "GET",
+    "target": "/rest/download?u=admin&p=parity-admin&v=1.16.1&c=parity&id=2Xc6Ix4qDl2csRPeaPnwau",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "audio/mpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Accept-Ranges",
+     "bytes"
+    ],
+    [
+     "Last-Modified",
+     "Wed, 01 Jan 2020 20:04:05 GMT"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 8443,
+    "sha256": "27e8a9231ef4c654d62397cd18bfcec9839b5e3c2077467a9fe5030b83d03da1",
+    "head": "SUQzBAAAAAABMlRQRTEAAAAPAAADQmrD"
+   }
+  },
+  {
+   "name": "download-local-range-catchall",
+   "request": {
+    "method": "GET",
+    "target": "/rest/download.view?u=admin&p=parity-admin&v=1.16.1&c=parity&id=1REy4tCLzfZLRjFxpQBwVM",
+    "headers": {
+     "Range": "bytes=0-31"
+    },
+    "body": null
+   },
+   "status": 206,
+   "reason": "Partial Content",
+   "headers": [
+    [
+     "Content-Type",
+     "audio/flac"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Accept-Ranges",
+     "bytes"
+    ],
+    [
+     "Content-Range",
+     "bytes 0-31/25481"
+    ],
+    [
+     "Last-Modified",
+     "Wed, 01 Jan 2020 20:04:05 GMT"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 32,
+    "sha256": "29af8e8aa31bbb7b30f27f71c861809f15f9f0b9b09fc9d82d2d7031080229ba",
+    "head": "ZkxhQwAAACIEAAQAAABaAAGmBWIg8AAA"
+   }
+  },
+  {
+   "name": "download-external-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/download?u=admin&p=parity-admin&v=1.16.1&c=parity&id=CwoXcVhGn95tWIOvqaFKt6",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "120"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 120,
+    "sha256": "08ef7a478025ac82b6ea24e3654b65e9754c67391d743f41f6622987d48df722",
+    "text": "<subsonic-response status=\"ok\" version=\"1.16.1\" xmlns=\"http://subsonic.org/restapi\">\n  <download />\n</subsonic-response>"
+   }
+  },
+  {
+   "name": "download-external-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/download.view?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&id=CwoXcVhGn95tWIOvqaFKt6",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 56,
+    "sha256": "96f7eb30910d5e02692bd58ca6426126c152046e3c1b12a2a18acbf1d35fab60",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\"}}"
+   }
+  },
+  {
+   "name": "cover-local-album",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?u=admin&p=parity-admin&v=1.16.1&c=parity&id=5KkmjLAmQA5mvuA6BVtGuD",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "230"
+    ],
+    [
+     "Content-Type",
+     "image/jpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 230,
+    "sha256": "24a176ed09c17fa1fd204210b59d0f486546f5c41ee680a65b3a583c5fc65ccc",
+    "head": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBD"
+   }
+  },
+  {
+   "name": "cover-local-album-size",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt.view?u=admin&p=parity-admin&v=1.16.1&c=parity&id=al-5KkmjLAmQA5mvuA6BVtGuD_b9d685baa046af1b&size=32",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "611"
+    ],
+    [
+     "Content-Type",
+     "image/jpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 611,
+    "sha256": "f2cdfd220a1888d3e5d974d17456247e27e43fbeaab03827f7223df457c4f1c4",
+    "head": "/9j/2wCEAAgGBgcGBQgHBwcJCQgKDBQN"
+   }
+  },
+  {
+   "name": "cover-local-song",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?u=admin&p=parity-admin&v=1.16.1&c=parity&id=79UbMHtfpdvxM9dnNYPHLu",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "230"
+    ],
+    [
+     "Content-Type",
+     "image/jpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 230,
+    "sha256": "b7046be9f8a0394b541f6970236e29ccd80509aabad3083c2e4bf4fb5cdc0adb",
+    "head": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBD"
+   }
+  },
+  {
+   "name": "cover-local-no-art",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?u=admin&p=parity-admin&v=1.16.1&c=parity&id=7hVkqYsGKelPO8XiRTyRC8",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "69228"
+    ],
+    [
+     "Content-Type",
+     "image/webp"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 69228,
+    "sha256": "273a4dbd61dfbb0a12d5d8ffe780eb7a3d4d000bc9771c5411cc70ae4dfa8a1f",
+    "head": "UklGRmQOAQBXRUJQVlA4WAoAAAAQAAAA"
+   }
+  },
+  {
+   "name": "cover-local-badpass",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?u=admin&p=wrong-password&v=1.16.1&c=parity&id=5KkmjLAmQA5mvuA6BVtGuD",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "241"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 241,
+    "sha256": "71b6952e17b857970c775ba1a4e42a7e1ca7f89a056bf489ad30fafa9b2316d8",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"failed\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><error code=\"40\" message=\"Wrong username or password\"></error></subsonic-response>"
+   }
+  },
+  {
+   "name": "cover-missing-id",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?u=admin&p=parity-admin&v=1.16.1&c=parity",
+    "headers": {},
+    "body": null
+   },
+   "status": 404,
+   "reason": "Not Found",
+   "headers": [
+    [
+     "Content-Type",
+     "application/problem+json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 162,
+    "sha256": "d737a8abeb9fd0b0b73e46a7c261882f77d5b0a9d59d453ce639d9756109a5d8",
+    "text": "{\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.5\",\"title\":\"Not Found\",\"status\":404,\"traceId\":\"00-046d736953b1899ebb69000e6bacf2e6-812da56d58cf84b4-00\"}"
+   }
+  },
+  {
+   "name": "cover-octo-radio",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?id=octo-radio",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "11823"
+    ],
+    [
+     "Content-Type",
+     "image/jpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 11823,
+    "sha256": "3d3066bd2aeade8e3b8789af33c64d028f426a2a7dc5dc6cea41837ac6721caa",
+    "head": "/9j/4AAQSkZJRgABAQEAYABgAAD/wAAR"
+   }
+  },
+  {
+   "name": "cover-external-song",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?u=admin&p=parity-admin&v=1.16.1&c=parity&id=CwoXcVhGn95tWIOvqaFKt6",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "2552"
+    ],
+    [
+     "Content-Type",
+     "image/jpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 2552,
+    "sha256": "f57f7329c49323c0faab40aaa6bb73e376aade7badfb85bbc9309800b2aec951",
+    "head": "/9j/4AAQSkZJRgABAQAAAQABAAD/wAAR"
+   }
+  },
+  {
+   "name": "cover-external-song-octo-client",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?u=admin&p=parity-admin&v=1.16.1&c=Octo&id=CwoXcVhGn95tWIOvqaFKt6",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "746"
+    ],
+    [
+     "Content-Type",
+     "image/jpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 746,
+    "sha256": "f5a1a5b8f0cbfc9e5182f992afbae7e431eece3cff53e61e09a9c7de4657c685",
+    "head": "/9j/4AAQSkZJRgABAgAAAQABAAD/2wBD"
+   }
+  },
+  {
+   "name": "cover-external-album",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt.view?u=admin&p=parity-admin&v=1.16.1&c=parity&id=wIfqpf1IeFS337TdaMfNC3",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "2552"
+    ],
+    [
+     "Content-Type",
+     "image/jpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 2552,
+    "sha256": "f57f7329c49323c0faab40aaa6bb73e376aade7badfb85bbc9309800b2aec951",
+    "head": "/9j/4AAQSkZJRgABAQAAAQABAAD/wAAR"
+   }
+  },
+  {
+   "name": "cover-external-artist",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?u=admin&p=parity-admin&v=1.16.1&c=parity&id=NdCCz1eNDVR3vKwUWVaAO1",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "2552"
+    ],
+    [
+     "Content-Type",
+     "image/jpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 2552,
+    "sha256": "f57f7329c49323c0faab40aaa6bb73e376aade7badfb85bbc9309800b2aec951",
+    "head": "/9j/4AAQSkZJRgABAQAAAQABAAD/wAAR"
+   }
+  },
+  {
+   "name": "cover-legacy-ext-album",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?u=admin&p=parity-admin&v=1.16.1&c=parity&id=ext-album-unknown",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "11823"
+    ],
+    [
+     "Content-Type",
+     "image/jpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 11823,
+    "sha256": "3d3066bd2aeade8e3b8789af33c64d028f426a2a7dc5dc6cea41837ac6721caa",
+    "head": "/9j/4AAQSkZJRgABAQEAYABgAAD/wAAR"
+   }
+  },
+  {
+   "name": "cover-legacy-ext-album-octo-client",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?u=admin&p=parity-admin&v=1.16.1&c=Octo&id=ext-album-unknown",
+    "headers": {},
+    "body": null
+   },
+   "status": 404,
+   "reason": "Not Found",
+   "headers": [
+    [
+     "Content-Type",
+     "application/problem+json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 162,
+    "sha256": "03479a135ba52ce8b6030be7321b1b3e7fe2f62b49a36ecad61c22a07a44daf2",
+    "text": "{\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.5\",\"title\":\"Not Found\",\"status\":404,\"traceId\":\"00-43ca859ee264c5fb7bba81861596127b-9721a1f40dfeee98-00\"}"
+   }
+  },
+  {
+   "name": "cover-legacy-ext-typed",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?u=admin&p=parity-admin&v=1.16.1&c=parity&id=ext-deezer-album-2001",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "11823"
+    ],
+    [
+     "Content-Type",
+     "image/jpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:49 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 11823,
+    "sha256": "3d3066bd2aeade8e3b8789af33c64d028f426a2a7dc5dc6cea41837ac6721caa",
+    "head": "/9j/4AAQSkZJRgABAQEAYABgAAD/wAAR"
+   }
+  },
+  {
+   "name": "cover-external-playlist",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?u=admin&p=parity-admin&v=1.16.1&c=parity&id=pl-deezer-777",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "11823"
+    ],
+    [
+     "Content-Type",
+     "image/jpeg"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "binary",
+    "size": 11823,
+    "sha256": "3d3066bd2aeade8e3b8789af33c64d028f426a2a7dc5dc6cea41837ac6721caa",
+    "head": "/9j/4AAQSkZJRgABAQEAYABgAAD/wAAR"
+   }
+  },
+  {
+   "name": "cover-octo-station-unknown",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getCoverArt?u=admin&p=parity-admin&v=1.16.1&c=parity&id=or00000000000000000000",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Length",
+     "232"
+    ],
+    [
+     "Content-Type",
+     "application/xml"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "xml",
+    "size": 232,
+    "sha256": "e213cea950183bbe90795aa81415f86bf4ee97b7397b3a76e9f41299bae07a71",
+    "text": "<subsonic-response xmlns=\"http://subsonic.org/restapi\" status=\"failed\" version=\"1.16.1\" type=\"navidrome\" serverVersion=\"0.64.2 (10114574)\" openSubsonic=\"true\"><error code=\"70\" message=\"Artwork not found\"></error></subsonic-response>"
+   }
+  },
+  {
+   "name": "transcode-decision-local-json",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getTranscodeDecision?u=admin&p=parity-admin&v=1.16.1&c=parity&f=json&mediaId=2A1r2OKTiTVuvPfmtePIIe",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 120,
+    "sha256": "24cc1c04577994cf28a6d304d957490901a8beb9d7accc76368ce6fde9ec0a39",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"transcodeDecision\":{\"canDirectPlay\":true,\"canTranscode\":false}}}"
+   }
+  },
+  {
+   "name": "transcode-decision-local-xml",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getTranscodeDecision.view?u=admin&p=parity-admin&v=1.16.1&c=parity&mediaId=7LQvU7JOETUgfLldHu8laT",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 120,
+    "sha256": "24cc1c04577994cf28a6d304d957490901a8beb9d7accc76368ce6fde9ec0a39",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"transcodeDecision\":{\"canDirectPlay\":true,\"canTranscode\":false}}}"
+   }
+  },
+  {
+   "name": "transcode-decision-external",
+   "request": {
+    "method": "GET",
+    "target": "/rest/getTranscodeDecision?u=admin&p=parity-admin&v=1.16.1&c=parity&mediaId=CwoXcVhGn95tWIOvqaFKt6",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "application/json; charset=utf-8"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ]
+   ],
+   "body": {
+    "kind": "json",
+    "size": 120,
+    "sha256": "24cc1c04577994cf28a6d304d957490901a8beb9d7accc76368ce6fde9ec0a39",
+    "text": "{\"subsonic-response\":{\"status\":\"ok\",\"version\":\"1.16.1\",\"transcodeDecision\":{\"canDirectPlay\":true,\"canTranscode\":false}}}"
+   }
+  },
+  {
+   "name": "radio-stream-unknown-token",
+   "request": {
+    "method": "GET",
+    "target": "/radio/stream/000000000000000000000000000000000000000000000000",
+    "headers": {},
+    "body": null
+   },
+   "status": 404,
+   "reason": "Not Found",
+   "headers": [
+    [
+     "Content-Length",
+     "0"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "empty",
+    "size": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "name": "radio-stream-unknown-token-head",
+   "request": {
+    "method": "HEAD",
+    "target": "/radio/stream/000000000000000000000000000000000000000000000000",
+    "headers": {},
+    "body": null
+   },
+   "status": 404,
+   "reason": "Not Found",
+   "headers": [
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ]
+   ],
+   "body": {
+    "kind": "empty",
+    "size": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   }
+  },
+  {
+   "name": "radio-stream-short-token-catchall",
+   "request": {
+    "method": "GET",
+    "target": "/radio/stream/tooshort",
+    "headers": {},
+    "body": null
+   },
+   "status": 200,
+   "reason": "OK",
+   "headers": [
+    [
+     "Content-Type",
+     "text/html"
+    ],
+    [
+     "Date",
+     "Sun, 04 Oct 2026 08:07:50 GMT"
+    ],
+    [
+     "Server",
+     "Kestrel"
+    ],
+    [
+     "Cache-Control",
+     "no-store, must-revalidate, no-cache"
+    ],
+    [
+     "Transfer-Encoding",
+     "chunked"
+    ],
+    [
+     "Vary",
+     "Origin"
+    ]
+   ],
+   "body": {
+    "kind": "text",
+    "size": 3689,
+    "sha256": "d25f5d1deabcdd8df520067cc57ba3874812600638ee1d31c9114930a2855209",
+    "text": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta\n            name=\"description\"\n            content=\"Navidrome Music Server - v0.64.2 (10114574)\"\n    />\n    <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"./apple-touch-icon.png\">\n    <link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"./favicon-32x32.png\">\n    <link rel=\"icon\" type=\"image/png\" sizes=\"192x192\" href=\"./android-chrome-192x192.png\">\n    <link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"./favicon-16x16.png\">\n    <link rel=\"mask-icon\" href=\"./safari-pinned-tab.svg\" color=\"#5b5fd5\">\n    <meta name=\"msapplication-TileColor\" content=\"#da532c\">\n    <meta name=\"theme-color\" content=\"#ffffff\">\n\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    \n    <link rel=\"manifest\" href=\"./manifest.webmanifest\" />\n    <meta property=\"og:site_name\" content=\"Navidrome\">\n    <meta property=\"og:url\" content=\"\">\n    <meta property=\"og:title\" content=\"\">\n    <meta property=\"og:image\" content=\"\">\n    <meta property=\"og:image:width\" content=\"300\">\n    <meta property=\"og:image:height\" content=\"300\">\n    <title>Navidrome</title>\n    <script>\n      \n      window.process = { env: {} };\n    </script>\n    <script>\n      window.__APP_CONFIG__ = \"{\\\"baseURL\\\":\\\"\\\",\\\"defaultDownloadableShare\\\":false,\\\"defaultDownsamplingFormat\\\":\\\"opus\\\",\\\"defaultLanguage\\\":\\\"\\\",\\\"defaultTheme\\\":\\\"Dark\\\",\\\"defaultUIVolume\\\":100,\\\"devActivityPanel\\\":true,\\\"devNewEventStream\\\":true,\\\"devShowArtistPage\\\":true,\\\"devSidebarPlaylists\\\":true,\\\"devUIShowConfig\\\":true,\\\"enableArtworkUpload\\\":true,\\\"enableCoverAnimation\\\":true,\\\"enableDownloads\\\":true,\\\"enableExternalServices\\\":false,\\\"enableFavourites\\\":true,\\\"enableInspect\\\":true,\\\"enableNowPlaying\\\":true,\\\"enableQuickConnect\\\":false,\\\"enableReplayGain\\\":true,\\\"enableSharing\\\":true,\\\"enableStarRating\\\":true,\\\"enableTranscodingConfig\\\":false,\\\"enableUserEditing\\\":true,\\\"extAuthLogoutURL\\\":\\\"\\\",\\\"firstTime\\\":false,\\\"gaTrackingId\\\":\\\"\\\",\\\"lastFMEnabled\\\":false,\\\"listenBrainzEnabled\\\":false,\\\"loginBackgroundURL\\\":\\\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAAABGdBTUEAALGPC/xhBQAAAiJJREFUeF7t0IEAAAAAw6D5Ux/khVBhwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDBgwIABAwYMGDDwMDDVlwABBWcSrQAAAABJRU5ErkJggg==\\\",\\\"losslessFormats\\\":\\\"FLAC,ALAC,APE,SHN,DSF,WV,WVP,TAK,WAV\\\",\\\"maxSidebarPlaylists\\\":100,\\\"playbackReportIntervalMs\\\":60000,\\\"pluginsEnabled\\\":true,\\\"separator\\\":\\\"/\\\",\\\"shareURL\\\":\\\"\\\",\\\"uiCoverArtSize\\\":300,\\\"uiSearchDebounceMs\\\":200,\\\"variousArtistsId\\\":\\\"63sqASlAfjbGMuLP4JhnZU\\\",\\\"version\\\":\\\"0.64.2 (10114574)\\\",\\\"welcomeMessage\\\":\\\"\\\"}\"\n    </script>\n    <script>\n      window.__SHARE_INFO__ =  null \n    </script>\n    <script type=\"module\" crossorigin src=\"./assets/index-7wbOXZOY.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"./assets/index-uCXnEN-G.css\">\n  <link rel=\"manifest\" href=\"./manifest.webmanifest\"></head>\n  <body>\n    <noscript>You need to enable JavaScript to run this app.</noscript>\n    <div id=\"root\"></div>\n    \n  </body>\n</html>\n"
+   }
+  }
+ ]
+}

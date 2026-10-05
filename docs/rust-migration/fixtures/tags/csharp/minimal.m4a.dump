@@ -1,0 +1,45 @@
+duration 0 rate 44100
+apple
+  "©nam" [data(1) "Song"]
+  "©ART" [data(1) "Artist"]
+  "aART" [data(1) "Artist"]
+  "©gen" [data(1) "Pop"]
+tag
+  title "Song"
+  performers ["Artist"]
+  albumartists ["Artist"]
+  composers []
+  album null
+  genres ["Pop"]
+  year 0 track 0/0 disc 0/0 bpm 0
+  copyright null
+  lyrics null
+  isrc null publisher null
+  releaseid null releasegroupid null
+extras
+  isrc null
+  label null
+  catalognumber null
+  barcode null
+  releasetype null
+  releasestatus null
+  releasecountry null
+  releasetrackid null
+  albumartistid null
+  artistid null
+  acoustid null
+  trackgain null
+  trackpeak null
+  albumgain null
+  albumpeak null
+  albumid null
+  albumartists null
+  albumversion null
+  releasedate null
+  recordingid null compilation False
+facts 0 ".m4a" 44100 "Song" "Artist" null "Artist" null null null [] null null null null null False True
+barefacts 0 ".m4a" 44100 False
+identity null 0
+album null "Artist" False
+kept "Song" null ["Artist"] [] null null null null 0/0 0/0 False
+pid "||Artist|||||Song"

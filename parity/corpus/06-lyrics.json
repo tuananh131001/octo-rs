@@ -1,0 +1,31 @@
+{
+  "group": "subsonic-lyrics",
+  "description": "endpoints.md 3.7: getLyricsBySongId (sidecar .lrc, LRCLIB stub hit, nothing found, external song via lyrics.ovh stub, enhanced on/off), getLyrics relay plus live fill-in, and the octoLyrics extension (getLyricsCandidates / setLyricsChoice with non-mutating arguments).",
+  "defaults": {"auth": "p"},
+  "requests": [
+    {"name": "by-id-sidecar-json", "path": "/rest/getLyricsBySongId", "f": "json", "query": [["id", "{{song_flac1}}"]]},
+    {"name": "by-id-sidecar-enhanced-json", "path": "/rest/getLyricsBySongId", "f": "json", "query": [["id", "{{song_flac1}}"], ["enhanced", "true"]]},
+    {"name": "by-id-sidecar-xml", "path": "/rest/getLyricsBySongId.view", "query": [["id", "{{song_flac1}}"]]},
+    {"name": "by-id-lrclib-json", "path": "/rest/getLyricsBySongId", "f": "json", "query": [["id", "{{song_flac2}}"]]},
+    {"name": "by-id-lrclib-xml-enhanced", "path": "/rest/getLyricsBySongId", "query": [["id", "{{song_flac2}}"], ["enhanced", "1"]]},
+    {"name": "by-id-none-json", "path": "/rest/getLyricsBySongId", "f": "json", "query": [["id", "{{song_m4a_3}}"]]},
+    {"name": "by-id-none-xml", "path": "/rest/getLyricsBySongId.view", "query": [["id", "{{song_mp3_2}}"]]},
+    {"name": "by-id-external-json", "path": "/rest/getLyricsBySongId", "f": "json", "query": [["id", "{{ext_song}}"]]},
+    {"name": "by-id-external-octo-client-json", "path": "/rest/getLyricsBySongId", "client": "Octo", "f": "json", "query": [["id", "{{ext_song2}}"]]},
+    {"name": "by-id-badpass-json", "path": "/rest/getLyricsBySongId", "auth": "bad", "f": "json", "query": [["id", "{{song_flac1}}"]]},
+    {"name": "by-id-missing-id-json", "path": "/rest/getLyricsBySongId", "f": "json"},
+    {"name": "lyrics-sidecar-xml", "path": "/rest/getLyrics.view", "query": [["artist", "Aurora Vale"], ["title", "Café del Mar"]]},
+    {"name": "lyrics-sidecar-json", "path": "/rest/getLyrics", "f": "json", "query": [["artist", "Aurora Vale"], ["title", "Café del Mar"]]},
+    {"name": "lyrics-live-fill-json", "path": "/rest/getLyrics", "f": "json", "query": [["artist", "Zephyr Echo"], ["title", "Glass Harbor"]]},
+    {"name": "lyrics-nothing-xml", "path": "/rest/getLyrics", "query": [["artist", "Nobody"], ["title", "Nothing"]]},
+    {"name": "lyrics-badpass-json", "path": "/rest/getLyrics", "auth": "bad", "f": "json", "query": [["artist", "Aurora Vale"], ["title", "Polar Night"]]},
+    {"name": "candidates-json", "path": "/rest/getLyricsCandidates", "f": "json", "query": [["id", "{{song_flac2}}"]]},
+    {"name": "candidates-xml-still-json", "path": "/rest/getLyricsCandidates.view", "query": [["id", "{{song_flac1}}"]]},
+    {"name": "candidates-missing-id", "path": "/rest/getLyricsCandidates", "f": "json"},
+    {"name": "candidates-unknown-song", "path": "/rest/getLyricsCandidates", "f": "json", "query": [["id", "doesnotexist000000000x"]]},
+    {"name": "candidates-badpass", "path": "/rest/getLyricsCandidates", "auth": "bad", "f": "json", "query": [["id", "{{song_flac2}}"]]},
+    {"name": "set-choice-missing", "path": "/rest/setLyricsChoice", "f": "json", "query": [["id", "{{song_flac2}}"]]},
+    {"name": "set-choice-auto-unknown-song", "path": "/rest/setLyricsChoice.view", "f": "json", "query": [["id", "doesnotexist000000000x"], ["candidate", "auto"]]},
+    {"name": "set-choice-bogus-candidate", "path": "/rest/setLyricsChoice", "f": "json", "query": [["id", "{{song_m4a_3}}"], ["candidate", "lrclib:0"]]}
+  ]
+}
