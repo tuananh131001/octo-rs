@@ -51,10 +51,10 @@ fn boom() -> &'static str {
     panic!("handler blew up")
 }
 
-/// Routes standing in for controllers that are not ported yet.
+/// Routes standing in for controllers (`testPing` for ping, which the controller now answers).
 fn dummy_routes() -> RouteSet {
     RouteSet::new()
-        .subsonic("ping", get(|| async { "pong" }).post(|| async { "pong" }))
+        .subsonic("testPing", get(|| async { "pong" }).post(|| async { "pong" }))
         .route("/test/panic", get(|| async { boom() }))
         .route(
             "/test/not-configured",
@@ -63,7 +63,7 @@ fn dummy_routes() -> RouteSet {
             }),
         )
         .route(
-            "/api/admin/settings",
+            "/api/admin/test-dummy",
             get(|| async { json_ok(&serde_json::json!({"ok": true})) })
                 .post(|| async { json_ok(&serde_json::json!({"saved": true})) }),
         )
@@ -154,7 +154,7 @@ fn assert_problem_404(r: &Reply, what: &str) {
 
 #[tokio::test]
 async fn cors_a_request_with_origin_gets_allow_origin_and_the_exposed_headers() {
-    let r = get_("/rest/ping", &[("Origin", "http://player.example")]).await;
+    let r = get_("/rest/testPing", &[("Origin", "http://player.example")]).await;
     assert_eq!(r.status, StatusCode::OK);
     assert_eq!(r.header("access-control-allow-origin"), Some("*"));
     assert_eq!(
@@ -163,7 +163,7 @@ async fn cors_a_request_with_origin_gets_allow_origin_and_the_exposed_headers() 
     );
     assert!(r.header("vary").is_none(), "no Vary");
 
-    let r = get_("/rest/ping", &[]).await;
+    let r = get_("/rest/testPing", &[]).await;
     assert!(!r.has_cors(), "no Origin, no CORS headers");
 }
 
@@ -206,7 +206,7 @@ async fn cors_preflight_echoes_the_method_and_headers_with_204() {
 
     let r = send(
         Method::OPTIONS,
-        "/rest/ping",
+        "/rest/testPing",
         &[("Origin", "http://x"), ("Access-Control-Request-Method", "GET")],
     )
     .await;
@@ -239,7 +239,7 @@ async fn an_options_request_that_is_not_a_preflight_reaches_the_catch_all() {
 
 #[tokio::test]
 async fn admin_guard_strips_cors_from_admin_reads() {
-    let r = get_("/api/admin/settings", &[("Origin", "http://evil.example")]).await;
+    let r = get_("/api/admin/test-dummy", &[("Origin", "http://evil.example")]).await;
     assert_eq!(r.status, StatusCode::OK);
     assert_eq!(r.text(), r#"{"ok":true}"#);
     assert!(!r.has_cors());
@@ -249,7 +249,7 @@ async fn admin_guard_strips_cors_from_admin_reads() {
 async fn admin_guard_answers_options_with_a_bare_204() {
     let r = send(
         Method::OPTIONS,
-        "/api/admin/settings",
+        "/api/admin/test-dummy",
         &[
             ("Origin", "http://evil.example"),
             ("Access-Control-Request-Method", "POST"),
@@ -265,7 +265,7 @@ async fn admin_guard_answers_options_with_a_bare_204() {
 async fn admin_guard_refuses_writes_without_the_header() {
     let r = send(
         Method::POST,
-        "/api/admin/settings",
+        "/api/admin/test-dummy",
         &[("Origin", "http://evil.example")],
     )
     .await;
@@ -277,7 +277,7 @@ async fn admin_guard_refuses_writes_without_the_header() {
     );
     assert!(!r.has_cors());
 
-    let r = send(Method::POST, "/API/Admin/Settings", &[("X-Octo-Admin", "1")]).await;
+    let r = send(Method::POST, "/API/Admin/Test-Dummy", &[("X-Octo-Admin", "1")]).await;
     assert_eq!(r.status, StatusCode::OK);
     assert_eq!(r.text(), r#"{"saved":true}"#);
 
@@ -293,7 +293,7 @@ async fn admin_guard_refuses_writes_without_the_header() {
 
 #[tokio::test]
 async fn head_on_an_admin_get_route_reaches_the_catch_all() {
-    let r = send(Method::HEAD, "/api/admin/settings", &[]).await;
+    let r = send(Method::HEAD, "/api/admin/test-dummy", &[]).await;
     assert_eq!(r.status, StatusCode::NOT_FOUND);
 }
 
@@ -690,14 +690,14 @@ async fn everything_else_is_relayed_and_without_a_url_says_so() {
 
 #[tokio::test]
 async fn paths_are_canonicalised_before_routing() {
-    for uri in ["/REST/Ping.VIEW", "/rest/ping/", "/Rest/PING?f=json"] {
+    for uri in ["/REST/TestPing.VIEW", "/rest/testping/", "/Rest/TESTPING?f=json"] {
         let r = get_(uri, &[]).await;
         assert_eq!((r.status, r.text().as_str()), (StatusCode::OK, "pong"), "{uri}");
     }
     // A method the route does not take reaches the catch-all, never a 405; so does HEAD.
     // (No Navidrome URL here, so the relay answers its 200 error envelope.)
     for method in [Method::PUT, Method::DELETE, Method::HEAD] {
-        let r = send(method.clone(), "/rest/ping", &[]).await;
+        let r = send(method.clone(), "/rest/testPing", &[]).await;
         assert_eq!(r.status, StatusCode::OK, "{method}");
         if method != Method::HEAD {
             assert!(
