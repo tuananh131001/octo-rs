@@ -234,7 +234,7 @@ services:
       Updates__Repo: ${UPDATES_REPO:-winters27/octo}
     volumes:
       - ${DOWNLOAD_PATH:-./downloads}:/music
-      # Editable settings file: the admin UI writes here, ASP.NET hot-reloads on
+      # Editable settings file: the admin UI writes here, Octo hot-reloads it on
       # change. Bind-mounted to host so values survive `docker compose up`. The
       # update helper watches its update/ folder.
       - ${OCTO_CONFIG_DIR:-./octo-config}:/app/config

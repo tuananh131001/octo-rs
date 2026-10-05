@@ -7,7 +7,7 @@ baseline recording in [`parity/recordings/csharp/`](../../parity/recordings/csha
 (`octo-csharp:csharp-final`, release `2026.10.03.2`).
 
 ```sh
-docker build -f Dockerfile.rust -t octo-rust:final .
+docker build -t octo-rust:final .   # Dockerfile.rust at f651ed5; the root Dockerfile since the cutover
 python3 parity/parity.py run --image octo-rust:final --project parity-rust --port 18580 --nd-port 18553 \
     --out <scratch>/parity/rust1
 python3 parity/parity.py diff               parity/recordings/csharp <scratch>/parity/rust1
