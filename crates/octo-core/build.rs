@@ -17,7 +17,10 @@ fn main() {
         Ok(v) if !v.trim().is_empty() => v.trim().to_string(),
         _ => match std::fs::read_to_string(&file) {
             Ok(text) => text.trim().to_string(),
-            Err(e) => panic!("{} cannot be read ({e}), and OCTO_VERSION is not set", file.display()),
+            Err(e) => panic!(
+                "{} cannot be read ({e}), and OCTO_VERSION is not set",
+                file.display()
+            ),
         },
     };
     if !is_release(&version) {
