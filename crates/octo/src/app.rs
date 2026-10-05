@@ -996,14 +996,20 @@ impl Lyrics {
             config_dir.map(|dir| dir.join("lyrics-library.json")),
         ));
         let resolver = navidrome.navidrome_song_path_resolver.clone();
-        let worker = Arc::new(LyricsLibraryWorker::new(
-            store.clone(),
-            self.sidecar_writer.clone(),
-            settings.clone(),
-            navidrome.local_library.clone(),
-            move || resolver.music_root(),
-            self.undo_journal.clone(),
-        ));
+        let worker = Arc::new(
+            LyricsLibraryWorker::new(
+                store.clone(),
+                self.sidecar_writer.clone(),
+                settings.clone(),
+                navidrome.local_library.clone(),
+                move || resolver.music_root(),
+                self.undo_journal.clone(),
+            )
+            .with_navidrome(
+                Arc::new(navidrome.navidrome_identity.clone()),
+                navidrome.http.clone(),
+            ),
+        );
         LyricsLibraryJob { store, worker }
     }
 }

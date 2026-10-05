@@ -105,11 +105,6 @@ impl Drop for Budget {
 // ---- Find lyrics for the library ------------------------------------------------------------
 
 /// The run, its rows and the review list.
-///
-/// The C# anonymous type has both `run.Busy` (the count of lookups no service answered) and
-/// `busy = _job.IsRunning`. Under the camelCase policy both are `busy`, and System.Text.Json
-/// refused to write it: every signed-in call answered `400` "Operation not valid" (parity
-/// recording `09-admin/lyrics-library-busy-collision`). Kept as it was; see known-diffs.md.
 async fn get_library_run(State(state): State<AppState>, request: Request) -> Response {
     let (parts, _) = request.into_parts();
     if !signed(&state, &parts) {
@@ -171,7 +166,9 @@ async fn get_library_run(State(state): State<AppState>, request: Request) -> Res
         ("picked", json!(run.picked.as_ref().map(Vec::len))),
         // What a preview found stays here; the dashboard gets the first lines.
         ("rows", Value::Array(rows)),
-        ("busy", json!(job.is_running())),
+        // Not "busy": that is the run's count of songs no service answered for, and two
+        // properties of one name cannot be written.
+        ("running", json!(job.is_running())),
         ("canUndo", json!(job.can_undo())),
         (
             "saveTo",

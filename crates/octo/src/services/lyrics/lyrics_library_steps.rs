@@ -6,14 +6,14 @@
 //!
 //! The rules without the files and the lookups are `octo_core::lyrics::lyrics_library_steps`.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::io;
 use std::path::Path;
 use std::sync::atomic::Ordering;
 
 use anyhow::anyhow;
 use chrono::Utc;
-use octo_core::common::dotnet::eq_ignore_case;
+use octo_core::common::dotnet::{eq_ignore_case, is_blank};
 use octo_core::lyrics::lyrics_library_job::{OCTO_DOWNLOADS, WHOLE_LIBRARY};
 use octo_core::lyrics::lyrics_library_steps::{
     self as steps, SERVICES_STOPPED_ANSWERING, better_than, has_name, picked, scan_row, undo_reason,
@@ -27,9 +27,11 @@ use tokio_util::sync::CancellationToken;
 use tracing::info;
 
 use super::lyrics_choices::LyricsChoiceService;
-use super::lyrics_library_job::{LyricsLibraryWorker, count, new_run_id};
+use super::lyrics_library_job::{LyricsLibraryWorker, count, extension_of, files_with, new_run_id};
 use super::lyrics_sidecar_writer::LyricsJob;
 use super::song_lyrics;
+use crate::services::library::NavidromeSongEntry;
+use crate::services::library::navidrome_song_list::{self, full_path};
 
 impl LyricsLibraryWorker {
     pub(super) async fn run_step(
@@ -51,7 +53,7 @@ impl LyricsLibraryWorker {
         }
 
         match mode {
-            LyricsLibraryMode::Scan => self.scan(stopping),
+            LyricsLibraryMode::Scan => self.scan(stopping).await,
             LyricsLibraryMode::Preview => self.preview(stopping).await,
             LyricsLibraryMode::Save => self.save(stopping).await,
             LyricsLibraryMode::Undo => self.undo(),
@@ -167,15 +169,44 @@ impl LyricsLibraryWorker {
 
     // ---- Scan ---------------------------------------------------------------------------------
 
-    fn scan(&self, stopping: &CancellationToken) -> anyhow::Result<()> {
+    /// Reads what each song has. Navidrome's song list names every song's artist, title and tag
+    /// lyrics, and one listing of the music folder finds the lyrics files, so only a song that
+    /// already has lyrics is opened; reading every file over a network mount took minutes.
+    async fn scan(&self, stopping: &CancellationToken) -> anyhow::Result<()> {
         let (queue, start) = self
             .store
             .read(|run| (run.queue.clone(), run.cursor.max(0) as usize));
+        let root = (self.music_root)();
+        let base_url = self.settings.current().subsonic.url.clone();
+        let known = navidrome_song_list::list(
+            self.identity.as_deref(),
+            self.http.as_ref(),
+            base_url.as_deref(),
+            &root,
+        )
+        .await;
+        let sidecars = {
+            let root = root.clone();
+            tokio::task::spawn_blocking(move || lyrics_file_stems(&root))
+                .await
+                .ok()
+                .flatten()
+        };
+        info!(
+            "Lyrics scan: Navidrome named {} of {} song(s); {} lyrics file(s) found",
+            queue
+                .iter()
+                .filter(|path| known.contains_key(&full_path(path)))
+                .count(),
+            queue.len(),
+            sidecars.as_ref().map_or(-1, |stems| count(stems.len()))
+        );
+
         for (index, path) in queue.iter().enumerate().skip(start) {
             if self.stopping(stopping) {
                 return Ok(());
             }
-            let scanned = self.scan_song(path);
+            let scanned = self.scan_song_known(path, known.get(&full_path(path)), sidecars.as_ref());
             self.store.update(|run| {
                 run.cursor = count(index) + 1;
                 run.processed += 1;
@@ -193,6 +224,43 @@ impl LyricsLibraryWorker {
         }
         self.finish(None);
         Ok(())
+    }
+
+    /// A song Navidrome named: read from its list unless the song has lyrics (in its tags or a
+    /// file beside it), which are opened to learn how they are timed. Any other song is read
+    /// from its file.
+    pub fn scan_song_known(
+        &self,
+        path: &str,
+        known: Option<&NavidromeSongEntry>,
+        lyrics_files: Option<&HashSet<String>>,
+    ) -> io::Result<(Option<LyricsLibraryRow>, bool)> {
+        let Some((known, artist, title)) = known.and_then(|known| {
+            let artist = known.artist.as_deref().filter(|artist| !is_blank(artist))?;
+            let title = known.title.as_deref().filter(|title| !is_blank(title))?;
+            Some((known, artist, title))
+        }) else {
+            return self.scan_song(path);
+        };
+        if known.has_tag_lyrics()
+            || lyrics_files.is_none_or(|stems| stems.contains(&stem_of(&full_path(path))))
+        {
+            return self.scan_song(path);
+        }
+        let row = LyricsLibraryRow {
+            id: LyricsLibraryRow::id_of(path),
+            path: path.to_string(),
+            artist: artist.trim().to_string(),
+            title: title.trim().to_string(),
+            album: known
+                .album
+                .as_deref()
+                .filter(|album| !is_blank(album))
+                .map(|album| album.trim().to_string()),
+            has: "none".to_string(),
+            ..Default::default()
+        };
+        Ok((Some(row), false))
     }
 
     /// One song as a scan sees it: a row when its lyrics are missing, plain or timed by line;
@@ -407,3 +475,21 @@ impl LyricsLibraryWorker {
 #[cfg(test)]
 #[path = "lyrics_library_steps_tests.rs"]
 mod tests;
+
+const LYRICS_FILE_EXTENSIONS: [&str; 7] = [".lrc", ".txt", ".ttml", ".elrc", ".srt", ".yaml", ".yml"];
+
+/// Every song stem (full path without extension) with a lyrics file beside it, from one listing
+/// of the music folder; None when it cannot be listed, so each song is checked.
+pub(crate) fn lyrics_file_stems(root: &str) -> Option<HashSet<String>> {
+    if !Path::new(root).is_dir() {
+        return None;
+    }
+    let files = files_with(Path::new(root), &LYRICS_FILE_EXTENSIONS).ok()?;
+    Some(files.iter().map(|file| stem_of(&full_path(file))).collect())
+}
+
+/// `Path.Combine(Path.GetDirectoryName(full), Path.GetFileNameWithoutExtension(full))`.
+fn stem_of(full: &str) -> String {
+    let name = full.rsplit('/').next().unwrap_or(full);
+    full[..full.len() - extension_of(name).len()].to_string()
+}

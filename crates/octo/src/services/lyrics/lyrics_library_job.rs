@@ -31,6 +31,7 @@ use super::lyrics_sidecar_writer::{LyricsJob, LyricsSidecarWriter, LyricsWrite, 
 use super::lyrics_undo_journal::LyricsUndoJournal;
 use crate::services::local::ILocalLibraryService;
 use crate::services::state_file;
+use crate::services::subsonic::NavidromeIdentityService;
 
 /// The run's progress, on disk, with the genre backfill's idiom: a dirty bit and a coalesced
 /// flush through a temporary file, so a long walk is not one write per song and a torn write
@@ -171,10 +172,15 @@ type Processed = (Option<LyricsWrite>, Option<LyricsJob>, Option<String>);
 pub struct LyricsLibraryWorker {
     pub(super) store: Arc<LyricsLibraryStore>,
     pub(super) writer: Arc<LyricsSidecarWriter>,
-    settings: Arc<SettingsStore>,
+    pub(super) settings: Arc<SettingsStore>,
     /// Resolved from a scope when it is needed in C#; only asked for Octo's downloads.
     library: Arc<dyn ILocalLibraryService>,
-    music_root: Box<dyn Fn() -> String + Send + Sync>,
+    pub(super) music_root: Box<dyn Fn() -> String + Send + Sync>,
+    /// For Navidrome's song list, which a scan reads instead of every file; None (the tests)
+    /// reads each file.
+    pub(super) identity: Option<Arc<NavidromeIdentityService>>,
+    /// `IHttpClientFactory.CreateClient()`.
+    pub(super) http: Option<reqwest::Client>,
     pub(super) journal: Arc<LyricsUndoJournal>,
     /// The pause after each song that needed a lookup ([`Self::GAP`]; the tests set none).
     pub(super) gap: Duration,
@@ -215,6 +221,8 @@ impl LyricsLibraryWorker {
             settings,
             library,
             music_root: Box::new(music_root),
+            identity: None,
+            http: None,
             journal,
             gap: Self::GAP,
             cancel_requested: AtomicBool::new(false),
@@ -227,6 +235,13 @@ impl LyricsLibraryWorker {
     /// The pause after each looked-up song (the C# tests set the static `Gap` to zero).
     pub fn with_gap(mut self, gap: Duration) -> Self {
         self.gap = gap;
+        self
+    }
+
+    /// Navidrome's identity and an HTTP client, so a scan reads Navidrome's song list.
+    pub fn with_navidrome(mut self, identity: Arc<NavidromeIdentityService>, http: reqwest::Client) -> Self {
+        self.identity = Some(identity);
+        self.http = Some(http);
         self
     }
 
@@ -609,9 +624,15 @@ fn compare_ordinal(a: &str, b: &str) -> CmpOrdering {
 }
 
 /// `Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories)`, kept to the audio
-/// extensions. Symbolic links to folders are followed, and any folder that cannot be read fails
-/// the whole listing (`IgnoreInaccessible` is off for that overload).
+/// extensions.
 fn audio_files(root: &Path) -> io::Result<Vec<String>> {
+    files_with(root, &LyricsLibraryWorker::AUDIO_EXTENSIONS)
+}
+
+/// `Directory.EnumerateFiles(root, "*", SearchOption.AllDirectories)`, kept to `extensions`.
+/// Symbolic links to folders are followed, and any folder that cannot be read fails the whole
+/// listing (`IgnoreInaccessible` is off for that overload).
+pub(super) fn files_with(root: &Path, extensions: &[&str]) -> io::Result<Vec<String>> {
     let mut found = Vec::new();
     let mut folders = vec![root.to_path_buf()];
     while let Some(folder) = folders.pop() {
@@ -628,10 +649,7 @@ fn audio_files(root: &Path) -> io::Result<Vec<String>> {
             }
             let name = entry.file_name();
             let extension = extension_of(&name.to_string_lossy());
-            if LyricsLibraryWorker::AUDIO_EXTENSIONS
-                .iter()
-                .any(|audio| eq_ignore_case(audio, &extension))
-            {
+            if extensions.iter().any(|wanted| eq_ignore_case(wanted, &extension)) {
                 found.push(path.to_string_lossy().into_owned());
             }
         }
@@ -641,7 +659,7 @@ fn audio_files(root: &Path) -> io::Result<Vec<String>> {
 
 /// `Path.GetExtension` of a file name: from its last dot, or nothing when there is no dot or the
 /// name ends in one. (Unlike Rust's, ".mp3" has the extension ".mp3".)
-fn extension_of(name: &str) -> String {
+pub(super) fn extension_of(name: &str) -> String {
     match name.rfind('.') {
         Some(dot) if dot + 1 < name.len() => name[dot..].to_string(),
         _ => String::new(),

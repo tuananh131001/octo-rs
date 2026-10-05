@@ -103,6 +103,8 @@ impl ILyricsSource for FakeSource {
 pub(crate) struct FakeTags {
     lyrics: Mutex<HashMap<PathBuf, String>>,
     songs: Mutex<HashMap<PathBuf, LyricsSongTags>>,
+    /// Every song whose tags were read, in order.
+    opened: Mutex<Vec<PathBuf>>,
 }
 
 impl FakeTags {
@@ -124,6 +126,11 @@ impl FakeTags {
 
     pub(crate) fn get(&self, path: &Path) -> Option<String> {
         self.lyrics.lock().get(path).cloned()
+    }
+
+    /// The songs whose tags were read (`read_song`), in order.
+    pub(crate) fn opened(&self) -> Vec<PathBuf> {
+        self.opened.lock().clone()
     }
 }
 
@@ -149,6 +156,7 @@ impl LyricsTagAccess for FakeTags {
 
     /// A file with no tags set is read as audio without any; a missing file is an I/O error.
     fn read_song(&self, path: &Path) -> std::io::Result<Option<LyricsSongTags>> {
+        self.opened.lock().push(path.to_path_buf());
         std::fs::metadata(path)?;
         let mut song = self.songs.lock().get(path).cloned().unwrap_or_default();
         song.lyrics = self.get(path);

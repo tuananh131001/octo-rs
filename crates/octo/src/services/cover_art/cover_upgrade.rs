@@ -6,7 +6,7 @@
 use std::cmp::Ordering as CmpOrdering;
 use std::collections::{HashMap, HashSet};
 use std::io::{self, Write as _};
-use std::path::{Component, Path, PathBuf};
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
@@ -27,7 +27,7 @@ use tracing::{debug, error, info, warn};
 
 use super::album_cover_finder::{AlbumCoverQuery, IAlbumCoverFinder};
 use crate::services::framework::HttpAnswer;
-use crate::services::framework::http::parse_json;
+use crate::services::library::navidrome_song_list::{self, full_path};
 use crate::services::local::ILocalLibraryService;
 use crate::services::state_file::{self, null_as_default};
 use crate::services::subsonic::NavidromeIdentityService;
@@ -1541,87 +1541,21 @@ impl CoverUpgradeWorker {
     /// out. Keyed by full path. Empty when Navidrome cannot be asked; the scan then goes folder
     /// by folder as before.
     async fn navidrome_albums(&self, root: &str) -> HashMap<String, String> {
-        let mut albums: HashMap<String, String> = HashMap::new();
         let base_url = self.settings.current().subsonic.url.clone();
-        let (Some(identity), Some(http), Some(base_url)) = (
-            self.services.identity.as_ref(),
+        navidrome_song_list::list(
+            self.services.identity.as_deref(),
             self.services.http.as_ref(),
-            base_url.filter(|url| !is_blank(url)),
-        ) else {
-            return albums;
-        };
-        let attempt = async {
-            let Some(jwt) = identity.ensure_admin_jwt().await.filter(|jwt| !jwt.is_empty()) else {
-                return anyhow::Ok(());
-            };
-            const PAGE: usize = 1000;
-            let mut start = 0;
-            while start < 200_000 {
-                let url = format!(
-                    "{}/api/song?_start={start}&_end={}&_sort=id&_order=ASC",
-                    base_url.trim_end_matches('/'),
-                    start + PAGE
-                );
-                let answer = HttpAnswer::read(
-                    http.get(&url)
-                        .header("X-Nd-Authorization", format!("Bearer {jwt}"))
-                        .send()
-                        .await?,
-                )
-                .await?;
-                if !answer.is_success() {
-                    break;
-                }
-                let doc = parse_json(&answer.body)?;
-                let Some(songs) = doc.as_array() else {
-                    break;
-                };
-                for song in songs {
-                    let text = |name: &str| {
-                        song.get(name)
-                            .and_then(|value| value.as_str())
-                            .map(str::to_string)
-                    };
-                    let (Some(album), Some(path)) = (
-                        text("albumId").filter(|album| !album.is_empty()),
-                        text("path").filter(|path| !path.is_empty()),
-                    ) else {
-                        continue;
-                    };
-                    let relative = path
-                        .replace('\\', "/")
-                        .trim_start_matches('/')
-                        .split('/')
-                        .filter(|segment| !segment.is_empty())
-                        .collect::<Vec<_>>()
-                        .join("/");
-                    for base in [text("libraryPath"), Some(root.to_string())]
-                        .into_iter()
-                        .flatten()
-                    {
-                        if base.is_empty() {
-                            continue;
-                        }
-                        albums
-                            .entry(full_path(&combine(&base, &relative)))
-                            .or_insert_with(|| album.clone());
-                    }
-                    // An older Navidrome reports the full path instead.
-                    if path.starts_with('/') {
-                        albums.entry(full_path(&path)).or_insert_with(|| album.clone());
-                    }
-                }
-                if songs.len() < PAGE {
-                    break;
-                }
-                start += PAGE;
-            }
-            Ok(())
-        };
-        if let Err(failure) = attempt.await {
-            info!("Cover upgrade could not list Navidrome's songs, so it goes folder by folder: {failure}");
-        }
-        albums
+            base_url.as_deref(),
+            root,
+        )
+        .await
+        .into_iter()
+        .filter_map(|(path, song)| {
+            song.album_id
+                .filter(|album| !album.is_empty())
+                .map(|album| (path, album))
+        })
+        .collect()
     }
 
     /// Files grouped into one item per Navidrome album where Navidrome named one, and per
@@ -2000,42 +1934,6 @@ fn directory_name(path: &str) -> String {
         .parent()
         .map(|parent| parent.to_string_lossy().into_owned())
         .unwrap_or_default()
-}
-
-/// `Path.Combine(base, relative)`.
-fn combine(base: &str, relative: &str) -> String {
-    if relative.is_empty() {
-        base.to_string()
-    } else if base.ends_with('/') {
-        format!("{base}{relative}")
-    } else {
-        format!("{base}/{relative}")
-    }
-}
-
-/// `Path.GetFullPath`: made absolute against the working folder, with `.`, `..` and doubled
-/// separators taken out.
-fn full_path(path: &str) -> String {
-    let absolute = if path.starts_with('/') {
-        PathBuf::from(path)
-    } else {
-        std::env::current_dir().unwrap_or_default().join(path)
-    };
-    let mut parts: Vec<String> = Vec::new();
-    for component in absolute.components() {
-        match component {
-            Component::Normal(part) => parts.push(part.to_string_lossy().into_owned()),
-            Component::ParentDir => {
-                parts.pop();
-            }
-            _ => {}
-        }
-    }
-    let mut full = format!("/{}", parts.join("/"));
-    if path.ends_with('/') && full.len() > 1 {
-        full.push('/');
-    }
-    full
 }
 
 /// The parent folder of a state file (`Path.GetDirectoryName`), "." for a bare name.

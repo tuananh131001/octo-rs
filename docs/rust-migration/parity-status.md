@@ -65,6 +65,18 @@ Every entry in [`parity/allowlist.json`](../../parity/allowlist.json) quotes a r
 | `static-compressed-variants` | 6 / 6 | Static files | `index-html-br`, `index-html-gzip`, `admin-js-br`: different compressor bytes; the decompressed content and the weak ETag are the same. |
 | `cover-jpeg-bytes` | 7 / 7 | List covers: JPEG bytes | Same status, type and size in pixels. Checked perceptually in this run (ffmpeg `ssim`, RGB): the 600×600 placeholder (`cover-octo-radio`, `cover-legacy-ext-*`, and the not-diffing `cover-external-playlist`) **0.9926**, the 300×300 badged outside covers (`cover-external-song`/`-album`/`-artist`) **0.9937**, all above PLAN's 0.98. `cover-external-song-octo-client` is byte-identical. Rust's JPEGs are larger (17.6 KB vs 11.8 KB, 4.0 KB vs 2.6 KB) because the `image` encoder always writes 4:4:4. |
 
+## Upstream 2026.10.04
+
+The port of upstream release 2026.10.04 (`docs/upstream-2026.10.04/PLAN.md`) changes three
+answers against the frozen 2026.10.03.2 recording, which is kept. A run on 2026-10-05
+(`octo-rust:upstream-2026.10.04`) diffs 453 of 453 requests with **0 unexplained** in both
+structural and bytes mode; the tables above are the cutover run's and are left as they were.
+
+| Allowlist id | Requests | known-diffs row | Notes |
+|---|---|---|---|
+| `lyrics-status-running` | `09-admin/lyrics-library-busy-collision` | Admin: `GET /api/admin/lyrics/library` (upstream 2026.10.04) | `200` with the run (`busy` 0, `running` false) instead of the `400` collision envelope, so also without its `Cache-Control`/`Expires`/`Pragma`. The case keeps its name so the baseline still pairs with it. |
+| `admin-js-upstream-2026-10-04` | `10-static-cors/admin-js`, `admin-js-if-none-match` | Admin UI: `admin.js` (upstream 2026.10.04) | The new `admin.js`: body, length and ETag; the 304 still answers, with the new ETag. `admin-js-br` was already covered by `static-compressed-variants`. |
+
 ## Beyond the corpus
 
 The upgrade and downgrade runs (C# and Rust taking turns on one `/app/config` and `/music`), the

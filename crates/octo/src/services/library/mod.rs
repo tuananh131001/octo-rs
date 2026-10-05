@@ -13,6 +13,7 @@ pub mod library_action_rating_worker;
 pub mod library_ownership;
 pub mod library_review_sweep_worker;
 pub mod navidrome_playlist_api;
+pub mod navidrome_song_list;
 pub mod navidrome_song_path_resolver;
 pub mod notice_playlist_worker;
 pub mod notice_queue;
@@ -45,6 +46,7 @@ pub use library_review_sweep_worker::{
     ReviewSweepState, ReviewSweepStatus, ReviewSweepStore, SweepVerification,
 };
 pub use navidrome_playlist_api::NavidromePlaylistApi;
+pub use navidrome_song_list::NavidromeSongEntry;
 pub use navidrome_song_path_resolver::{NavidromeSongPathResolver, PathSource, ResolvedSongFile};
 pub use notice_playlist_worker::{NoticePlan, NoticePlaylistWorker, NoticeReconcile};
 pub use notice_queue::{NoticeEntry, NoticeOrigin, NoticeQueue, NoticeState};

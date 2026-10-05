@@ -10,6 +10,7 @@ use axum::body::Body;
 use axum::http::{HeaderMap, Method, Request, StatusCode};
 use http_body_util::BodyExt;
 use octo_core::common::Clock;
+use octo_core::lyrics::{LyricsLibraryMode, LyricsLibraryRow, LyricsLibraryRun, LyricsLibraryStatus};
 use octo_core::settings::{
     AppSettings, LibraryAction, LibraryActionDefinition, LibraryActionSettings, SoulseekSettings,
 };
@@ -721,11 +722,31 @@ async fn the_idle_runs_answer_the_baselines_shape() {
     );
 }
 
-/// `GET /api/admin/lyrics/library` answers the serializer's collision, as the C# did (parity
-/// `09-admin/lyrics-library-busy-collision`), and only once signed in.
+/// `LyricsPageStatusTests.LyricsStatus_WithRowsAndABusyCount_IsWritten`: the lyrics page's
+/// status is written with the run's busy count beside `running` (it once could not be written
+/// at all, two members being `busy`), and only once signed in.
 #[tokio::test]
-async fn the_lyrics_run_answers_the_busy_collision() {
+async fn the_lyrics_status_with_rows_and_a_busy_count_is_written() {
     let state = AppState::for_tests(AppSettings::default());
+    state.lyrics_library_store.replace(LyricsLibraryRun {
+        run_id: "r1".to_string(),
+        status: LyricsLibraryStatus::Completed,
+        mode: LyricsLibraryMode::Preview,
+        busy: 2,
+        rows: vec![LyricsLibraryRow {
+            id: "a".to_string(),
+            path: "/music/a.mp3".to_string(),
+            artist: "A".to_string(),
+            title: "T".to_string(),
+            result: "found".to_string(),
+            kind: Some("word".to_string()),
+            source: Some("KuGou".to_string()),
+            preview: vec!["first".to_string()],
+            found_synced: Some("[00:01.00]secret text".to_string()),
+            ..LyricsLibraryRow::default()
+        }],
+        ..LyricsLibraryRun::default()
+    });
     let app = app(&state);
     let reply = send(
         &app,
@@ -739,12 +760,29 @@ async fn the_lyrics_run_answers_the_busy_collision() {
         request(Method::GET, "/api/admin/lyrics/library", Some(&token), None),
     )
     .await;
-    assert_eq!(reply.status, StatusCode::BAD_REQUEST);
-    assert_eq!(
-        reply.body,
-        r#"{"subsonic-response":{"status":"failed","version":"1.16.1","error":{"code":10,"message":"Operation not valid"}}}"#
-    );
-    assert_eq!(reply.header("cache-control"), Some("no-cache,no-store"));
+
+    assert_eq!(reply.status, StatusCode::OK);
+    let json = reply.json();
+    assert_eq!(json["busy"], json!(2));
+    assert_eq!(json["running"], json!(false));
+    assert_eq!(json["rows"][0]["result"], json!("found"));
+    // The found lyrics stay on the server.
+    assert!(!reply.body.contains("secret text"));
+}
+
+/// `LyricsPageStatusTests.CoverStatus_IsWritten`: the cover page's status, as the same kind of
+/// page.
+#[tokio::test]
+async fn the_cover_status_is_written() {
+    let state = AppState::for_tests(AppSettings::default());
+    let app = app(&state);
+    let token = state.browse_sessions.create("admin");
+    let reply = send(
+        &app,
+        request(Method::GET, "/api/admin/covers/upgrade", Some(&token), None),
+    )
+    .await;
+    assert_eq!(reply.status, StatusCode::OK);
 }
 
 /// Model binding runs before the action: a missing required member, a bad bool and an empty

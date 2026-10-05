@@ -23,5 +23,15 @@
    "requests": ["04-media/cover-octo-radio", "04-media/cover-external-*", "04-media/cover-legacy-ext-album", "04-media/cover-legacy-ext-typed"],
    "aspects": ["body", "header:content-length"],
    "knownDiff": "Bytes were never stable across encoders",
-   "reason": "The placeholder and the badged outside covers are JPEGs from the image crate's encoder, not ImageSharp's; status and Content-Type match (6-A2)."}
+   "reason": "The placeholder and the badged outside covers are JPEGs from the image crate's encoder, not ImageSharp's; status and Content-Type match (6-A2)."},
+  {"id": "lyrics-status-running",
+   "requests": ["09-admin/lyrics-library-busy-collision"],
+   "aspects": ["status", "body", "header:cache-control", "header:expires", "header:pragma"],
+   "knownDiff": "Admin: `GET /api/admin/lyrics/library` (upstream 2026.10.04)",
+   "reason": "Upstream 2026.10.04 renamed the running flag to `running`, so the status is written (200, without the error envelope's no-cache headers) where the 2026.10.03.2 baseline answered the 400 name collision."},
+  {"id": "admin-js-upstream-2026-10-04",
+   "requests": ["10-static-cors/admin-js", "10-static-cors/admin-js-if-none-match"],
+   "aspects": ["body", "header:etag", "header:content-length"],
+   "knownDiff": "Admin UI: `admin.js` (upstream 2026.10.04)",
+   "reason": "The admin UI carries upstream 2026.10.04's admin.js; the baseline recorded 2026.10.03.2's."}
 ]
