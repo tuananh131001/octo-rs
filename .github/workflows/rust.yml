@@ -1,0 +1,70 @@
+name: Rust
+
+# The Rust build's checks, shared by CI (every PR and push to main) and by the image
+# build (docker.yml), so a published image has passed the same gate as the merge.
+on:
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # rustup is on the runner; with no argument it installs what rust-toolchain.toml
+      # names (the channel and the rustfmt and clippy components).
+      - name: Rust toolchain
+        run: rustup toolchain install
+
+      # ~/.cargo (registry, git) and target/, keyed on the toolchain, Cargo.lock and the
+      # manifests. Saved only from main, so PRs read the main cache but never evict it.
+      - name: Cache cargo and target
+        uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      # ffmpeg for the Radio transcoder, loudness and spectrum tests; fpcalc for the
+      # fingerprint tests; Noto CJK, Symbola and DejaVu, as in the image, so the cover tests
+      # draw names in other scripts with the same fallback fonts. Tests that need a missing
+      # tool skip themselves, so a gap here shows up as a skip, not a failure.
+      - name: Install ffmpeg, fpcalc and cover fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ffmpeg libchromaprint-tools \
+            fonts-noto-cjk fonts-symbola fonts-dejavu-core
+
+      - name: Format
+        run: cargo fmt --all --check
+
+      - name: Clippy
+        run: cargo clippy --workspace --tests -- -D warnings
+
+      - name: Test
+        run: cargo test --workspace
+
+  # Licences, banned or duplicated crates and unknown sources (deny.toml). Advisories run
+  # beside them but do not fail the build: a new RustSec advisory against a dependency is
+  # news to act on, not a fault of the commit that happened to run when it was published.
+  deny:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        checks:
+          - bans licenses sources
+          - advisories
+
+    continue-on-error: ${{ matrix.checks == 'advisories' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: cargo deny check ${{ matrix.checks }}
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check ${{ matrix.checks }}
+          # The action's container brings its own toolchain; match rust-toolchain.toml.
+          rust-version: "1.99"
